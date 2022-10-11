@@ -1,0 +1,10 @@
+{
+    "Lua.diagnostics.globals": [
+        "display",
+        "native",
+        "application"
+    ],
+    "Lua.diagnostics.disable": [
+        "param-type-mismatch"
+    ]
+}
