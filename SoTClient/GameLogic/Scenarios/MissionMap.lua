@@ -25,9 +25,12 @@ local function SelectFarTile(x, y, size_x, size_y, dist)
     return fardest_dist
 end
 
-local function SetupCustomRoom(room)
-
-
+local function checkEmptySpace(x,y)
+    if(map["x"]["y"]["Tile"] == 1 and map["x"]["y"]["Actor"] == "") then
+        return 1
+    end
+    
+    return 0
 end 
 
 local function CheckRoomSuitability(room)
