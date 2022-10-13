@@ -2,7 +2,7 @@
 local GameOverseer = {}
 
 local global_turns = 0
-local CharBehaviour = require "SoTClient.GameLogic.CharacterLogic.CharBehaviour"
+local CharBehavior = require "SoTClient.GameLogic.CharacterLogic.CharBehavior"
 
 local Squad = {}
 
@@ -63,23 +63,24 @@ function SetupInitPlacements(game_map, player_units)
     end
 end
 
-function GameOverseer.DoMovement(game_map, char, m_up_down, m_left_right)
-    local cur_tile, desired_tile = game_map[char["x"]][char["y"]], 
+function DoMovement(game_map, char, m_up_down, m_left_right)
+    local cur_tile, desired_tile = game_map[char["x"]][char["y"]],
                                     game_map[char["x"] + m_up_down][char["y"] + m_left_right]
 
-    if(desired_tile["Tile"] ~= 1 and desired_tile["Actor"] ~= "") then
+    if(desired_tile["Tile"] ~= 1 or desired_tile["Actor"] ~= "") then
         return
     end
 
-    game_map[cur_tile["x"]][cur_tile["y"]]["Actor"] = ""
+    cur_tile["Actor"] = ""
     char["x"] = char["x"] + m_up_down
     char["y"] = char["y"] + m_left_right
-    game_map[desired_tile["x"]][desired_tile["y"]]["Actor"] = char
+    desired_tile["Actor"] = char
 
 end
 
-function GameOverseer.doTurn(game_map)
-    CharBehavior.DoFollow(Squad["Player"][2])
+function DoTurn(game_map)
+    DoMovement(game_map, Squad["Player"][2],
+        CharBehavior.DoFollow(game_map, Squad["Player"][2]["x"], Squad["Player"][2]["y"], Squad["Player"][1]["x"], Squad["Player"][1]["y"]))
 end
 
 function GameOverseer.SendCommand(game_map, command)
@@ -90,15 +91,17 @@ function GameOverseer.SendCommand(game_map, command)
     print("Tile right is " .. game_map[Squad["Player"][1]["x"] + 1][Squad["Player"][1]["y"]]["Tile"])
 
     if(command == "pressUp") then
-        DoMovement(game_map, Squad["Player"][1], 1, 0)
-    elseif (command == "pressDown") then
-        DoMovement(game_map, Squad["Player"][1], -1, 0)
-    elseif (command == "pressLeft") then
         DoMovement(game_map, Squad["Player"][1], 0, -1)
-    elseif (command == "pressRight") then
+    elseif (command == "pressDown") then
         DoMovement(game_map, Squad["Player"][1], 0, 1)
+    elseif (command == "pressLeft") then
+        DoMovement(game_map, Squad["Player"][1], -1, 0)
+    elseif (command == "pressRight") then
+        DoMovement(game_map, Squad["Player"][1], 1, 0)
     end
 
+    DoTurn(game_map)
+    
     return game_map
 end
 

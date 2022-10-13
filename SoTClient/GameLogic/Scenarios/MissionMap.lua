@@ -26,6 +26,10 @@ local function SelectFarTile(x, y, size_x, size_y, dist)
 end
 
 local function checkEmptySpace(x,y)
+    if(x > map["x"] or y > map["y"]) then
+        return 0
+    end
+
     if(map["x"]["y"]["Tile"] == 1 and map["x"]["y"]["Actor"] == "") then
         return 1
     end
