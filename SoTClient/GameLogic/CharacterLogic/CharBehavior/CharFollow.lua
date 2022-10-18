@@ -1,4 +1,4 @@
-local CharBehavior = {}
+local CharFollow = {}
 
 local math = require "math"
 local missionmaputils = require "SoTClient.GameLogic.Scenarios.MissionMapUtils"
@@ -13,7 +13,7 @@ local destination_x, destination_y = 0, 0
 local follow_map_max_x, follow_map_max_y = 0, 0
 local grid_start_x, grid_start_y = 0,0
 
-function GreedySearch(map, current_space_x, current_space_y)
+local function GreedySearch(map, current_space_x, current_space_y)
 
     if(current_space_x < 1 or current_space_x > follow_map_max_x or
         current_space_y < 1 or current_space_y > follow_map_max_y) then
@@ -78,7 +78,7 @@ function GreedySearch(map, current_space_x, current_space_y)
     end
 end
 
-function ReconstructFollowPath()
+local function ReconstructFollowPath()
     local current_space_x, current_space_y, temp_x, temp_y = destination_x, destination_y, 0, 0
     while follow_map[current_space_x][current_space_y][1] ~= 1 do
         temp_x = current_space_x - follow_map[current_space_x][current_space_y][2]
@@ -88,7 +88,7 @@ function ReconstructFollowPath()
     return follow_map[current_space_x][current_space_y][2], follow_map[current_space_x][current_space_y][3]
 end
 
-function CheckFollowNecessity(map, begin_space_x, begin_space_y, desired_space_x, desired_space_y)
+local function CheckFollowNecessity(map, begin_space_x, begin_space_y, desired_space_x, desired_space_y)
     local cardinal_dist_x, cardinal_dist_y = desired_space_x - begin_space_x, desired_space_y - begin_space_y
 
     if((cardinal_dist_x == 0 and math.abs(cardinal_dist_y) == 1) or (math.abs(cardinal_dist_x) == 1 and cardinal_dist_y == 0)) then
@@ -149,4 +149,4 @@ function CharBehavior.DoFollow(map, begin_space_x, begin_space_y, desired_space_
     return 0,0
 end
 
-return CharBehavior
+return CharFollow
