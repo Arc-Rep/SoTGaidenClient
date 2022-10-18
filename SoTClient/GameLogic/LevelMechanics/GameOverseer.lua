@@ -3,6 +3,7 @@ local GameOverseer = {}
 
 local global_turns = 0
 local CharBehavior = require "SoTClient.GameLogic.CharacterLogic.CharBehavior"
+local missionmaputils = require "SoTClient.GameLogic.Scenarios.MissionMapUtils"
 
 local Squad = {}
 
@@ -67,8 +68,8 @@ function DoMovement(game_map, char, m_up_down, m_left_right)
     local cur_tile, desired_tile = game_map[char["x"]][char["y"]],
                                     game_map[char["x"] + m_up_down][char["y"] + m_left_right]
 
-    if(desired_tile["Tile"] ~= 1 or desired_tile["Actor"] ~= "") then
-        return
+    if(missionmaputils.CheckLegalMovement(game_map, char["x"], char["y"], m_up_down, m_left_right) == false) then
+        return false
     end
 
     cur_tile["Actor"] = ""
@@ -76,6 +77,7 @@ function DoMovement(game_map, char, m_up_down, m_left_right)
     char["y"] = char["y"] + m_left_right
     desired_tile["Actor"] = char
 
+    return true
 end
 
 function DoTurn(game_map)
@@ -84,6 +86,7 @@ function DoTurn(game_map)
 end
 
 function GameOverseer.SendCommand(game_map, command)
+    local move_done = false
     print("Player is in " .. Squad["Player"][1]["x"] .. " and " .. Squad["Player"][1]["y"])
     print("Tile above is " .. game_map[Squad["Player"][1]["x"]][Squad["Player"][1]["y"] - 1]["Tile"])
     print("Tile below is " .. game_map[Squad["Player"][1]["x"]][Squad["Player"][1]["y"] + 1]["Tile"])
@@ -91,16 +94,18 @@ function GameOverseer.SendCommand(game_map, command)
     print("Tile right is " .. game_map[Squad["Player"][1]["x"] + 1][Squad["Player"][1]["y"]]["Tile"])
 
     if(command == "pressUp") then
-        DoMovement(game_map, Squad["Player"][1], 0, -1)
+        move_done = DoMovement(game_map, Squad["Player"][1], 0, -1)
     elseif (command == "pressDown") then
-        DoMovement(game_map, Squad["Player"][1], 0, 1)
+        move_done = DoMovement(game_map, Squad["Player"][1], 0, 1)
     elseif (command == "pressLeft") then
-        DoMovement(game_map, Squad["Player"][1], -1, 0)
+        move_done = DoMovement(game_map, Squad["Player"][1], -1, 0)
     elseif (command == "pressRight") then
-        DoMovement(game_map, Squad["Player"][1], 1, 0)
+        move_done = DoMovement(game_map, Squad["Player"][1], 1, 0)
     end
 
-    DoTurn(game_map)
+    if(move_done == true) then
+        DoTurn(game_map)
+    end
     
     return game_map
 end
@@ -112,7 +117,10 @@ function GameOverseer.StartGame(game_map, player_squads, team_squads)
     player_squads["Players"]["Player1"][1] = {}
     player_squads["Players"]["Player1"][2] = {}
     player_squads["Players"]["Player1"][1]["Actor"] = "Law"
+    player_squads["Players"]["Player1"][1]["Team"] = 1
     player_squads["Players"]["Player1"][2]["Actor"] = "Dylan"
+    player_squads["Players"]["Player1"][2]["Team"] = 2
+
 
     Squad["Player"] = player_squads["Players"]["Player1"]
 

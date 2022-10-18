@@ -3,8 +3,8 @@ local MissionMap = {}
 
 local math = require("math")
 local mathutils = require("SoTClient.Utils.MathUtils")
-local level_gen = require "SoTClient.GameLogic.Scenarios.LevelGen"
-
+local levelgen = require "SoTClient.GameLogic.Scenarios.LevelGen"
+local missionmaputils = require "SoTClient.GameLogic.Scenarios.MissionMapUtils"
 local map = {}
 local empty, walkable, exit, entrance = 0, 1, 2, 3
 local min_x, max_x = 30, 40
@@ -24,18 +24,6 @@ local function SelectFarTile(x, y, size_x, size_y, dist)
 
     return fardest_dist
 end
-
-local function checkEmptySpace(x,y)
-    if(x > map["x"] or y > map["y"]) then
-        return 0
-    end
-
-    if(map["x"]["y"]["Tile"] == 1 and map["x"]["y"]["Actor"] == "") then
-        return 1
-    end
-    
-    return 0
-end 
 
 local function CheckRoomSuitability(room)
     local upper_wall, left_wall, right_wall, down_wall = 0, 0, 0, 0
@@ -76,9 +64,9 @@ local function MakeRoom(room_x, room_y, min_room_size, max_room_size, room_type)
     local room, added_tiles = {}, 0
     room["x"] = room_x
     room["y"] = room_y
-    room["rows"] = level_gen.generateRandomBetween(
+    room["rows"] = levelgen.generateRandomBetween(
                                 min_room_wall_size, math.min(max_room_wall_size, map["x"] - room_x))     -- number of rows the room has
-    room["columns"] = level_gen.generateRandomBetween(
+    room["columns"] = levelgen.generateRandomBetween(
                                 min_room_wall_size, math.min(max_room_wall_size, map["y"] - room_y))  -- number of columns the room has
     room["type"] = room_type   -- type of room
     io.write("Rows " .. room["rows"] .. "and columns " .. room["columns"] .. "\n")
@@ -91,7 +79,7 @@ local function MakeRoom(room_x, room_y, min_room_size, max_room_size, room_type)
     end
 
     if(room_type ~= nil) then  -- add room type specific details
-        SetupCustomRoom(room)
+        --SetupCustomRoom(room)
     end
 
     if(CheckRoomSuitability(room) == false) then
@@ -105,10 +93,10 @@ local function MakeRoom(room_x, room_y, min_room_size, max_room_size, room_type)
 end
 
 local function MapRoomEssentials(mission_type)
-    local entrance_room_index, exit_room_index = level_gen.generateRandomBetween(1, #map["rooms"]), nil
+    local entrance_room_index, exit_room_index = levelgen.generateRandomBetween(1, #map["rooms"]), nil
     local entrance_room = map["rooms"][entrance_room_index] -- define entrance room
-    local entrance_x, entrance_y = level_gen.generateRandomBetween(1,entrance_room["rows"]),
-                                        level_gen.generateRandomBetween(1,entrance_room["columns"])
+    local entrance_x, entrance_y = levelgen.generateRandomBetween(1,entrance_room["rows"]),
+                                        levelgen.generateRandomBetween(1,entrance_room["columns"])
 
     entrance_room[entrance_x][entrance_y] = entrance
     map["entrance_x"] = entrance_room["x"] + entrance_x
@@ -117,15 +105,15 @@ local function MapRoomEssentials(mission_type)
 
     if #map["rooms"] ~= 1 then
         repeat
-            exit_room_index = level_gen.generateRandomBetween(1, #map["rooms"])
+            exit_room_index = levelgen.generateRandomBetween(1, #map["rooms"])
        until exit_room_index ~= entrance_room_index
     else
         exit_room_index = 1
     end
 
     local exit_room = map["rooms"][exit_room_index] -- define exit room
-    local exit_x, exit_y = level_gen.generateRandomBetween(1,exit_room["rows"]),
-                                level_gen.generateRandomBetween(1,exit_room["columns"])
+    local exit_x, exit_y = levelgen.generateRandomBetween(1,exit_room["rows"]),
+                                levelgen.generateRandomBetween(1,exit_room["columns"])
 
     exit_room[exit_x][exit_y] = exit
     map["exit_x"] = exit_x
@@ -268,8 +256,8 @@ local function ConnectAllRooms()
 end
 
 function MissionMap.generateMap(mission_type, seed1, seed2, difficulty_level)
-    level_gen.setSeed(seed1, seed2)
-    local x, y = level_gen.generateRandomBetween(min_x, max_x), level_gen.generateRandomBetween(min_y, max_y)
+    levelgen.setSeed(seed1, seed2)
+    local x, y = levelgen.generateRandomBetween(min_x, max_x), levelgen.generateRandomBetween(min_y, max_y)
     print( "x" .. x .. "\ny" .. y)
     map["x"] = x
     map["y"] = y
@@ -284,10 +272,10 @@ function MissionMap.generateMap(mission_type, seed1, seed2, difficulty_level)
         end
     end
 
-    local room_num_to_create = level_gen.generateRandomBetween(min_room_num, max_room_num)
+    local room_num_to_create = levelgen.generateRandomBetween(min_room_num, max_room_num)
     
     while #map["rooms"] < room_num_to_create do
-        MakeRoom(level_gen.generateRandomBetween(2, map["x"] - min_room_wall_size), level_gen.generateRandomBetween(2, map["y"] - min_room_wall_size), nil)
+        MakeRoom(levelgen.generateRandomBetween(2, map["x"] - min_room_wall_size), levelgen.generateRandomBetween(2, map["y"] - min_room_wall_size), nil)
     end
 
     MapRoomEssentials(mission_type)

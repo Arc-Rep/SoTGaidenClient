@@ -1,8 +1,10 @@
 local CharBehavior = {}
 
 local math = require "math"
+local missionmaputils = require "SoTClient.GameLogic.Scenarios.MissionMapUtils"
 
 local UP, LEFT, UNDIRECTED, DOWN, RIGHT  = -1, -1, 0, 1, 1
+local DIRECT_ORDER = {-1, 1, 0}
 local MAX_FOLLOW_RANGE = 5
 
 local follow_map, direct_queue, semi_direct_queue, side_queue, back_queue = {}, {}, {}, {}, {}
@@ -19,6 +21,7 @@ function GreedySearch(map, current_space_x, current_space_y)
     end
 
     local x_dif, y_dif = 0, 0
+    local x_order, y_order
 
     if(destination_x - current_space_x > 0) then
         x_dif = 1
@@ -31,27 +34,42 @@ function GreedySearch(map, current_space_x, current_space_y)
     elseif(destination_y - current_space_y < 0) then
         y_dif = -1
     end
-    print("Begun with " .. x_dif .. " " .. y_dif)
-    for i = LEFT, RIGHT, 1 do
-        for j = UP, DOWN, 1 do
-            if((i ~= UNDIRECTED or j ~= UNDIRECTED) and map.checkEmptySpace(grid_start_x + current_space_x + i, grid_start_y + current_space_y + j)) then
-                if(follow_map[current_space_x + i][current_space_y + j][1] > follow_map[current_space_x][current_space_y][1]) then
 
-                    follow_map[current_space_x + i][current_space_y + j] = {follow_map[current_space_x][current_space_y][1] + 1, i, j}
+    if(x_dif ~= 0) then
+        x_order = {x_dif, -x_dif, 0}
+    else
+        x_order = {0 , 1, -1}
+    end
 
-                    if(destination_x == current_space_x + i and destination_y == current_space_y + j) then
-                        return
-                    end
+    if(y_dif ~= 0) then
+        y_order = {y_dif, -y_dif, 0}
+    else
+        y_order = {0 , 1, -1}
+    end
 
-                    local local_dif = math.abs(i - x_dif) + math.abs(j - y_dif)
+    for i = 1, #x_order, 1 do
+        local move_x = x_order[i]
+        for j = 1, #y_order, 1 do
+            local move_y = y_order[j]
+
+            if((move_x ~= UNDIRECTED or move_y ~= UNDIRECTED) and (follow_map[current_space_x + move_x][current_space_y + move_y][1] > follow_map[current_space_x][current_space_y][1])) then
+                if(destination_x == current_space_x + move_x and destination_y == current_space_y + move_y and
+                        missionmaputils.CheckWallCollision(map, grid_start_x + current_space_x, grid_start_y + current_space_y, move_x, move_y) == false ) then
+                    follow_map[destination_x][destination_y] = {follow_map[current_space_x][current_space_y][1] + 1, move_x, move_y}
+                    return
+
+                elseif(missionmaputils.CheckLegalMovement(map, grid_start_x + current_space_x, grid_start_y + current_space_y, move_x, move_y) == true) then
+                    follow_map[current_space_x + move_x][current_space_y + move_y] = {follow_map[current_space_x][current_space_y][1] + 1, move_x, move_y}
+
+                    local local_dif = math.abs(move_x - x_dif) + math.abs(move_y - y_dif)
                     if(local_dif == 0) then
-                        direct_queue[#direct_queue+1] = {current_space_x+i, current_space_y+j}
+                        direct_queue[#direct_queue+1] = {current_space_x + move_x, current_space_y + move_y}
                     elseif(local_dif == 1) then
-                        semi_direct_queue[#semi_direct_queue+1] = {current_space_x+i, current_space_y+j}
+                        semi_direct_queue[#semi_direct_queue+1] = {current_space_x + move_x, current_space_y + move_y}
                     elseif(local_dif == 2) then
-                        side_queue[#side_queue+1] = {current_space_x+i, current_space_y+j}
+                        side_queue[#side_queue+1] = {current_space_x + move_x, current_space_y + move_y}
                     else
-                        back_queue[#back_queue+1] = {current_space_x+i, current_space_y+j}
+                        back_queue[#back_queue+1] = {current_space_x + move_x, current_space_y + move_y}
                     end
 
                 end
@@ -61,15 +79,34 @@ function GreedySearch(map, current_space_x, current_space_y)
 end
 
 function ReconstructFollowPath()
-    local current_space_x, current_space_y = destination_x, destination_y
+    local current_space_x, current_space_y, temp_x, temp_y = destination_x, destination_y, 0, 0
     while follow_map[current_space_x][current_space_y][1] ~= 1 do
-        current_space_x = current_space_x - follow_map[current_space_x][current_space_y][2]
-        current_space_y = current_space_y - follow_map[current_space_x][current_space_y][3]
+        temp_x = current_space_x - follow_map[current_space_x][current_space_y][2]
+        temp_y = current_space_y - follow_map[current_space_x][current_space_y][3]
+        current_space_x, current_space_y = temp_x, temp_y
     end
     return follow_map[current_space_x][current_space_y][2], follow_map[current_space_x][current_space_y][3]
 end
 
+function CheckFollowNecessity(map, begin_space_x, begin_space_y, desired_space_x, desired_space_y)
+    local cardinal_dist_x, cardinal_dist_y = desired_space_x - begin_space_x, desired_space_y - begin_space_y
+
+    if((cardinal_dist_x == 0 and math.abs(cardinal_dist_y) == 1) or (math.abs(cardinal_dist_x) == 1 and cardinal_dist_y == 0)) then
+        return false
+    elseif(math.abs(cardinal_dist_x) == 1 and math.abs(cardinal_dist_y) == 1 and
+                missionmaputils.CheckWallCollision(map, begin_space_x, begin_space_y, desired_space_x - begin_space_x, desired_space_y - begin_space_y) == false) then
+        return false
+    end
+
+    return true
+end
+
 function CharBehavior.DoFollow(map, begin_space_x, begin_space_y, desired_space_x, desired_space_y)
+
+    if ((CheckFollowNecessity(map, begin_space_x, begin_space_y, desired_space_x, desired_space_y) == false) or
+            desired_space_x - begin_space_x > MAX_FOLLOW_RANGE or desired_space_y - begin_space_y > MAX_FOLLOW_RANGE)  then
+        return 0,0
+    end
     start_x, start_y = math.min(begin_space_x, MAX_FOLLOW_RANGE), math.min(begin_space_y, MAX_FOLLOW_RANGE)
     destination_x, destination_y = start_x + desired_space_x - begin_space_x, start_y + desired_space_y - begin_space_y
     grid_start_x, grid_start_y = begin_space_x - start_x, begin_space_y - start_y
@@ -85,10 +122,6 @@ function CharBehavior.DoFollow(map, begin_space_x, begin_space_y, desired_space_
         end
     end
 
-    print("Start " .. start_x .. " " .. start_y)
-    print("Destination" .. destination_x .. " " .. destination_y)
-    print("Follow max " .. follow_map_max_x .. " " .. follow_map_max_y)
-
     direct_queue[#direct_queue+1] = {start_x, start_y}
     follow_map[start_x][start_y] = {0, UNDIRECTED, UNDIRECTED}
 
@@ -96,7 +129,6 @@ function CharBehavior.DoFollow(map, begin_space_x, begin_space_y, desired_space_
             (#direct_queue ~= 0 or #semi_direct_queue ~= 0 or #side_queue ~= 0 or #back_queue ~= 0)) do
         
         local next_space
-        print("Total remaining " .. #direct_queue + #semi_direct_queue + #side_queue + #back_queue)
         if(#direct_queue ~= 0) then
             next_space = table.remove(direct_queue, 1)
         elseif(#semi_direct_queue ~= 0) then
@@ -110,7 +142,8 @@ function CharBehavior.DoFollow(map, begin_space_x, begin_space_y, desired_space_
         GreedySearch(map, next_space[1], next_space[2])
     end
 
-    if(follow_map[destination_x][destination_y] ~= MAX_FOLLOW_RANGE) then
+    if(follow_map[destination_x][destination_y][1] ~= MAX_FOLLOW_RANGE) then
+        print(follow_map[destination_x][destination_y][1] .. " " .. follow_map[destination_x][destination_y][2] .. " " .. follow_map[destination_x][destination_y][3])
         return ReconstructFollowPath()
     end
     return 0,0
