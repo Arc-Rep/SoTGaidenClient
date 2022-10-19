@@ -255,6 +255,10 @@ local function ConnectAllRooms()
     CorrectDiffPartitions(room_partitions)
 end
 
+function MissionMap.GetMap()
+    return map
+end
+
 function MissionMap.generateMap(mission_type, seed1, seed2, difficulty_level)
     levelgen.setSeed(seed1, seed2)
     local x, y = levelgen.generateRandomBetween(min_x, max_x), levelgen.generateRandomBetween(min_y, max_y)

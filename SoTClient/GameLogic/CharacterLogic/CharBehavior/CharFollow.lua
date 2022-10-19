@@ -104,7 +104,7 @@ end
 function CharFollow.DoFollow(map, begin_space_x, begin_space_y, desired_space_x, desired_space_y)
 
     if ((CheckFollowNecessity(map, begin_space_x, begin_space_y, desired_space_x, desired_space_y) == false) or
-            desired_space_x - begin_space_x > MAX_FOLLOW_RANGE or desired_space_y - begin_space_y > MAX_FOLLOW_RANGE)  then
+            math.abs(desired_space_x - begin_space_x) >= MAX_FOLLOW_RANGE or math.abs(desired_space_y - begin_space_y) >= MAX_FOLLOW_RANGE)  then
         return 0,0
     end
     start_x, start_y = math.min(begin_space_x, MAX_FOLLOW_RANGE), math.min(begin_space_y, MAX_FOLLOW_RANGE)
@@ -124,10 +124,10 @@ function CharFollow.DoFollow(map, begin_space_x, begin_space_y, desired_space_x,
 
     direct_queue[#direct_queue+1] = {start_x, start_y}
     follow_map[start_x][start_y] = {0, UNDIRECTED, UNDIRECTED}
-
+    print("Check parameters " .. start_y .. " and " .. desired_space_y.. " and ".. begin_space_y .. " and " .. destination_y)
     while ((follow_map[destination_x][destination_y][1] == MAX_FOLLOW_RANGE) and
             (#direct_queue ~= 0 or #semi_direct_queue ~= 0 or #side_queue ~= 0 or #back_queue ~= 0)) do
-        
+        print("Check parameters " .. destination_x .. " and " .. destination_y)
         local next_space
         if(#direct_queue ~= 0) then
             next_space = table.remove(direct_queue, 1)
