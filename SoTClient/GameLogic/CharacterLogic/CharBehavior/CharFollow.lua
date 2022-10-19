@@ -101,7 +101,7 @@ local function CheckFollowNecessity(map, begin_space_x, begin_space_y, desired_s
     return true
 end
 
-function CharBehavior.DoFollow(map, begin_space_x, begin_space_y, desired_space_x, desired_space_y)
+function CharFollow.DoFollow(map, begin_space_x, begin_space_y, desired_space_x, desired_space_y)
 
     if ((CheckFollowNecessity(map, begin_space_x, begin_space_y, desired_space_x, desired_space_y) == false) or
             desired_space_x - begin_space_x > MAX_FOLLOW_RANGE or desired_space_y - begin_space_y > MAX_FOLLOW_RANGE)  then

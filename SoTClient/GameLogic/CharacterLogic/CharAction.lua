@@ -2,6 +2,7 @@ local CharAction = {}
 
 local missionmaputils = require "SoTClient.GameLogic.Scenarios.MissionMapUtils"
 local follow = require "SoTClient.GameLogic.CharacterLogic.CharBehavior.CharFollow"
+local missionmaputils = require "SoTClient.GameLogic.Scenarios.MissionMapUtils"
 
 local function BehaviourHandler_Enemy(game_map, unit_list, unit){
     if(char["Status"] == "Standby") then
@@ -19,7 +20,7 @@ local function BehaviourHandler_Ally(){
 
 }
 
-local function DoMovement(game_map, char, m_up_down, m_left_right)
+function CharAction.DoMovement(game_map, char, m_up_down, m_left_right)
     local cur_tile, desired_tile = game_map[char["x"]][char["y"]],
                                     game_map[char["x"] + m_up_down][char["y"] + m_left_right]
 
@@ -43,8 +44,8 @@ function CharAction.DoPlayerAction(map, char){
     end
 
     if(char["Status"] == "Follower") then
-       DoMovement(map, char, follow.doFollow(map, char["x"], char["y"], char["Focus"]["x"], char["Focus"]["y"]))
+        CharAction.DoMovement(map, char, follow.DoFollow(map, char["x"], char["y"], char["Focus"]["x"], char["Focus"]["y"]))
     end
-}
+end
 
 return CharAction

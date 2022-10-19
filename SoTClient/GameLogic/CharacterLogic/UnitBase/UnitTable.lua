@@ -1,17 +1,14 @@
 local UnitTable = {}
 
-local Squads = {}
-Squads["Player1"] = {}
-Squads["Hostiles"] = {}
+function UnitTable:AddPlayerUnit(unit_list, Squads, Unit)
+    table.insert(unit_list, Unit)
+    table.insert(Squads[Unit["Team"]],  Unit)
+end
 
-function UnitTable.AddEnemyUnit(Unit)
+function UnitTable:AddEnemyUnit(unit_list, Squads, Unit)
+    table.insert(unit_list, Unit)
     table.insert(Squads["Hostiles"], Unit)
-    table.insert(UnitTable, Unit)
 end
 
-function UnitTable.AddPlayerUnit(Unit)
-    table.insert(Squad["Player1"],  Unit)
-    table.insert(UnitTable,         Unit)
-end
 
 return UnitTable
