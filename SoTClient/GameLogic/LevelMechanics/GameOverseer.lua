@@ -4,13 +4,11 @@ local GameOverseer = {}
 local global_turns = 0
 local GameSetup = require "SoTClient.GameLogic.LevelMechanics.GameSetup"
 local CharAction = require "SoTClient.GameLogic.CharacterLogic.CharAction"
+local MapData = require "SotClient.GameLogic.Scenarios.MissionMap"
 local missionmaputils = require "SoTClient.GameLogic.Scenarios.MissionMapUtils"
 local UnitTable = "SoTClient.GameLogic.CharacterLogic.UnitBase.UnitTable.lua"
 
 local LocalBattles = {}
-
-
-
 
 function DoTurn(game_map)
     for char, char_index in ipairs(UnitTable) do
@@ -43,10 +41,11 @@ function GameOverseer.SendCommand(game_map, command)
     return game_map
 end
 
-function GameOverseer.StartGame(game_map, player_squads, team_squads)
-
+function GameOverseer.StartGame(game_map, player_squads, team_squads, seed1, seed2)
+    game_map = MapData.generateMap(0, seed1, seed2, 0)
     GameSetup.SetupPlayerUnits(UnitTable)
-    GameSetup.SetupInitPlacements(game_map, UnitTable)
+    GameSetup.SetupPlayerInitPlacements(game_map, UnitTable)
+    GameSetup.SetupEnemyInitPlacements(game_map, UnitTable, seed1, seed2)
 end
 
 return GameOverseer

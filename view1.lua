@@ -6,11 +6,12 @@
 
 local composer = require( "composer" )
 local scene = composer.newScene()
-local MapData = require "SotClient.GameLogic.Scenarios.MissionMap"
 local MapRender = require "SotClient.Visuals.RenderMap"
+local GameOverseer = require "SotClient.GameLogic.LevelMechanics.GameOverseer"
 local map_data = {}
 local map_render = {}
-local game_overseer = require "SotClient.GameLogic.LevelMechanics.GameOverseer"
+local seed1, seed2 = 14638, 3526
+
 local last_click = system.getTimer()
 
 local touchListener = function( event )
@@ -62,9 +63,9 @@ function scene:create( event )
 	--local summary = display.newText( newTextParams )
 	--summary:setFillColor( 0 ) -- black
 
-	map_data = MapData.generateMap(0, 14638, 3526, 0)
 	
-	game_overseer.StartGame(map_data, nil, nil)
+	
+	GameOverseer.StartGame(map_data, nil, nil, seed1, seed2)
 	map_render = MapRender.setVisualMap(map_data)
 	MapRender.UpdateTilemap(map_render, map_data)
 	sceneGroup:addEventListener("touch", touchListener)

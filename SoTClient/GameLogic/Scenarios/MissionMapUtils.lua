@@ -73,4 +73,16 @@ function MissionMapUtils.FindClosestEmptySpace(game_map, center_x, center_y)
     
 end
 
+function MissionMapUtils.GetCurrentRoom(game_map, x, y)
+    for index, room in ipairs(game_map["rooms"]) do
+        if(x <= room["x"] + room["columns"] and x >= room["x"]) then
+            if(y <= room["y"] + room["rows"] and y >= room["y"]) then
+                return index
+            end
+        end
+    end 
+
+    return -1
+end
+
 return MissionMapUtils

@@ -81,9 +81,9 @@ end
 local function ReconstructFollowPath()
     local current_space_x, current_space_y, temp_x, temp_y = destination_x, destination_y, 0, 0
     while follow_map[current_space_x][current_space_y][1] ~= 1 do
-        temp_x = current_space_x - follow_map[current_space_x][current_space_y][2]
-        temp_y = current_space_y - follow_map[current_space_x][current_space_y][3]
-        current_space_x, current_space_y = temp_x, temp_y
+        current_space_x, current_space_y = 
+            current_space_x - follow_map[current_space_x][current_space_y][2], 
+            current_space_y - follow_map[current_space_x][current_space_y][3]
     end
     return follow_map[current_space_x][current_space_y][2], follow_map[current_space_x][current_space_y][3]
 end

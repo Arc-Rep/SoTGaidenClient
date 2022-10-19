@@ -281,7 +281,7 @@ function MissionMap.generateMap(mission_type, seed1, seed2, difficulty_level)
     MapRoomEssentials(mission_type)
 
     ConnectAllRooms()
-    
+
     return map
 end
 
