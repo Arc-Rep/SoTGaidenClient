@@ -9,18 +9,43 @@ local scene = composer.newScene()
 local MapRender = require "SotClient.Visuals.RenderMap"
 local GameOverseer = require "SotClient.GameLogic.LevelMechanics.GameOverseer"
 local MapData = require "SoTClient.GameLogic.Scenarios.MissionMap"
+local TextData = require "SoTClient.GameLogic.CharacterLogic.CharAction"
 local map_render = {}
 local seed1, seed2 = 14638, 3527
 
 local last_click = system.getTimer()
 
 local touchListener = function( event )
-
 	if(last_click + 300 > system.getTimer()) then
 		return false
 	end
-
 	last_click = system.getTimer()
+
+	TextData.ShowCharOnRight("GameResources/andre.png")
+	local options = {
+		text = "André: You know, brother, when I was searching... It was in nights like these that my mind would always keep me awake.",     
+		x = 110,
+		y = 770,
+		width = 440,
+		height = 150,
+		font = native.systemFont,
+		fontSize = 26 -- Alignment parameter
+	}
+	-- Next text to add: "Ever restless I wondered how I would find you amidst the outside world. How you were, what happened to you..."
+	TextData.TextBox(options)
+
+
+	TextData.ShowCharOnLeft("GameResources/joao.png")
+	local options2 = {
+		text = "João: So what do you think of that 90% win rate in smash?...",     
+		x = 110,
+		y = 270,
+		width = 440,
+		height = 150,
+		font = native.systemFont,
+		fontSize = 26 -- Alignment parameter
+	}
+	TextData.TextBox(options2)
 
     local x, y = event.x, event.y
 	if( y < display.contentHeight/ 5) then
@@ -86,6 +111,7 @@ function scene:show( event )
 	local phase = event.phase
 	MapRender.UpdateTilemap(map_render,MapData.GetMap())
 	if phase == "will" then
+		TextData.BehaviourHandler_Ally()
 		-- Called when the scene is still off screen and is about to move on screen
 	elseif phase == "did" then
 		-- Called when the scene is now on screen

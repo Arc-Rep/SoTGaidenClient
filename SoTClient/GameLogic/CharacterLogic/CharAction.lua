@@ -17,8 +17,34 @@ local function BehaviourHandler_Enemy(game_map, char_list, char)
     end
 end
 
-local function BehaviourHandler_Ally()
+function CharAction.ShowCharOnLeft(charDir)
+    local myImage = display.newImage(charDir)
+    myImage:translate(300,300) --Global Values (char always same position)
+    myImage:rotate(90)
+end
 
+function CharAction.ShowCharOnRight(charDir)
+    local myImage = display.newImage(charDir)
+    myImage:translate(300,800) --Global Values (char always same position)
+    myImage.xScale = -1
+    myImage:rotate(90)
+end
+
+function CharAction.TextBox(options)
+    local myRoundedRect = display.newRoundedRect( options.x, options.y, options.height+20, options.width+20, 12 )
+    myRoundedRect.strokeWidth = 3
+    myRoundedRect:setFillColor( 0.5 )
+    myRoundedRect:setStrokeColor( 1, 0, 0 )
+
+    local myText = display.newText( options )
+    myText:setFillColor( 1, 1, 1 )
+    myText:rotate(90)
+end
+
+
+
+function CharAction.BehaviourHandler_Ally()
+    
 end
 
 function CharAction.DoMovement(game_map, char, m_up_down, m_left_right)
