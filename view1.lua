@@ -11,17 +11,15 @@ local GameOverseer = require "SotClient.GameLogic.LevelMechanics.GameOverseer"
 local MapData = require "SoTClient.GameLogic.Scenarios.MissionMap"
 local map_render = {}
 local seed1, seed2 = 14638, 3527
+local cutscene = {false}
 
 local last_click = system.getTimer()
 
 local touchListener = function( event )
-
 	if(last_click + 300 > system.getTimer()) then
 		return false
 	end
-
 	last_click = system.getTimer()
-
     local x, y = event.x, event.y
 	if( y < display.contentHeight/ 5) then
 		print(MapData.GetMap()[1][1])
@@ -38,6 +36,15 @@ local touchListener = function( event )
 		print("Right")
 	end
 	map_render = MapRender.UpdateTilemap(map_render, MapData.GetMap())
+
+	--Move where you wanna call cutscenes
+	if cutscene[1] == false then
+		composer.gotoScene("GameResources.Cutscenes.cutscene1",{time=2000, effect="fade"})
+		cutscene[1] = true
+	end
+
+
+	
     return true
 end
 

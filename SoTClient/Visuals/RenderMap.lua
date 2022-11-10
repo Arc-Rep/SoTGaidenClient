@@ -1,4 +1,3 @@
-
 local RenderMap = {}
 
 local zoom = 1

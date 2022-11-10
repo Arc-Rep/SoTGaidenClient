@@ -17,8 +17,8 @@ local function BehaviourHandler_Enemy(game_map, char_list, char)
     end
 end
 
-local function BehaviourHandler_Ally()
 
+function CharAction.BehaviourHandler_Ally()
 end
 
 function CharAction.DoMovement(game_map, char, m_up_down, m_left_right)
@@ -41,11 +41,11 @@ function CharAction.DoCharAction(map, unit_list,char)
     if(char["Team"] < 0) then
         BehaviourHandler_Enemy(map, unit_list, char)
     else
-        BehaviourHandler_Ally()
+       -- BehaviourHandler_Ally()
     end
 
     if(char["Status"] == "Follower") then
-        print("Data is " .. char["Focus"]["y"]) 
+        print("Data is " .. char["Focus"]["y"])
         CharAction.DoMovement(map, char, follow.DoFollow(map, char["x"], char["y"], char["Focus"]["x"], char["Focus"]["y"]))
     end
 end

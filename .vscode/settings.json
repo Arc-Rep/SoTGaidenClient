@@ -2,7 +2,9 @@
     "Lua.diagnostics.globals": [
         "display",
         "native",
-        "application"
+        "application",
+        "makeLuaText",
+        "setTextSize"
     ],
     "Lua.diagnostics.disable": [
         "param-type-mismatch"
