@@ -39,6 +39,8 @@ end
 
 function MissionMapUtils.FindClosestEmptySpace(game_map, center_x, center_y)
 
+    if(MissionMapUtils.checkEmptySpace(game_map, center_x, center_y) == true) then return center_x, center_y end
+
     local dist, deviation, max_dist = 1, nil, nil
     local side_placement, square_sides = nil, 4
     local min_dev, max_dev
@@ -51,7 +53,7 @@ function MissionMapUtils.FindClosestEmptySpace(game_map, center_x, center_y)
         max_dev = math.min(game_map["y"] - center_y, dist)
 
         for deviation = min_dev, max_dev, 1 do
-                if(game_map[center_x + (dist - deviation)][center_y + deviation]["Tile"] == 1) then
+                if(MissionMapUtils.checkEmptySpace(game_map,center_x + (dist - deviation), center_y + deviation) == true) then
                     return center_x + (dist - deviation), center_y + deviation
                 end
         end
@@ -60,7 +62,7 @@ function MissionMapUtils.FindClosestEmptySpace(game_map, center_x, center_y)
         max_dev = math.min(center_y, dist)
 
         for deviation = min_dev, max_dev, 1 do
-            if(game_map[center_x - (dist - deviation)][center_y - deviation]["Tile"] == 1) then
+            if(MissionMapUtils.checkEmptySpace(game_map, center_x - (dist - deviation), center_y - deviation) == true) then
                 return center_x - (dist - deviation), center_y - deviation
             end
         end
@@ -77,7 +79,7 @@ function MissionMapUtils.GetCurrentRoom(game_map, x, y)
     for index, room in ipairs(game_map["rooms"]) do
         if(x <= room["x"] + room["columns"] and x >= room["x"]) then
             if(y <= room["y"] + room["rows"] and y >= room["y"]) then
-                return index
+                return room
             end
         end
     end 

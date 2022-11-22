@@ -1,4 +1,3 @@
-
 local RenderMap = {}
 
 local Camera = require "SoTClient.Visuals.CameraMap"

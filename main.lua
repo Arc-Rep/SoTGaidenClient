@@ -17,6 +17,8 @@ PlayerData = Player.ReadPlayer()
 local datapath = "D:/GameDev/SoT Gaiden/UserData/gamedata.db"
 DB = sqlite3.open(datapath)
 
+composer.gotoScene("loginmenu")
+
 -- event listeners for tab buttons:
 local function onFirstView( event )
 	composer.gotoScene( "view1" )
@@ -36,9 +38,9 @@ local tabButtons = {
 }
 
 -- create the actual tabBar widget
-local tabBar = widget.newTabBar{
+--[[local tabBar = widget.newTabBar{
 	top = display.contentHeight - 50,	-- 50 is default height for tabBar widget
 	buttons = tabButtons
-}
+}]]--
 
-onFirstView()	-- invoke first tab button's onPress event manually
+--onFirstView()	-- invoke first tab button's onPress event manually

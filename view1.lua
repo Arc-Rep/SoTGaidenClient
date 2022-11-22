@@ -8,36 +8,43 @@ local composer = require( "composer" )
 local scene = composer.newScene()
 local MapRender = require "SotClient.Visuals.RenderMap"
 local GameOverseer = require "SotClient.GameLogic.LevelMechanics.GameOverseer"
-local map_data = {}
+local MapData = require "SoTClient.GameLogic.Scenarios.MissionMap"
 local map_render = {}
-local seed1, seed2 = 14638, 3526
+local seed1, seed2 = 14638, 3527
+local cutscene = {false}
 
 local last_click = system.getTimer()
 
 local touchListener = function( event )
-
 	if(last_click + 300 > system.getTimer()) then
 		return false
 	end
-
 	last_click = system.getTimer()
-
     local x, y = event.x, event.y
 	if( y < display.contentHeight/ 5) then
-		print(map_data[1][1])
-		game_overseer.SendCommand(map_data,"pressUp")
+		print(MapData.GetMap()[1][1])
+		GameOverseer.SendCommand(MapData.GetMap(),"pressUp")
 		print("Up")
 	elseif (y > display.contentHeight * (4/5)) then
-		game_overseer.SendCommand(map_data,"pressDown")
+		GameOverseer.SendCommand(MapData.GetMap(),"pressDown")
 		print("Down")
 	elseif (x < display.contentWidth / 4) then
-		game_overseer.SendCommand(map_data,"pressLeft")
+		GameOverseer.SendCommand(MapData.GetMap(),"pressLeft")
 		print("Left")
 	elseif (x > display.contentWidth * (3 / 4)) then
-		game_overseer.SendCommand(map_data,"pressRight")
+		GameOverseer.SendCommand(MapData.GetMap(),"pressRight")
 		print("Right")
 	end
-	map_render = MapRender.UpdateTilemap(map_render, map_data)
+	map_render = MapRender.UpdateTilemap(map_render, MapData.GetMap())
+
+	--Move where you wanna call cutscenes
+	if cutscene[1] == false then
+		composer.gotoScene("GameResources.Cutscenes.cutscene1",{time=2000, effect="fade"})
+		cutscene[1] = true
+	end
+
+
+	
     return true
 end
 
@@ -65,9 +72,9 @@ function scene:create( event )
 
 	
 	
-	GameOverseer.StartGame(map_data, nil, nil, seed1, seed2)
-	map_render = MapRender.setVisualMap(map_data)
-	MapRender.UpdateTilemap(map_render, map_data)
+	GameOverseer.StartGame(MapData, nil, nil, seed1, seed2)
+	map_render = MapRender.setVisualMap(MapData.GetMap())
+	MapRender.UpdateTilemap(map_render, MapData.GetMap())
 	sceneGroup:addEventListener("touch", touchListener)
 
 	for i = 1, #map_render, 1 do
@@ -84,7 +91,7 @@ end
 function scene:show( event )
 	local sceneGroup = self.view
 	local phase = event.phase
-	MapRender.UpdateTilemap(map_render,map_data)
+	MapRender.UpdateTilemap(map_render,MapData.GetMap())
 	if phase == "will" then
 		-- Called when the scene is still off screen and is about to move on screen
 	elseif phase == "did" then
