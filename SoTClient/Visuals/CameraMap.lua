@@ -9,11 +9,11 @@ local camera_tile_width, camera_tile_height = 1, 1
 local camera_tile_pixel_conversion = 1
 local TILE_OUT_BOUNDS = 4
 
-local CAMERA_ZOOM_VALUES = [0.75, 0.875, 1, 1.125, 1.25]
+local CAMERA_ZOOM_VALUES = {0.75, 0.875, 1, 1.125, 1.25}
 local zoom_index = 3
 local camera_tile_pixel_zoomed = 1
 
-local focus_element_queue = []
+local focus_element_queue = {}
 
 
 function CameraMap.updateFocus()
@@ -41,29 +41,29 @@ function CameraMap.zoomDecrease()
     if(zoom_index == 0) then
         return false
     end
-    zoom_index -= 1
-    zoomSetup()
+    zoom_index = zoom_index - 1
+    CameraMap.zoomSetup()
 end
-
+ 
 function CameraMap.zoomIncrease()
     if(zoom_index == 5) then
         return false
     end
-    zoom_index += 1
-    zoomSetup()
+    zoom_index = zoom_index + 1
+    CameraMap.zoomSetup()
 end
 
 
 function CameraMap.addFocus(focus)
-    focus_element_queue.add(focus, 1)
-    updateFocus()
+    focus_element_queue[#focus_element_queue+1] = focus
+    CameraMap.updateFocus()
 end
 
 function CameraMap.popFocus()
     if (#focus_element_queue ~= 0) then
-        focus_element_queue.remove(focus, 1)
+        table.remove(focus_element_queue, #focus_element_queue)
     end
-    updateFocus()
+    CameraMap.updateFocus()
 end
 
 function CameraMap.getFocus()
@@ -104,14 +104,14 @@ function CameraMap.setup(Map, screen_info, focus)
         return "Error has occured: No width read"
     elseif type(screen_info.height) ~= "number" then
         return "Error has occured: No height read"
-    elseif type(screen_info.tile_pixel_conversion) ~= "number"
+    elseif type(screen_info.tile_pixel_conversion) ~= "number" then
         return "Error has occured: Could not read render info"
     end
 
-    camera_width_base, camera_height_base = camera_info.width, camera_info.height
-    camera_tile_pixel_conversion = camera_info.tile_pixel_conversion
-    zoomSetup()
-    cameraAddFocus(focus)
+    camera_width_base, camera_height_base = screen_info.width, screen_info.height
+    camera_tile_pixel_conversion = screen_info.tile_pixel_conversion
+    CameraMap.zoomSetup()
+    CameraMap.cameraAddFocus(focus)
 
     return true
 end

@@ -40,21 +40,21 @@ function RenderMap.updateTilemap(map)
 
     local move_x, move_y = Camera.updateFocus()
 
-    if((Camera.getStartTileX() + move_x) // 1 < Camera.getStartTileX() // 1) then 
-        clearRow(Camera.getStartTileX() // 1, 
+    if((Camera.getStartTileX() + move_x) // 1 < Camera.getStartTileX() // 1) then
+        RenderMap.clearRow(Camera.getStartTileX() // 1,
             Camera.getStartTileY() // 1, (Camera.getStartTileY() + Camera.getTileHeight()) // 1)
 
-    else if ((Camera.getStartTileX() + move_x) // 1 > Camera.getStartTileX() // 1) then
-        clearRow((Camera.getStartTileX() + Camera.getTileWidth()) // 1, 
+    elseif ((Camera.getStartTileX() + move_x) // 1 > Camera.getStartTileX() // 1) then
+        RenderMap.clearRow((Camera.getStartTileX() + Camera.getTileWidth()) // 1,
             Camera.getStartTileY() // 1, (Camera.getStartTileY() + Camera.getTileHeight()) // 1)
     end
 
-    if((Camera.getStartTileY() + move_y) // 1 < Camera.getStartTileY() // 1) then 
-        clearColumn(Camera.getStartTileY() // 1, 
+    if((Camera.getStartTileY() + move_y) // 1 < Camera.getStartTileY() // 1) then
+        RenderMap.clearColumn(Camera.getStartTileY() // 1,
             Camera.getStartTileX(), Camera.getStartTileX() + Camera.getTileWidth())
 
-    else if ((Camera.getStartTileY() + move_y) // 1 > Camera.getStartTileX() // 1) then
-        clearColumn((Camera.getStartTileY() + Camera.getTileHeight()) // 1, 
+    elseif ((Camera.getStartTileY() + move_y) // 1 > Camera.getStartTileX() // 1) then
+        RenderMap.clearColumn((Camera.getStartTileY() + Camera.getTileHeight()) // 1,
             Camera.getStartTileX() // 1, (Camera.getStartTileX() + Camera.getTileWidth()) // 1)
     end
 
@@ -71,8 +71,8 @@ function RenderMap.updateTilemap(map)
                         tilemap[tile_x][tile_y]:translate(move_x * Camera.getRealTileSize(), move_y * Camera.getRealTileSize())
                     else
                         tilemap[tile_x][tile_y] = display.newRect(
-                            render_start_x + Camera.getRealTileSize() * (x - 1),
-                            render_start_y + Camera.getRealTileSize() * (y - 1),
+                            Camera.getStartTileX() + Camera.getRealTileSize() * (x - 1),
+                            Camera.getStartTileY() + Camera.getRealTileSize() * (y - 1),
                             Camera.getRealTileSize(),
                             Camera.getRealTileSize()
                         )
