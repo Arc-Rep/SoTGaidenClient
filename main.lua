@@ -17,7 +17,7 @@ PlayerData = Player.ReadPlayer()
 local datapath = "D:/GameDev/SoT Gaiden/UserData/gamedata.db"
 DB = sqlite3.open(datapath)
 
-composer.gotoScene("loginmenu")
+--composer.gotoScene("loginmenu")
 
 -- event listeners for tab buttons:
 local function onFirstView( event )
@@ -43,4 +43,4 @@ local tabButtons = {
 	buttons = tabButtons
 }]]--
 
---onFirstView()	-- invoke first tab button's onPress event manually
+onFirstView()	-- invoke first tab button's onPress event manually

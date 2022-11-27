@@ -9,7 +9,6 @@ local scene = composer.newScene()
 local MapRender = require "SotClient.Visuals.RenderMap"
 local GameOverseer = require "SotClient.GameLogic.LevelMechanics.GameOverseer"
 local MapData = require "SoTClient.GameLogic.Scenarios.MissionMap"
-local map_render = {}
 local seed1, seed2 = 14638, 3527
 local cutscene = {false}
 
@@ -35,13 +34,13 @@ local touchListener = function( event )
 		GameOverseer.SendCommand(MapData.GetMap(),"pressRight")
 		print("Right")
 	end
-	map_render = MapRender.UpdateTilemap(map_render, MapData.GetMap())
+	MapRender.UpdateTilemap(MapData.GetMap())
 
 	--Move where you wanna call cutscenes
-	if cutscene[1] == false then
-		composer.gotoScene("GameResources.Cutscenes.cutscene1",{time=2000, effect="fade"})
-		cutscene[1] = true
-	end
+	--if cutscene[1] == false then
+	--	composer.gotoScene("GameResources.Cutscenes.cutscene1",{time=2000, effect="fade"})
+	--	cutscene[1] = true
+	--end
 
 
 	
@@ -73,15 +72,10 @@ function scene:create( event )
 	
 	
 	GameOverseer.StartGame(MapData, nil, nil, seed1, seed2)
-	map_render = MapRender.setVisualMap(MapData.GetMap())
-	MapRender.UpdateTilemap(map_render, MapData.GetMap())
+	MapRender.SetCamera(MapData.GetMap(), GameOverseer.getPlayerCharStats(MapData.GetMap()), sceneGroup)
+	MapRender.UpdateTilemap(MapData.GetMap())
 	sceneGroup:addEventListener("touch", touchListener)
 
-	for i = 1, #map_render, 1 do
-		for j = 1, #map_render[i], 1 do
-			sceneGroup:insert(map_render[i][j])
-		end
-	end
 	-- all objects must be added to group (e.g. self.view)
 	--sceneGroup:insert( background )
 	--sceneGroup:insert( title )
@@ -91,7 +85,7 @@ end
 function scene:show( event )
 	local sceneGroup = self.view
 	local phase = event.phase
-	MapRender.UpdateTilemap(map_render,MapData.GetMap())
+	MapRender.UpdateTilemap(MapData.GetMap())
 	if phase == "will" then
 		-- Called when the scene is still off screen and is about to move on screen
 	elseif phase == "did" then

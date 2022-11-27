@@ -1,14 +1,18 @@
 local RenderMap = {}
 
+local math = require "math"
+
 local Camera = require "SoTClient.Visuals.CameraMap"
 local ScreenInfo = require "SoTClient.Visuals.ScreenInfo"
 
 local visual_tile_width, visual_tile_height
 
 local tilemap = {}
+local RenderSurface = nil
 
-function RenderMap.setCamera(map, focus)
+function RenderMap.SetCamera(map, focus, surface)
     Camera.setup(map, ScreenInfo, focus)
+    RenderSurface = surface
 
     for tile_x = 1, map["x"], 1 do
         tilemap[tile_x] = {}
@@ -18,7 +22,7 @@ function RenderMap.setCamera(map, focus)
     end
 end
 
-function RenderMap.clearRow(row, start_y, end_y)
+function ClearRow(row, start_y, end_y)
     for tile_y = start_y, end_y, 1 do
         if tilemap[row][tile_y] ~= nil then
             tilemap[row][tile_y]:removeSelf()
@@ -27,7 +31,7 @@ function RenderMap.clearRow(row, start_y, end_y)
     end
 end
 
-function RenderMap.clearColumn(column, start_x, end_x)
+function ClearColumn(column, start_x, end_x)
     for tile_x = start_x, end_x, 1 do
         if tilemap[tile_x][column] ~= nil then
             tilemap[tile_x][column]:removeSelf()
@@ -36,34 +40,35 @@ function RenderMap.clearColumn(column, start_x, end_x)
     end
 end
 
-function RenderMap.updateTilemap(map)
+function RenderMap.UpdateTilemap(map)
 
     local move_x, move_y = Camera.updateFocus()
 
-    if((Camera.getStartTileX() + move_x) // 1 < Camera.getStartTileX() // 1) then
-        RenderMap.clearRow(Camera.getStartTileX() // 1,
-            Camera.getStartTileY() // 1, (Camera.getStartTileY() + Camera.getTileHeight()) // 1)
+    local tile_x, tile_y = math.floor(Camera.getStartTileX()), math.floor(Camera.getStartTileY())
+    local moved_tile_x, moved_tile_y = math.floor(Camera.getStartTileX() + move_x), math.floor(Camera.getStartTileY())
 
-    elseif ((Camera.getStartTileX() + move_x) // 1 > Camera.getStartTileX() // 1) then
-        RenderMap.clearRow((Camera.getStartTileX() + Camera.getTileWidth()) // 1,
-            Camera.getStartTileY() // 1, (Camera.getStartTileY() + Camera.getTileHeight()) // 1)
+    if(moved_tile_x < tile_x) then
+        ClearRow(tile_x, tile_y, math.floor(Camera.getStartTileY() + Camera.getTileHeight()))
+
+    elseif (moved_tile_x > tile_x) then
+        ClearRow(math.floor(Camera.getStartTileX() + Camera.getTileWidth()),
+            tile_y, math.floor(Camera.getStartTileY() + Camera.getTileHeight()))
     end
 
-    if((Camera.getStartTileY() + move_y) // 1 < Camera.getStartTileY() // 1) then
-        RenderMap.clearColumn(Camera.getStartTileY() // 1,
-            Camera.getStartTileX(), Camera.getStartTileX() + Camera.getTileWidth())
+    if(moved_tile_y < tile_y) then
+        ClearColumn(tile_y, tile_x, math.floor(Camera.getStartTileX() + Camera.getTileWidth()))
 
-    elseif ((Camera.getStartTileY() + move_y) // 1 > Camera.getStartTileX() // 1) then
-        RenderMap.clearColumn((Camera.getStartTileY() + Camera.getTileHeight()) // 1,
-            Camera.getStartTileX() // 1, (Camera.getStartTileX() + Camera.getTileWidth()) // 1)
+    elseif (moved_tile_y > tile_y) then
+        ClearColumn(math.floor(Camera.getStartTileY() + Camera.getTileHeight()),
+            tile_x, math.floor(Camera.getStartTileX() + Camera.getTileWidth()))
     end
 
-    for x = Camera.getStartTileX(),Camera.getStartTileX() + Camera.getTileWidth(), 1 do
-        local tile_x = x // 1
+    for x = Camera.getStartTileX(), Camera.getStartTileX() + Camera.getTileWidth(), 1 do
+        tile_x = math.floor(x)
 
         if(map[tile_x] ~= nil) then
             for y = Camera.getStartTileY(), Camera.getStartTileY() + Camera.getTileHeight(), 1 do
-                local tile_y = y // 1
+                tile_y = math.floor(y)
 
                 if(map[tile_x][tile_y] ~= nil) then
                         
@@ -104,6 +109,8 @@ function RenderMap.updateTilemap(map)
                             tilemap[tile_x][tile_y]:setFillColor(0.8)
                             tilemap[tile_x][tile_y]:setStrokeColor(0, 1, 1)
                         end
+
+                        RenderSurface:insert(tilemap[tile_x][tile_y])
                     end
                 end
             end

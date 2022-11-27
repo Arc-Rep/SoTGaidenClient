@@ -13,6 +13,10 @@ local Squads = {}
 
 local LocalBattles = {}
 
+function GameOverseer.getPlayerCharStats(game_map)
+    return Squads[1][1]
+end
+
 function DoTurn(game_map)
     for char_index, char in ipairs(unit_table) do
         CharAction.DoCharAction(game_map, unit_table, char)

@@ -7,6 +7,7 @@ local audio = require("audio")
 
 
 local grpMain,userName,password,background,Title,signInbtn,signInlbl,usernameField,passwordField,settingsbtn,settingslbl,Username,logInbtn,logInlbl
+-- Audio
 local backgroundMusic = audio.loadStream( "GameResources/Sound/loginmusic.mp3" )
 audio.reserveChannels(1)
 audio.setVolume( 0.1, { channel=1 } )
@@ -52,7 +53,7 @@ local function handleResponse( event )
             display.remove(grpMain.password)
             composer.gotoScene("view1")
    		end
-	else 
+	else
 		print( "Error!" )
 	end
     return
