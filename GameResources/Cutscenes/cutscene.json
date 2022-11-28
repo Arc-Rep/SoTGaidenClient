@@ -1,0 +1,43 @@
+{
+    "options" : {
+    "character": "ToBeRemoved/andre.png",
+    "text":"Andre: You know, brother, when I was searching... It was in nights like these that my mind would always keep me awake.",
+    "x":110,
+    "y" : 770,
+    "width" : 440,
+    "height" : 150,
+    "font" : "native.arial",
+    "position" : "right",
+    "fontSize" : 26 
+    },
+    "options2" : {
+        "character": "ToBeRemoved/joao.png",
+        "text":"Andre: You know, brother, when I was searching... It was in nights like these that my mind would always keep me awake.",
+        "x":110,
+        "y" : 770,
+        "width" : 440,
+        "height" : 150,
+        "position" : "left",
+        "fontSize" : 26 
+    },
+    "options3" : {
+        "character": "ToBeRemoved/joao.png",
+        "text":"Andre: You know, brother, when I was searching... It was in nights like these that my mind would always keep me awake.",
+        "x":110,
+        "y" : 770,
+        "width" : 440,
+        "height" : 150,
+        "position" : "right",
+        "fontSize" : 26 
+    },
+    "options4" : {
+        "character": "ToBeRemoved/andre.png",
+        "text":"Andre: You know, brother, when I was searching... It was in nights like these that my mind would always keep me awake.",
+        "x":110,
+        "y" : 770,
+        "width" : 440,
+        "height" : 150,
+        "position" : "right",
+        "fontSize" : 26 
+    }
+} 
