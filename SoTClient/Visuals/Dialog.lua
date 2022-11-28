@@ -3,6 +3,7 @@ local json = require("json")
 local system = require("system")
 local graphics = require("graphics")
 local composer = require( "composer" )
+local timer = require("timer")
 
 local Dialog = {}
 local leftchararray = {}
@@ -40,38 +41,39 @@ function Dialog.CreateLoading(x,y)
     fireSpin:play()
 end
 
---PROTOTYPE TO SHOW TEXT 1 LETTER AT A TIME 
---[[local positionCount = 0
+local letterLabel
+local sentence
+local delayTimer
 
-local options = {
-    text = "Andre: You know, brother, when I was searching... It was in nights like these that my mind would always keep me awake.",
-    x = 110,
-    y = 770,
-    width = 440,
-    height = 150,
-    font = native.arial,
-    position = "right",
-    fontSize = 26 -- Alignment parameter
-}
-local nameparts = {}
-for substring in options.text:gmatch("%S+") do
-    table.insert(nameparts,substring)
+local function displayData(event)
+   local letter = string.sub(sentence,event.count, event.count)
+   print("letterlabel:",letterLabel)
+   if letterLabel == nil then
+        timer.cancel(delayTimer)
+   else
+        letterLabel.text = letterLabel.text .. letter
+   end
 end
 
-local function displayData()
-    positionCount = positionCount + 1
-    if(positionCount<=string.len(options.text))then
-      -- if positionCount is less than or equal to letters in 'myString'
-        local letter = string.sub(options.text, positionCount, positionCount) -- get the current letter~
-        local letterLabel = display.newText(letter,options.x,options.y+14*positionCount,options.width,options.height,options.font,options.fontSize,nil,26)
-        print(letterLabel)
-        letterLabel:setFillColor( 1, 1, 1 )
-        letterLabel.alpha = 0;
-        letterLabel.rotation = 90;
-        -- display the label and update the function after the completion of transition
-        transition.to(letterLabel,{time=80,alpha=1,onComplete=displayData})
-    end
-end]]--
+local function setText(aSentence)
+  sentence = aSentence
+  letterLabel.text = ""
+  delayTimer = timer.performWithDelay(70, displayData, string.len(sentence))
+end
+
+function Dialog.setFullText(options)
+    display.remove(letterLabel)
+    letterLabel = nil
+    timer.cancel(delayTimer)
+    letterLabel = display.newText(options)
+    letterLabel:setFillColor( 1, 1, 1 )
+    letterLabel:rotate(90)
+end
+
+function Dialog.getStringTime(aSentence)
+    return string.len(aSentence)*70
+end
+
 
 function Dialog.loadTable(filename,location)
     local loc = location
@@ -79,7 +81,6 @@ function Dialog.loadTable(filename,location)
         loc = defaultLocation
     end
 
-    print(location)
     local path = system.pathForFile( filename, loc )
     local file, errorString = io.open( path, "r" )
  
@@ -118,7 +119,7 @@ function Dialog.ShowCharOnLeft(options)
     table.insert(leftchararray,1,leftcharacter)
 end
 
-function Dialog.RemoveCharOnLeft(charDir)
+function Dialog.RemoveCharOnLeft()
     display.remove(leftcharacter)
     display.remove(fireSpin)
     leftcharacter = nil
@@ -143,7 +144,7 @@ function Dialog.ShowCharOnRight(options)
     table.insert(rightchararray,1,rightcharacter)
 end
 
-function Dialog.RemoveCharOnRight(charDir)
+function Dialog.RemoveCharOnRight()
     display.remove(rightcharacter)
     display.remove(fireSpin)
     rightcharacter = nil
@@ -157,25 +158,24 @@ function Dialog.TextBox(options)
     rectangle.alpha = 0
     transition.to(rectangle,{time=500, alpha=1.0})
 
-    textbox = display.newText( options )
-    textbox:setFillColor( 1, 1, 1 )
-    textbox:rotate(90)
-    textbox.alpha = 0
-    transition.to(textbox,{time=500, alpha=1.0})
+    letterLabel = display.newText( options )
+    letterLabel:setFillColor( 1, 1, 1 )
+    letterLabel:rotate(90)
+    setText(letterLabel.text)
 
     if options.position == "left" then
         Dialog.CreateLoading(options.x-options.x/2,options.y+options.y/1.4)
     else
-        Dialog.CreateLoading(options.x-options.x/2,options.y+options.y/4)
+        Dialog.CreateLoading(options.x-options.x/2,options.y+options.y/4.2)
     end 
     transition.to(fireSpin,{time=5000,alpha=1.0})
 end
 
-function Dialog.RemoveTextBox(options)
+function Dialog.RemoveTextBox()
     display.remove(rectangle)
     rectangle = nil
-    display.remove(textbox)
-    textbox = nil
+    display.remove(letterLabel)
+    letterLabel = nil
     display.remove(fireSpin)
     fireSpin = nil
 end

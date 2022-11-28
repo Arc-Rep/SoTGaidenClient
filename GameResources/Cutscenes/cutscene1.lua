@@ -1,63 +1,89 @@
 local composer = require( "composer" )
 local TextData = require "SoTClient.Visuals.Dialog"
-local MapRender = require "SotClient.Visuals.RenderMap"
-local MapData = require "SoTClient.GameLogic.Scenarios.MissionMap"
+local GeneralUtils = require "SoTClient.Utils.GeneralUtils"
 local system = require("system")
 local scene = composer.newScene()
-local map_render = {}
 local dialogArray = {}
 local diaoptions
 
+local limitFrameTime = 0
+local leftchar = nil
+local rightchar = nil
 
+local function tapListener(event)
+    local currentFrameTime
 
-local function tapListener(event) 
+    currentFrameTime = system.getTimer()
     if next(dialogArray) then
         if dialogArray[1].position == "right" then
-            if diaoptions~=nil and diaoptions.character == dialogArray[1].character then
-                TextData.RemoveTextBox(diaoptions)
+            if system.getTimer()<limitFrameTime+currentFrameTime then
+                print("printed everything",system.getTimer())
+                TextData.setFullText(diaoptions)
+                limitFrameTime = 0
             else
-                TextData.RemoveCharOnRight(diaoptions)
-                TextData.RemoveTextBox(diaoptions)
+                if diaoptions~=nil and rightchar == dialogArray[1].character then
+                    TextData.RemoveTextBox()
+                else
+                    TextData.RemoveCharOnRight()
+                    TextData.RemoveTextBox()
+                end
+                diaoptions = table.remove(dialogArray,1)
+                rightchar = diaoptions.character
+                limitFrameTime = TextData.getStringTime(diaoptions.text)
+                TextData.ShowCharOnRight(diaoptions)
+                TextData.TextBox(diaoptions)
             end
-            diaoptions = table.remove(dialogArray,1)
-            TextData.ShowCharOnRight(diaoptions)
-            TextData.TextBox(diaoptions)
 
         elseif dialogArray[1].position == "left" then
-            if diaoptions~=nil and diaoptions.character == dialogArray[1].character then
-                TextData.RemoveTextBox(diaoptions)
+            if system.getTimer()<limitFrameTime+currentFrameTime then
+                print("printed everything",system.getTimer())
+                TextData.setFullText(diaoptions)
+                limitFrameTime = 0
             else
-                TextData.RemoveCharOnLeft(diaoptions)
-                TextData.RemoveTextBox(diaoptions)
+                if diaoptions~=nil and leftchar == dialogArray[1].character then   
+                    TextData.RemoveTextBox()
+                    diaoptions = table.remove(dialogArray,1)
+                    leftchar = diaoptions.character
+                    limitFrameTime = TextData.getStringTime(diaoptions.text)
+                    TextData.TextBox(diaoptions)
+                else
+                    TextData.RemoveCharOnLeft()
+                    TextData.RemoveTextBox()
+                    diaoptions = table.remove(dialogArray,1)
+                    leftchar = diaoptions.character
+                    limitFrameTime = TextData.getStringTime(diaoptions.text)
+                    TextData.ShowCharOnLeft(diaoptions)
+                    TextData.TextBox(diaoptions)
+                end
             end
-            diaoptions = table.remove(dialogArray,1)
-            TextData.ShowCharOnLeft(diaoptions)
-            TextData.TextBox(diaoptions)
         end
     else
-        scene:destroy()
+        if system.getTimer()<limitFrameTime+currentFrameTime then
+            print("printed everything",system.getTimer())
+            TextData.setFullText(diaoptions)
+            limitFrameTime = 0
+        else
+            TextData.RemoveTextBox()
+            scene:destroy()
+        end
     end
 end
 
 
 function scene:create( event )
     local sceneGroup = self.view
-    
+
     --SECURITY REASONS = system.DocumentsDirectory
     local optionsArray = TextData.loadTable("cutscene.json",system.DocumentsDirectory)
 
-    table.insert(dialogArray,optionsArray.options)
-    table.insert(dialogArray,optionsArray.options2)
-    table.insert(dialogArray,optionsArray.options4)
-    table.insert(dialogArray,optionsArray.options3)
+    --GeneralUtils.PrintTable(optionsArray)
+    local myRectangle = display.newRect(300,600,display.contentWidth*2, display.contentHeight*2)
+    myRectangle:addEventListener("tap",tapListener)
+    for k,v in pairs(optionsArray) do 
+        table.insert(dialogArray, v)
+    end
     ---------------------------------------------------------------------------------
-    map_render = MapRender.setVisualMap(MapData.GetMap())
-    sceneGroup:addEventListener("tap",tapListener)
-    for i = 1, #map_render, 1 do
-		for j = 1, #map_render[i], 1 do
-			sceneGroup:insert(map_render[i][j])
-		end
-	end
+    sceneGroup:insert(myRectangle)
     TextData.ShowBackground("GameResources/ToBeRemoved/background.jpg")
 end
 
@@ -90,6 +116,7 @@ end
 
 function scene:destroy( event )
 	local sceneGroup = self.view
+    TextData.RemoveCharOnLeft()
     TextData.RemoveEverything()
 end
 
