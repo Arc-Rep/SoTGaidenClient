@@ -48,6 +48,7 @@ function RenderMap.UpdateTilemap(map)
     local moved_tile_x, moved_tile_y = math.floor(Camera.getStartTileX() + move_x), math.floor(Camera.getStartTileY())
 
     print("Entered Tilemap")
+    print()
     print(tile_x)
     print(tile_y)
     print(moved_tile_x)
@@ -73,6 +74,7 @@ function RenderMap.UpdateTilemap(map)
         print("Begin x")
         print(Camera.getStartTileX())
         print(Camera.getStartTileX() + Camera.getTileWidth())
+        print(x)
         tile_x = math.floor(x)
 
         if(map[tile_x] ~= nil) then
@@ -80,20 +82,22 @@ function RenderMap.UpdateTilemap(map)
                 print("Begin y")
                 print(Camera.getStartTileY())
                 print(Camera.getStartTileY() + Camera.getTileHeight())
+                print(y)
                 tile_y = math.floor(y)
 
                 if(map[tile_x][tile_y] ~= nil) then
                         
                     if(tilemap[tile_x][tile_y] ~= nil) then
+                        print("Already rendered with move" .. move_x * Camera.getRealTileSize() .. "," .. move_y * Camera.getRealTileSize())
                         tilemap[tile_x][tile_y]:translate(move_x * Camera.getRealTileSize(), move_y * Camera.getRealTileSize())
                     else
+                        print("Rendering at ".. Camera.getStartTileX() + Camera.getRealTileSize() * (x - 1) .. "," .. Camera.getStartTileY() + Camera.getRealTileSize() * (y - 1))
                         tilemap[tile_x][tile_y] = display.newRect(
-                            Camera.getStartTileX() + Camera.getRealTileSize() * (x - 1),
-                            Camera.getStartTileY() + Camera.getRealTileSize() * (y - 1),
+                            (-Camera.getStartTileX() + tile_x) * Camera.getRealTileSize(),
+                            (-Camera.getStartTileY() + tile_y) * Camera.getRealTileSize(),
                             Camera.getRealTileSize(),
                             Camera.getRealTileSize()
                         )
-
                         if(map[tile_x][tile_y]["Tile"] == 0) then
                             tilemap[tile_x][tile_y].strokeWidth = 3
                             tilemap[tile_x][tile_y]:setFillColor(0.5)
@@ -121,7 +125,11 @@ function RenderMap.UpdateTilemap(map)
                             tilemap[tile_x][tile_y]:setFillColor(0.8)
                             tilemap[tile_x][tile_y]:setStrokeColor(0, 1, 1)
                         end
-
+                        local n = display.newRect(1893.25, 1587.1640625, 64, 64)
+                        n.strokeWidth = 3
+                        n:setFillColor(0)
+                        n:setStrokeColor(1, 0, 0)
+                        RenderSurface:insert(n)
                         RenderSurface:insert(tilemap[tile_x][tile_y])
                     end
                 end

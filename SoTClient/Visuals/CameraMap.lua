@@ -19,10 +19,10 @@ local focus_element_queue = {}
 function CameraMap.updateFocus()
 
     local focus_move_x = focus_element_queue[1]["x"] - camera_x
-    local focus_move_y = focus_element_queue[1]["x"] - camera_y
+    local focus_move_y = focus_element_queue[1]["y"] - camera_y
 
     camera_x = focus_element_queue[1]["x"]
-    camera_y = focus_element_queue[1]["y"] 
+    camera_y = focus_element_queue[1]["y"]
     camera_start_x = camera_x - camera_tile_width/2
     camera_start_y = camera_y - camera_tile_height/2
 
