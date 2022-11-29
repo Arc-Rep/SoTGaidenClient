@@ -47,27 +47,39 @@ function RenderMap.UpdateTilemap(map)
     local tile_x, tile_y = math.floor(Camera.getStartTileX()), math.floor(Camera.getStartTileY())
     local moved_tile_x, moved_tile_y = math.floor(Camera.getStartTileX() + move_x), math.floor(Camera.getStartTileY())
 
-    if(moved_tile_x < tile_x) then
+    print("Entered Tilemap")
+    print(tile_x)
+    print(tile_y)
+    print(moved_tile_x)
+    print(moved_tile_y)
+
+    if(moved_tile_x > tile_x) then
         ClearRow(tile_x, tile_y, math.floor(Camera.getStartTileY() + Camera.getTileHeight()))
 
-    elseif (moved_tile_x > tile_x) then
+    elseif (moved_tile_x < tile_x) then
         ClearRow(math.floor(Camera.getStartTileX() + Camera.getTileWidth()),
             tile_y, math.floor(Camera.getStartTileY() + Camera.getTileHeight()))
     end
 
-    if(moved_tile_y < tile_y) then
+    if(moved_tile_y > tile_y) then
         ClearColumn(tile_y, tile_x, math.floor(Camera.getStartTileX() + Camera.getTileWidth()))
 
-    elseif (moved_tile_y > tile_y) then
+    elseif (moved_tile_y < tile_y) then
         ClearColumn(math.floor(Camera.getStartTileY() + Camera.getTileHeight()),
             tile_x, math.floor(Camera.getStartTileX() + Camera.getTileWidth()))
     end
 
     for x = Camera.getStartTileX(), Camera.getStartTileX() + Camera.getTileWidth(), 1 do
+        print("Begin x")
+        print(Camera.getStartTileX())
+        print(Camera.getStartTileX() + Camera.getTileWidth())
         tile_x = math.floor(x)
 
         if(map[tile_x] ~= nil) then
             for y = Camera.getStartTileY(), Camera.getStartTileY() + Camera.getTileHeight(), 1 do
+                print("Begin y")
+                print(Camera.getStartTileY())
+                print(Camera.getStartTileY() + Camera.getTileHeight())
                 tile_y = math.floor(y)
 
                 if(map[tile_x][tile_y] ~= nil) then

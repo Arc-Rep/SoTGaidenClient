@@ -70,10 +70,8 @@ function scene:create( event )
 	--summary:setFillColor( 0 ) -- black
 
 	
-	
 	GameOverseer.StartGame(MapData, nil, nil, seed1, seed2)
 	MapRender.SetCamera(MapData.GetMap(), GameOverseer.getPlayerCharStats(MapData.GetMap()), sceneGroup)
-	MapRender.UpdateTilemap(MapData.GetMap())
 	sceneGroup:addEventListener("touch", touchListener)
 
 	-- all objects must be added to group (e.g. self.view)

@@ -111,7 +111,7 @@ function CameraMap.setup(Map, screen_info, focus)
     camera_width_base, camera_height_base = screen_info.width, screen_info.height
     camera_tile_pixel_conversion = screen_info.tile_pixel_conversion
     CameraMap.zoomSetup()
-    CameraMap.cameraAddFocus(focus)
+    CameraMap.addFocus(focus)
 
     return true
 end
