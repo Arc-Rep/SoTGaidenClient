@@ -59,19 +59,19 @@ function RenderMap.UpdateTilemap(map)
     print(moved_tile_y)
 
     if(moved_tile_x < tile_x) then
-        ClearRow(moved_tile_x, tile_y, math.floor(Camera.getStartTileY() - move_y + Camera.getTileHeight()))
+        ClearRow(moved_tile_x, moved_tile_y, math.floor(moved_tile_y + Camera.getTileHeight()))
 
     elseif (moved_tile_x > tile_x) then
-        ClearRow(math.floor(Camera.getStartTileX() - move_x + Camera.getTileWidth()),
-            tile_y, math.floor(Camera.getStartTileY() - move_y + Camera.getTileHeight()))
+        ClearRow(math.floor(moved_tile_x + Camera.getTileWidth()),
+            moved_tile_y, math.floor(moved_tile_y + Camera.getTileHeight()))
     end
 
     if(moved_tile_y < tile_y) then
-        ClearColumn(moved_tile_y, tile_x, math.floor(Camera.getStartTileX() - move_x + Camera.getTileWidth()))
+        ClearColumn(moved_tile_y, moved_tile_x, math.floor(moved_tile_x + Camera.getTileWidth()))
 
     elseif (moved_tile_y > tile_y) then
-        ClearColumn(math.floor(Camera.getStartTileY() - move_y + Camera.getTileHeight()),
-            tile_x, math.floor(Camera.getStartTileX() - move_x + Camera.getTileWidth()))
+        ClearColumn(math.floor(moved_tile_y + Camera.getTileHeight()),
+        moved_tile_x, math.floor(moved_tile_x + Camera.getTileWidth()))
     end
 
     for x = Camera.getStartTileX(), Camera.getStartTileX() + Camera.getTileWidth(), 1 do
