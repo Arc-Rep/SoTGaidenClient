@@ -75,24 +75,15 @@ function RenderMap.UpdateTilemap(map)
     end
 
     for x = Camera.getStartTileX(), Camera.getStartTileX() + Camera.getTileWidth(), 1 do
-        print("Begin x")
-        print(Camera.getStartTileX())
-        print(Camera.getStartTileX() + Camera.getTileWidth())
-        print(x)
         tile_x = math.floor(x)
 
         if(map[tile_x] ~= nil) then
             for y = Camera.getStartTileY(), Camera.getStartTileY() + Camera.getTileHeight(), 1 do
-                print("Begin y")
-                print(Camera.getStartTileY())
-                print(Camera.getStartTileY() + Camera.getTileHeight())
-                print(y)
                 tile_y = math.floor(y)
 
                 if(map[tile_x][tile_y] ~= nil) then
                         
                     if(tilemap[tile_x][tile_y] ~= nil) then
-                        print("Already rendered with move" .. move_x * Camera.getRealTileSize() .. "," .. move_y * Camera.getRealTileSize())
                         tilemap[tile_x][tile_y]:translate( -move_x * Camera.getRealTileSize(), -move_y * Camera.getRealTileSize())
                         if(tilemap[tile_x][tile_y]["Actor"] == nil and map[tile_x][tile_y]["Actor"] ~= "") then
                             tilemap[tile_x][tile_y].strokeWidth = 3
@@ -108,8 +99,8 @@ function RenderMap.UpdateTilemap(map)
                         end 
                     else
                         tilemap[tile_x][tile_y] = display.newRect(
-                            (-Camera.getStartTileX() + tile_x) * Camera.getRealTileSize(),
-                            (-Camera.getStartTileY() + tile_y) * Camera.getRealTileSize(),
+                            ((-Camera.getStartTileX() + tile_x) - Camera.getDeviationX()) * Camera.getRealTileSize(),
+                            ((-Camera.getStartTileY() + tile_y) - Camera.getDeviationY()) * Camera.getRealTileSize(),
                             Camera.getRealTileSize(),
                             Camera.getRealTileSize()
                         )

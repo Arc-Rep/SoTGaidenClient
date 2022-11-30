@@ -25,7 +25,7 @@ function CameraMap.updateFocus()
     camera_y = focus_element_queue[1]["y"]
     camera_start_x = camera_x - camera_tile_width/2
     camera_start_y = camera_y - camera_tile_height/2
-
+    print("x, y " .. camera_start_x .. "/ " .. camera_start_y)
     return focus_move_x, focus_move_y
 end
 
@@ -79,6 +79,14 @@ function CameraMap.getY()
     return camera_y
 end
 
+function CameraMap.getDeviationX()
+    return TILE_OUT_BOUNDS/2
+end
+
+function CameraMap.getDeviationY()
+    return TILE_OUT_BOUNDS/2
+end
+
 function CameraMap.getStartTileX()
     return camera_start_x
 end
@@ -107,9 +115,9 @@ function CameraMap.setup(Map, screen_info, focus)
     elseif type(screen_info.tile_pixel_conversion) ~= "number" then
         return "Error has occured: Could not read render info"
     end
-
-    camera_width_base, camera_height_base = screen_info.width, screen_info.height
     camera_tile_pixel_conversion = screen_info.tile_pixel_conversion
+    camera_width_base, camera_height_base = screen_info.width, screen_info.height
+    
     CameraMap.zoomSetup()
     CameraMap.addFocus(focus)
 
