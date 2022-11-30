@@ -24,18 +24,22 @@ end
 
 function ClearRow(row, start_y, end_y)
     for tile_y = start_y, end_y, 1 do
-        if tilemap[row][tile_y] ~= nil then
-            tilemap[row][tile_y]:removeSelf()
-            tilemap[row][tile_y] = nil
+        if tilemap[row] ~= nil then
+            if tilemap[row][tile_y] ~= nil then
+                tilemap[row][tile_y]:removeSelf()
+                tilemap[row][tile_y] = nil
+            end
         end
     end
 end
 
 function ClearColumn(column, start_x, end_x)
     for tile_x = start_x, end_x, 1 do
-        if tilemap[tile_x][column] ~= nil then
-            tilemap[tile_x][column]:removeSelf()
-            tilemap[tile_x][column] = nil
+        if tilemap[tile_x] ~= nil then
+            if tilemap[tile_x][column] ~= nil then
+                tilemap[tile_x][column]:removeSelf()
+                tilemap[tile_x][column] = nil
+            end
         end
     end
 end
@@ -45,7 +49,7 @@ function RenderMap.UpdateTilemap(map)
     local move_x, move_y = Camera.updateFocus()
 
     local tile_x, tile_y = math.floor(Camera.getStartTileX()), math.floor(Camera.getStartTileY())
-    local moved_tile_x, moved_tile_y = math.floor(Camera.getStartTileX() + move_x), math.floor(Camera.getStartTileY())
+    local moved_tile_x, moved_tile_y = math.floor(Camera.getStartTileX() - move_x), math.floor(Camera.getStartTileY() - move_y)
 
     print("Entered Tilemap")
     print()
@@ -54,20 +58,20 @@ function RenderMap.UpdateTilemap(map)
     print(moved_tile_x)
     print(moved_tile_y)
 
-    if(moved_tile_x > tile_x) then
-        ClearRow(tile_x, tile_y, math.floor(Camera.getStartTileY() + Camera.getTileHeight()))
+    if(moved_tile_x < tile_x) then
+        ClearRow(moved_tile_x, tile_y, math.floor(Camera.getStartTileY() - move_y + Camera.getTileHeight()))
 
-    elseif (moved_tile_x < tile_x) then
-        ClearRow(math.floor(Camera.getStartTileX() + Camera.getTileWidth()),
-            tile_y, math.floor(Camera.getStartTileY() + Camera.getTileHeight()))
+    elseif (moved_tile_x > tile_x) then
+        ClearRow(math.floor(Camera.getStartTileX() - move_x + Camera.getTileWidth()),
+            tile_y, math.floor(Camera.getStartTileY() - move_y + Camera.getTileHeight()))
     end
 
-    if(moved_tile_y > tile_y) then
-        ClearColumn(tile_y, tile_x, math.floor(Camera.getStartTileX() + Camera.getTileWidth()))
+    if(moved_tile_y < tile_y) then
+        ClearColumn(moved_tile_y, tile_x, math.floor(Camera.getStartTileX() - move_x + Camera.getTileWidth()))
 
-    elseif (moved_tile_y < tile_y) then
-        ClearColumn(math.floor(Camera.getStartTileY() + Camera.getTileHeight()),
-            tile_x, math.floor(Camera.getStartTileX() + Camera.getTileWidth()))
+    elseif (moved_tile_y > tile_y) then
+        ClearColumn(math.floor(Camera.getStartTileY() - move_y + Camera.getTileHeight()),
+            tile_x, math.floor(Camera.getStartTileX() - move_x + Camera.getTileWidth()))
     end
 
     for x = Camera.getStartTileX(), Camera.getStartTileX() + Camera.getTileWidth(), 1 do
@@ -89,9 +93,20 @@ function RenderMap.UpdateTilemap(map)
                         
                     if(tilemap[tile_x][tile_y] ~= nil) then
                         print("Already rendered with move" .. move_x * Camera.getRealTileSize() .. "," .. move_y * Camera.getRealTileSize())
-                        tilemap[tile_x][tile_y]:translate(move_x * Camera.getRealTileSize(), move_y * Camera.getRealTileSize())
+                        tilemap[tile_x][tile_y]:translate( -move_x * Camera.getRealTileSize(), -move_y * Camera.getRealTileSize())
+                        if(tilemap[tile_x][tile_y]["Actor"] == nil and map[tile_x][tile_y]["Actor"] ~= "") then
+                            tilemap[tile_x][tile_y].strokeWidth = 3
+                            tilemap[tile_x][tile_y]:setFillColor(0.8)
+                            tilemap[tile_x][tile_y]:setStrokeColor(0, 1, 1)
+                            tilemap[tile_x][tile_y]["Actor"] = map[tile_x][tile_y]["Actor"]
+                        
+                        elseif(tilemap[tile_x][tile_y]["Actor"] ~= nil and map[tile_x][tile_y]["Actor"] == "") then
+                            tilemap[tile_x][tile_y].strokeWidth = 3
+                            tilemap[tile_x][tile_y]:setFillColor(0.5)
+                            tilemap[tile_x][tile_y]:setStrokeColor(1, 0, 0)
+                            tilemap[tile_x][tile_y]["Actor"] = nil
+                        end 
                     else
-                        print("Rendering at ".. Camera.getStartTileX() + Camera.getRealTileSize() * (x - 1) .. "," .. Camera.getStartTileY() + Camera.getRealTileSize() * (y - 1))
                         tilemap[tile_x][tile_y] = display.newRect(
                             (-Camera.getStartTileX() + tile_x) * Camera.getRealTileSize(),
                             (-Camera.getStartTileY() + tile_y) * Camera.getRealTileSize(),
