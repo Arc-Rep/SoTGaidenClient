@@ -9,10 +9,11 @@ local scene = composer.newScene()
 local MapRender = require "SotClient.Visuals.RenderMap"
 local GameOverseer = require "SotClient.GameLogic.LevelMechanics.GameOverseer"
 local MapData = require "SoTClient.GameLogic.Scenarios.MissionMap"
+local CombatUI = require "SoTClient.Visuals.UI.CombatUI"
 local seed1, seed2 = 14638, 3527
 local cutscene = {false}
 
-local last_click = system.getTimer()
+--[[local last_click = system.getTimer()
 
 local touchListener = function( event )
 	if(last_click + 300 > system.getTimer()) then
@@ -45,7 +46,7 @@ local touchListener = function( event )
 
 	
     return true
-end
+end]]--
 
 function scene:create( event )
 	local sceneGroup = self.view
@@ -72,7 +73,13 @@ function scene:create( event )
 	
 	GameOverseer.StartGame(MapData, nil, nil, seed1, seed2)
 	MapRender.SetCamera(MapData.GetMap(), GameOverseer.getPlayerCharStats(MapData.GetMap()), sceneGroup)
-	sceneGroup:addEventListener("touch", touchListener)
+	--sceneGroup:addEventListener("touch", touchListener)
+
+	--CombatUI
+	CombatUI.readPlayer()
+	CombatUI.setHP()
+	CombatUI.setEssence()
+	CombatUI.createPlayerUI()
 
 	-- all objects must be added to group (e.g. self.view)
 	--sceneGroup:insert( background )

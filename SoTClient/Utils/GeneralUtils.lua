@@ -1,3 +1,5 @@
+local lfs = require( "lfs" )
+
 local gu = {}
 
 function gu.PrintTable( t )
@@ -30,6 +32,17 @@ function gu.PrintTable( t )
         print( "}" )
     else
         sub_printTable( t, "  " )
+    end
+end
+
+
+-- Get raw path to the app documents directory
+function gu.GetDocumentsPath()
+    local doc_path = system.pathForFile( "", system.DocumentsDirectory )
+
+    for file in lfs.dir( doc_path ) do
+        -- "file" is the current file or directory name
+        print( "Found file: " .. file )
     end
 end
 

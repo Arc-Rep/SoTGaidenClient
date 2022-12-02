@@ -1,6 +1,12 @@
 
-    {   
-        "name":"DeyL", 
-        "level": "0"
-    }  
+{   
+    "name":"DeyL", 
+    "level": "0",
+    "hp" : "100",
+    "essence" : "20",
+    "ability1" : "Rock Smash",
+    "ability2" : "Divine Punishment",
+    "ability3" : "Smoke Cloud",
+    "ability4" : "Rising Sun Fist"
+}  
 
