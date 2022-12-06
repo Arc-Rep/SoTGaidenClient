@@ -47,7 +47,6 @@ local delayTimer
 
 local function displayData(event)
    local letter = string.sub(sentence,event.count, event.count)
-   print("letterlabel:",letterLabel)
    if letterLabel == nil then
         timer.cancel(delayTimer)
    else
@@ -74,25 +73,6 @@ function Dialog.getStringTime(aSentence)
     return string.len(aSentence)*70
 end
 
-
-function Dialog.loadTable(filename,location)
-    local loc = location
-    if not location then
-        loc = defaultLocation
-    end
-
-    local path = system.pathForFile( filename, loc )
-    local file, errorString = io.open( path, "r" )
- 
-    if not file then
-        print( "File error: " .. errorString )
-    else
-        local contents = file:read( "*a" )
-        local t = json.decode( contents )
-        io.close( file )
-        return t
-    end
-end
 
 function Dialog.ShowBackground(charDir)
     myImage = display.newImage(charDir)

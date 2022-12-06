@@ -1,6 +1,6 @@
 local composer = require( "composer" )
-local TextData = require "SoTClient.Visuals.Dialog"
-local GeneralUtils = require "SoTClient.Utils.GeneralUtils"
+local Dialog = require "SoTClient.Visuals.Dialog"
+local JsonFuncs = require "SotClient.Utils.JsonFuncs"
 local system = require("system")
 local scene = composer.newScene()
 local dialogArray = {}
@@ -17,53 +17,50 @@ local function tapListener(event)
     if next(dialogArray) then
         if dialogArray[1].position == "right" then
             if system.getTimer()<limitFrameTime+currentFrameTime then
-                print("printed everything",system.getTimer())
-                TextData.setFullText(diaoptions)
+                Dialog.setFullText(diaoptions)
                 limitFrameTime = 0
             else
                 if diaoptions~=nil and rightchar == dialogArray[1].character then
-                    TextData.RemoveTextBox()
+                    Dialog.RemoveTextBox()
                 else
-                    TextData.RemoveCharOnRight()
-                    TextData.RemoveTextBox()
+                    Dialog.RemoveCharOnRight()
+                    Dialog.RemoveTextBox()
                 end
                 diaoptions = table.remove(dialogArray,1)
                 rightchar = diaoptions.character
-                limitFrameTime = TextData.getStringTime(diaoptions.text)
-                TextData.ShowCharOnRight(diaoptions)
-                TextData.TextBox(diaoptions)
+                limitFrameTime = Dialog.getStringTime(diaoptions.text)
+                Dialog.ShowCharOnRight(diaoptions)
+                Dialog.TextBox(diaoptions)
             end
 
         elseif dialogArray[1].position == "left" then
             if system.getTimer()<limitFrameTime+currentFrameTime then
-                print("printed everything",system.getTimer())
-                TextData.setFullText(diaoptions)
+                Dialog.setFullText(diaoptions)
                 limitFrameTime = 0
             else
                 if diaoptions~=nil and leftchar == dialogArray[1].character then   
-                    TextData.RemoveTextBox()
+                    Dialog.RemoveTextBox()
                     diaoptions = table.remove(dialogArray,1)
                     leftchar = diaoptions.character
-                    limitFrameTime = TextData.getStringTime(diaoptions.text)
-                    TextData.TextBox(diaoptions)
+                    limitFrameTime = Dialog.getStringTime(diaoptions.text)
+                    Dialog.TextBox(diaoptions)
                 else
-                    TextData.RemoveCharOnLeft()
-                    TextData.RemoveTextBox()
+                    Dialog.RemoveCharOnLeft()
+                    Dialog.RemoveTextBox()
                     diaoptions = table.remove(dialogArray,1)
                     leftchar = diaoptions.character
-                    limitFrameTime = TextData.getStringTime(diaoptions.text)
-                    TextData.ShowCharOnLeft(diaoptions)
-                    TextData.TextBox(diaoptions)
+                    limitFrameTime = Dialog.getStringTime(diaoptions.text)
+                    Dialog.ShowCharOnLeft(diaoptions)
+                    Dialog.TextBox(diaoptions)
                 end
             end
         end
     else
         if system.getTimer()<limitFrameTime+currentFrameTime then
-            print("printed everything",system.getTimer())
-            TextData.setFullText(diaoptions)
+            Dialog.setFullText(diaoptions)
             limitFrameTime = 0
         else
-            TextData.RemoveTextBox()
+            Dialog.RemoveTextBox()
             scene:destroy()
         end
     end
@@ -74,7 +71,7 @@ function scene:create( event )
     local sceneGroup = self.view
 
     --SECURITY REASONS = system.DocumentsDirectory
-    local optionsArray = TextData.loadTable("cutscene.json",system.DocumentsDirectory)
+    local optionsArray = JsonFuncs.LoadTable("cutscene.json",system.DocumentsDirectory)
 
     --GeneralUtils.PrintTable(optionsArray)
     local myRectangle = display.newRect(300,600,display.contentWidth*2, display.contentHeight*2)
@@ -84,7 +81,7 @@ function scene:create( event )
     end
     ---------------------------------------------------------------------------------
     sceneGroup:insert(myRectangle)
-    TextData.ShowBackground("GameResources/ToBeRemoved/background.jpg")
+    Dialog.ShowBackground("GameResources/ToBeRemoved/background.jpg")
 end
 
 function scene:show( event )
@@ -116,8 +113,8 @@ end
 
 function scene:destroy( event )
 	local sceneGroup = self.view
-    TextData.RemoveCharOnLeft()
-    TextData.RemoveEverything()
+    Dialog.RemoveCharOnLeft()
+    Dialog.RemoveEverything()
 end
 
 
