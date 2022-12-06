@@ -85,7 +85,9 @@ local function ReconstructFollowPath()
             current_space_x - follow_map[current_space_x][current_space_y][2], 
             current_space_y - follow_map[current_space_x][current_space_y][3]
     end
-    return follow_map[current_space_x][current_space_y][2], follow_map[current_space_x][current_space_y][3]
+    return follow_map[current_space_x][current_space_y][2], 
+            follow_map[current_space_x][current_space_y][3], 
+            follow_map[destination_x][desired_space_y][1]
 end
 
 local function CheckFollowNecessity(map, begin_space_x, begin_space_y, desired_space_x, desired_space_y)
@@ -105,7 +107,7 @@ function CharFollow.DoFollow(map, begin_space_x, begin_space_y, desired_space_x,
 
     if ((CheckFollowNecessity(map, begin_space_x, begin_space_y, desired_space_x, desired_space_y) == false) or
             math.abs(desired_space_x - begin_space_x) >= MAX_FOLLOW_RANGE or math.abs(desired_space_y - begin_space_y) >= MAX_FOLLOW_RANGE)  then
-        return 0,0
+        return 0,0,0
     end
     start_x, start_y = math.min(begin_space_x, MAX_FOLLOW_RANGE), math.min(begin_space_y, MAX_FOLLOW_RANGE)
     destination_x, destination_y = start_x + desired_space_x - begin_space_x, start_y + desired_space_y - begin_space_y
@@ -146,7 +148,7 @@ function CharFollow.DoFollow(map, begin_space_x, begin_space_y, desired_space_x,
         print(follow_map[destination_x][destination_y][1] .. " " .. follow_map[destination_x][destination_y][2] .. " " .. follow_map[destination_x][destination_y][3])
         return ReconstructFollowPath()
     end
-    return 0,0
+    return nil, nil, nil
 end
 
 return CharFollow
