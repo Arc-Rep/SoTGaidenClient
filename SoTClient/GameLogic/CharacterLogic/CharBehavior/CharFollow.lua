@@ -2,6 +2,7 @@ local CharFollow = {}
 
 local math = require "math"
 local missionmaputils = require "SoTClient.GameLogic.Scenarios.MissionMapUtils"
+local missionmap = require "SoTClient.GameLogic.Scenarios.MissionMap"
 
 local UP, LEFT, UNDIRECTED, DOWN, RIGHT  = -1, -1, 0, 1, 1
 local DIRECT_ORDER = {-1, 1, 0}

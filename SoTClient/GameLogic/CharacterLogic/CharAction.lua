@@ -1,6 +1,6 @@
 local CharAction = {}
 
-local missionmaputils = require "SoTClient.GameLogic.Scenarios.MissionMapUtils"
+local missionmap = require "SoTClient.GameLogic.Scenarios.MissionMap"
 local follow = require "SoTClient.GameLogic.CharacterLogic.CharBehavior.CharFollow"
 local missionmaputils = require "SoTClient.GameLogic.Scenarios.MissionMapUtils"
 
@@ -19,7 +19,17 @@ local function BehaviourHandler_Enemy(game_map, char_list, char)
 end
 
 
-function CharAction.BehaviourHandler_Ally()
+
+local function BehaviourHandler_Ally(game_map, char_list, char)
+    if(char["Status"] == "Follower") then
+        --CombatUI_implementation
+        --print("Data is " .. char["Focus"]["y"])
+        CharAction.DoMovement(missionmap.GetMap(), char, follow.DoFollow(missionmap.GetMap, char["x"], char["y"], char["Focus"]["x"], char["Focus"]["y"]))
+        local move_x, move_y, steps = follow.DoFollow(game_map, char["x"], char["y"], char["Focus"]["x"], char["Focus"]["y"])
+        if(move_x ~= nil and move_y ~= nil) then
+            CharAction.DoMovement(game_map, char, move_x, move_y)
+        end
+    end
 end
 
 
@@ -46,9 +56,9 @@ local function BehaviourHandler_Enemy(game_map, char_list, char)
     if(char["Status"] == "Standby") then
         print(cur_room["x"] .. " is the current x")
         for index, char_i in ipairs(char_list) do
-            if(char_i["Team"] > 0 and cur_room == missionmaputils.GetCurrentRoom(game_map, char_i["x"], char_i["y"]) then
-                temp_move_x, temp_move_y, temp_steps = follow.DoFollow(map, char["x"], char["y"], char["Focus"]["x"], char["Focus"]["y"])
-                if(temp_steps < steps) do
+            if(char_i["Team"] > 0 and cur_room == missionmaputils.GetCurrentRoom(game_map, char_i["x"], char_i["y"])) then
+                temp_move_x, temp_move_y, temp_steps = follow.DoFollow(missionmap.GetMap, char["x"], char["y"], char["Focus"]["x"], char["Focus"]["y"])
+                if(temp_steps < steps) then
                     char["Status"] = "Follower"
                     char["Focus"] = char_i
                     move_x = temp_move_x
@@ -59,9 +69,9 @@ local function BehaviourHandler_Enemy(game_map, char_list, char)
         end
     elseif(char["Status"] == "Follower") then
         for index, char_i in ipairs(char_list) do
-            if(char_i["Team"] > 0 and cur_room == missionmaputils.GetCurrentRoom(game_map, char_i["x"], char_i["y"]) then
-                temp_move_x, temp_move_y, temp_steps = follow.DoFollow(map, char["x"], char["y"], char["Focus"]["x"], char["Focus"]["y"])
-                if(temp_steps < steps) do
+            if(char_i["Team"] > 0 and cur_room == missionmaputils.GetCurrentRoom(game_map, char_i["x"], char_i["y"])) then
+                temp_move_x, temp_move_y, temp_steps = follow.DoFollow(missionmap.GetMap, char["x"], char["y"], char["Focus"]["x"], char["Focus"]["y"])
+                if(temp_steps < steps) then
                     char["Status"] = "Follower"
                     char["Focus"] = char_i
                     move_x = temp_move_x
@@ -80,18 +90,6 @@ local function BehaviourHandler_Enemy(game_map, char_list, char)
     end
 end
 
-
-function CharAction.BehaviourHandler_Ally(game_map, char_list, char)
-    if(char["Status"] == "Follower") then
-        CombatUI_implementation
-        --print("Data is " .. char["Focus"]["y"])
-        CharAction.DoMovement(map, char, follow.DoFollow(map, char["x"], char["y"], char["Focus"]["x"], char["Focus"]["y"]))
-        local move_x, move_y, steps = follow.DoFollow(game_map, char["x"], char["y"], char["Focus"]["x"], char["Focus"]["y"])
-        if(move_x ~= nil and move_y ~= nil) then
-            CharAction.DoMovement(game_map, char, move_x, move_y)
-        end
-    end
-end
 
 
 
