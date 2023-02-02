@@ -7,7 +7,7 @@ local missionmaputils = require "SoTClient.GameLogic.Scenarios.MissionMapUtils"
 local function BehaviourHandler_Enemy(game_map, char_list, char)
     if(char["Status"] == "Standby") then
         local cur_room = missionmaputils.GetCurrentRoom(game_map, char["x"], char["y"])
-        print(cur_room["x"] .. " is the current x")
+        --print(cur_room["x"] .. " is the current x")
         for index, char_i in ipairs(char_list) do
             if(char_i["Team"] > 0 and cur_room == missionmaputils.GetCurrentRoom(game_map, char_i["x"], char_i["y"])) then
                 char["Status"] = "Follower"
@@ -45,7 +45,7 @@ function CharAction.DoCharAction(map, unit_list,char)
     end
 
     if(char["Status"] == "Follower") then
-        print("Data is " .. char["Focus"]["y"])
+        --print("Data is " .. char["Focus"]["y"])
         CharAction.DoMovement(map, char, follow.DoFollow(map, char["x"], char["y"], char["Focus"]["x"], char["Focus"]["y"]))
     end
 end

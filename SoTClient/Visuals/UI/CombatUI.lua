@@ -1,9 +1,9 @@
-local Json = require "SotClient.Utils.Jsonfuncs"
 local graphics = require ("graphics")
 local widget = require("widget")
 local MapRender = require "SotClient.Visuals.RenderMap"
 local GameOverseer = require "SotClient.GameLogic.LevelMechanics.GameOverseer"
 local MapData = require "SoTClient.GameLogic.Scenarios.MissionMap"
+local Player = require "SoTClient.GameLogic.PlayerLogic.Player"
 
 local CombatUI = {}
 
@@ -11,7 +11,6 @@ local UIGroup = display.newGroup()
 local PlayerUI = display.newGroup()
 local AbilityUI = display.newGroup()
 local DpadUI = display.newGroup()
-local currenthp,fullhp,currentessence,fullessence,ability1,ability2,ability3,ability4,player
 
 -- CREATE DEFAULT UI OPTIONS
 local abilityW = display.contentWidth/7
@@ -30,9 +29,9 @@ local hpprogressView = widget.newProgressView(
         sheet = hpprogressSheet,
         fillWidth = 32,
         fillHeight = 32,
-        left = 290,
-        top = 340,
-        width = 300,
+        left = 305,
+        top = 320,
+        width = 270,
         isAnimated = true
     }
 )
@@ -50,9 +49,9 @@ local essenceprogressView = widget.newProgressView(
         sheet = essenceprogressSheet,
         fillWidth = 32,
         fillHeight = 32,
-        left = 230,
-        top = 340,
-        width = 300,
+        left = 245,
+        top = 320,
+        width = 270,
         isAnimated = true
     }
 )
@@ -64,20 +63,15 @@ local touchListener = function(event)
 	end
 	last_click = system.getTimer()
     local x, y = event.x, event.y
-    print("X="..x.." Y="..y)
 	if(x > 170 ) then
 		print(MapData.GetMap()[1][1])
 		GameOverseer.SendCommand(MapData.GetMap(),"pressRight")
-		print("Up")
 	elseif (x < 92) then
 		GameOverseer.SendCommand(MapData.GetMap(),"pressLeft")
-		print("Down")
 	elseif (y < 883) then
 		GameOverseer.SendCommand(MapData.GetMap(),"pressUp")
-		print("Left")
 	elseif (y > 969) then
 		GameOverseer.SendCommand(MapData.GetMap(),"pressDown")
-		print("Right")
 	end
 	MapRender.UpdateTilemap(MapData.GetMap())
 
@@ -90,18 +84,6 @@ local touchListener = function(event)
     return true
 end
 
-
-function CombatUI.readPlayer()
-    player = Json.LoadTable("playerdata.json",system.DocumentsDirectory)
-    currenthp = player.currenthp
-    currentessence = player.currentessence
-    fullhp = player.maxhp
-    fullessence = player.maxessence
-    ability1 = player.ability1
-    ability2 = player.ability2
-    ability3 = player.ability3
-    ability4 = player.ability4
-end
 
 local function tapListener(event)
     print(event.type)
@@ -167,14 +149,14 @@ function CombatUI.createPlayerUI()
     portrait4.maskScaleX, portrait4.maskScaleY = 0.1,0.1
     PlayerUI:insert(portrait4)
 
-    local hpText = display.newText( currenthp.."/"..fullhp.."HP", 467, 450, native.systemFont, 26 )
+    local hpText = display.newText( Player.currenthp.."/"..Player.maxhp.."HP", 467, 450, native.systemFont, 26 )
     hpText:setFillColor( 1, 0, 0 )
     hpText:rotate(90)
     hpprogressView:rotate(90)
     PlayerUI:insert(hpText)
     PlayerUI:insert(hpprogressView)
 
-    local essenceText = display.newText( currentessence.."/"..fullessence.."AP", 410, 450, native.systemFont, 26 )
+    local essenceText = display.newText( Player.currentessence.."/"..Player.maxessence.."AP", 410, 450, native.systemFont, 26 )
     essenceText:setFillColor( 0, 0, 1 )
     essenceText:rotate(90)
     essenceprogressView:rotate(90)
@@ -197,11 +179,11 @@ function CombatUI.createPlayerUI()
 end
 
 function CombatUI.setHP()
-    hpprogressView:setProgress( currenthp/fullhp )
+    hpprogressView:setProgress(Player.currenthp/Player.maxhp)
 end
 
 function CombatUI.setEssence()
-    essenceprogressView:setProgress(currentessence/fullessence)
+    essenceprogressView:setProgress(Player.currentessence/Player.maxessence)
 end
 
 function CombatUI.setAbility1()

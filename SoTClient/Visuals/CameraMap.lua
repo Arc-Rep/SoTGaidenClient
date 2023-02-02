@@ -25,7 +25,7 @@ function CameraMap.updateFocus()
     camera_y = focus_element_queue[1]["y"]
     camera_start_x = camera_x - camera_tile_width/2
     camera_start_y = camera_y - camera_tile_height/2
-    print("x, y " .. camera_start_x .. "/ " .. camera_start_y)
+    --print("x, y " .. camera_start_x .. "/ " .. camera_start_y)
     return focus_move_x, focus_move_y
 end
 

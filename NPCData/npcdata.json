@@ -1,0 +1,16 @@
+{
+    "1" : {
+        "character": "GameResources/ToBeRemoved/andre.png",
+        "name":"Hound Hell Dog", 
+        "level": "1",
+        "hp" : "1",
+        "essence" : "1",
+        "str" : "1",
+        "dex" : "1",
+        "itl" : "1",
+        "ability1" : "Rock Smash",
+        "ability2" : "Divine Punishment",
+        "ability3" : "Smoke Cloud",
+        "ability4" : "Rising Sun Fist"
+    }
+} 

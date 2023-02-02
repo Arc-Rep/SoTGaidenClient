@@ -51,12 +51,12 @@ function RenderMap.UpdateTilemap(map)
     local tile_x, tile_y = math.floor(Camera.getStartTileX()), math.floor(Camera.getStartTileY())
     local moved_tile_x, moved_tile_y = math.floor(Camera.getStartTileX() - move_x), math.floor(Camera.getStartTileY() - move_y)
 
-    print("Entered Tilemap")
+--[[print("Entered Tilemap")
     print()
     print(tile_x)
     print(tile_y)
     print(moved_tile_x)
-    print(moved_tile_y)
+    print(moved_tile_y)]]--
 
     if(moved_tile_x < tile_x) then
         ClearRow(moved_tile_x, moved_tile_y, math.floor(moved_tile_y + Camera.getTileHeight()))
