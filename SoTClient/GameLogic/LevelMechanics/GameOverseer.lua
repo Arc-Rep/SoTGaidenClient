@@ -25,11 +25,11 @@ end
 
 function GameOverseer.SendCommand(game_map, command)
     local move_done = false
-    print("Player is in " .. Squads[1][1]["x"] .. " and " .. Squads[1][1]["y"])
-    print("Tile above is " .. game_map[Squads[1][1]["x"]][Squads[1][1]["y"] - 1]["Tile"])
-    print("Tile below is " .. game_map[Squads[1][1]["x"]][Squads[1][1]["y"] + 1]["Tile"])
-    print("Tile left is " .. game_map[Squads[1][1]["x"] - 1][Squads[1][1]["y"]]["Tile"])
-    print("Tile right is " .. game_map[Squads[1][1]["x"] + 1][Squads[1][1]["y"]]["Tile"])
+    --print("Player is in " .. Squads[1][1]["x"] .. " and " .. Squads[1][1]["y"])
+    --print("Tile above is " .. game_map[Squads[1][1]["x"]][Squads[1][1]["y"] - 1]["Tile"])
+    --print("Tile below is " .. game_map[Squads[1][1]["x"]][Squads[1][1]["y"] + 1]["Tile"])
+    --print("Tile left is " .. game_map[Squads[1][1]["x"] - 1][Squads[1][1]["y"]]["Tile"])
+    --print("Tile right is " .. game_map[Squads[1][1]["x"] + 1][Squads[1][1]["y"]]["Tile"])
 
     if(command == "pressUp") then
         move_done = CharAction.DoMovement(game_map, Squads[1][1], 0, -1)

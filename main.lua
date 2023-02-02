@@ -2,12 +2,11 @@
 display.setStatusBar( display.HiddenStatusBar )
 
 -- include Corona's "widget" library
-local widget = require "widget"
 local composer = require "composer"
 local Player = require "SoTClient.GameLogic.PlayerLogic.Player"
 local sqlite3 = require( "sqlite3" )
 
-PlayerData = Player.ReadPlayer()
+PlayerData = Player.readPlayer()
 local datapath = "D:/GameDev/SoT Gaiden/UserData/gamedata.db"
 DB = sqlite3.open(datapath)
 

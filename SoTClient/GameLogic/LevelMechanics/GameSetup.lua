@@ -51,7 +51,7 @@ function GameSetup.SetupEnemyInitPlacements(game_map, enemy_units, seed1, seed2)
 
     for index, enemy in ipairs(enemy_units) do
         local chosen_room = game_map["rooms"][levelgen.generateRandomBetween(1, #game_map["rooms"])]
-        print("Chosen room has " .. chosen_room["columns"] .. " and " .. chosen_room["rows"])
+        --print("Chosen room has " .. chosen_room["columns"] .. " and " .. chosen_room["rows"])
         enemy["x"], enemy["y"] = 
             missionmaputils.FindClosestEmptySpace(game_map, 
                 chosen_room["x"] + levelgen.generateRandomBetween(1, chosen_room["columns"]),

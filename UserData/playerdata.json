@@ -2,8 +2,11 @@
 {   
     "name":"DeyL", 
     "level": "0",
-    "hp" : "100",
+    "hp" : "60",
     "essence" : "20",
+    "str" : 0,
+    "dex" : 0,
+    "itl" : 0,
     "ability1" : "Rock Smash",
     "ability2" : "Divine Punishment",
     "ability3" : "Smoke Cloud",

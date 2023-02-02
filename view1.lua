@@ -10,6 +10,7 @@ local MapRender = require "SotClient.Visuals.RenderMap"
 local GameOverseer = require "SotClient.GameLogic.LevelMechanics.GameOverseer"
 local MapData = require "SoTClient.GameLogic.Scenarios.MissionMap"
 local CombatUI = require "SoTClient.Visuals.UI.CombatUI"
+local Player = require "SoTClient.GameLogic.PlayerLogic.Player"
 local seed1, seed2 = 14638, 3527
 local cutscene = {false}
 
@@ -76,7 +77,7 @@ function scene:create( event )
 	--sceneGroup:addEventListener("touch", touchListener)
 
 	--CombatUI
-	CombatUI.readPlayer()
+	Player.readPlayer()
 	CombatUI.setHP()
 	CombatUI.setEssence()
 	CombatUI.createPlayerUI()
