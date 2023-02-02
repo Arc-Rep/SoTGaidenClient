@@ -46,4 +46,14 @@ function gu.GetDocumentsPath()
     end
 end
 
+-- Find idx of element in table that contains value
+function table_contains(table, element)
+    for key, value in pairs(table) do
+        if value == element then
+        return key
+        end
+    end
+    return false
+end
+
 return gu
