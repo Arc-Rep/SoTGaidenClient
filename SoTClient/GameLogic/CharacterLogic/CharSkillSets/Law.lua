@@ -6,13 +6,13 @@ local function PrepareStreakElement(streak, options, targets_left)
     local streak_elem = []
 
     streak_elem["Focus"]             = "Enemy"
-    streak_elem["Element"]           = "Light"
+    streak_elem["Element"]           = ["Light"]
     streak_elem["Range"]             = 3
     streak_elem["TargetType"]        = "Omni"
     streak_elem["FocusType"]         = "Char"
     streak_elem["AuraRadius"]        = 0
     streak_elem["DmgBase"]           = 10 - (DEFAULT_STREAK_NUM - targets_left) * 2
-    streak_elem["DmgIncrement"]      = ["Mag", 0.5, "Skill", 0.2]
+    streak_elem["DmgIncrement"]      = ["Mag", 0.5, "Skl", 0.2]
     streak_elem["CritMod"]           = [0.2]
     if(targets_left ~= 1) then 
         streak_elem["SequenceCriteria"]  = ["SeekRange", 3]
@@ -37,7 +37,7 @@ local function PrepareBlindingWisp(skill, modifiers)
     local blinding_wisp = []
 
     blinding_wisp["Focus"]          = "Enemy"
-    blinding_wisp["Element"]        = "Light"
+    blinding_wisp["Element"]        = ["Light"]
     blinding_wisp["Range"]          = 5
     blinding_wisp["TargetType"]     = "Omni"
     blinding_wisp["FocusType"]      = "Tile"
@@ -57,7 +57,7 @@ local function PrepareHolyExtermination(skill, modifiers)
     local holy_extermination = []
 
     holy_extermination["Focus"]         = "Enemy"
-    holy_extermination["Element"]       = "Light"
+    holy_extermination["Element"]       = ["Light"]
     holy_extermination["TargetType"]    = "Self"
     holy_extermination["FocusType"]     = "NULL"
     holy_extermination["DmgBase"]       = 20
