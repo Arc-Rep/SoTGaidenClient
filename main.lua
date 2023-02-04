@@ -6,7 +6,6 @@ local composer = require "composer"
 local Player = require "SoTClient.GameLogic.PlayerLogic.Player"
 local sqlite3 = require( "sqlite3" )
 
-PlayerData = Player.readPlayer()
 local datapath = "D:/GameDev/SoT Gaiden/UserData/gamedata.db"
 DB = sqlite3.open(datapath)
 

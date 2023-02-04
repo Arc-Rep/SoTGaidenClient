@@ -85,9 +85,9 @@ local function ReconstructFollowPath()
             current_space_x - follow_map[current_space_x][current_space_y][2], 
             current_space_y - follow_map[current_space_x][current_space_y][3]
     end
-    return follow_map[current_space_x][current_space_y][2], 
-            follow_map[current_space_x][current_space_y][3], 
-            follow_map[destination_x][desired_space_y][1]
+    return follow_map[current_space_x][current_space_y][2],
+            follow_map[current_space_x][current_space_y][3],
+            follow_map[destination_x][destination_y][1]
 end
 
 local function CheckFollowNecessity(map, begin_space_x, begin_space_y, desired_space_x, desired_space_y)

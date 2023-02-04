@@ -38,6 +38,8 @@ function jsonfunc.LoadTable(filename,location)
         io.close( file )
         return t
     end
+
+    return nil
 end
 
 
