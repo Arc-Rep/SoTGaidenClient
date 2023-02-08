@@ -19,7 +19,7 @@ function GameSetup.SetupPlayerUnits(unit_table, Squads)
     local unitenemy1 = {}
     unitenemy1["Actor"] = "Enemy"
     unitenemy1["Status"] = "Standby"
-    unitenemy1["Team"] = -1
+    unitenemy1["Team"] = 0
     unitenemy1["ControlType"] = "CPU-H"
     unitenemy1["Focus"] = nil
     

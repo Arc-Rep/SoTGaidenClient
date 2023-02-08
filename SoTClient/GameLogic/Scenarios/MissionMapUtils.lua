@@ -87,4 +87,8 @@ function MissionMapUtils.GetCurrentRoom(game_map, x, y)
     return -1
 end
 
+function MissionMapUtils.getCharInSpace(gmap_tile)
+    return map_tile["Actor"]
+end
+
 return MissionMapUtils

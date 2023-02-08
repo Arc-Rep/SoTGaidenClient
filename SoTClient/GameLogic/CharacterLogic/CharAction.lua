@@ -44,6 +44,16 @@ function CharAction.DoMovement(game_map, char, m_up_down, m_left_right)
     local cur_tile, desired_tile = game_map[char["x"]][char["y"]],
                                     game_map[char["x"] + m_up_down][char["y"] + m_left_right]
 
+    local blocking_char = missionmaputils.getCharInSpace(desired_tile)
+
+    if(blocking_char != "") then
+        if((blocking_char["Team"] <= 0 and char["Team"] > 0) or (blocking_char["Team"] > 0 and char["Team"] <= 0)) then
+            CharAction.doBasicAttack()
+            return true
+        end
+        return false
+    end
+
     if(missionmaputils.CheckLegalMovement(game_map, char["x"], char["y"], m_up_down, m_left_right) == false) then
         return false
     end

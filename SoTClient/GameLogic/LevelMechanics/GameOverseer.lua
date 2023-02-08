@@ -1,7 +1,8 @@
 
 local GameOverseer = {}
 
-local global_turns = 0
+-- 0 = Enemies, 1 = Player1 & Allies, 2 = Player2 & Allies, ...
+local global_turns = 1
 local GameSetup = require "SoTClient.GameLogic.LevelMechanics.GameSetup"
 local CharAction = require "SoTClient.GameLogic.CharacterLogic.CharAction"
 
@@ -18,20 +19,35 @@ function GameOverseer.getPlayerCharStats(game_map)
 end
 
 function DoTurn(game_map)
-    for char_index, char in ipairs(unit_table) do
+
+    for char_index, char in ipairs(Squads[global_turns]) do
         CharAction.DoCharAction(game_map, unit_table, char)
+    end
+
+    if (#Squads <= global_turns) then
+        global_turns = 0
+    else
+        global_turns = global_turns + 1
+    end
+    
+    if(Squad[global_turns][1]["ControlType"] != "Player") then
+        doTurn(game_map)    
     end
 end
 
 function GameOverseer.SendCommand(game_map, command)
     local move_done = false
+
+    if global_turns != 1 then
+        return
+    end
     --print("Player is in " .. Squads[1][1]["x"] .. " and " .. Squads[1][1]["y"])
     --print("Tile above is " .. game_map[Squads[1][1]["x"]][Squads[1][1]["y"] - 1]["Tile"])
     --print("Tile below is " .. game_map[Squads[1][1]["x"]][Squads[1][1]["y"] + 1]["Tile"])
     --print("Tile left is " .. game_map[Squads[1][1]["x"] - 1][Squads[1][1]["y"]]["Tile"])
     --print("Tile right is " .. game_map[Squads[1][1]["x"] + 1][Squads[1][1]["y"]]["Tile"])
 
-    if(command == "pressUp") then
+    if (command == "pressUp") then
         move_done = CharAction.DoMovement(game_map, Squads[1][1], 0, -1)
     elseif (command == "pressDown") then
         move_done = CharAction.DoMovement(game_map, Squads[1][1], 0, 1)
@@ -53,6 +69,7 @@ function GameOverseer.StartGame(MapData, player_squads, team_squads, seed1, seed
     GameSetup.SetupPlayerUnits(unit_table, Squads)
     GameSetup.SetupPlayerInitPlacements(MapData.GetMap(), Squads[1])
     GameSetup.SetupEnemyInitPlacements(MapData.GetMap(), Squads[-1], seed1, seed2)
+    global_turns = 1
 end
 
 return GameOverseer
