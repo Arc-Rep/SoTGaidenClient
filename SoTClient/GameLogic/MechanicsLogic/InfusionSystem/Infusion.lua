@@ -4,47 +4,66 @@ local Infusion = {}
 local INFUSION_MAX_ELEMENTS = 3
 
 function Infusion.setup()
-    Infusion.ElementQueue = {}
+    local char_infusion = {}
+    char_infusion.ElementQueue = {}
     for i = 1, INFUSION_MAX_ELEMENTS, 1 do
-        Infusion.ElementQueue[i] = nil
+        char_infusion.ElementQueue[i] = nil
     end
+    return char_infusion
 end
 
-function Infusion.addInfusion(new_infusion)
-    if #Infusion.ElementQueue == INFUSION_MAX_ELEMENTS then
+function Infusion.addInfusion(char_infusion, new_infusion)
+    if #char_infusion.ElementQueue == INFUSION_MAX_ELEMENTS then
         for i = INFUSION_MAX_ELEMENTS, 2, -1 do
-            Infusion.ElementQueue[i] = Infusion.ElementQueue[i - 1]
+            char_infusion.ElementQueue[i] = char_infusion.ElementQueue[i - 1]
         end
-        Infusion.ElementQueue[1] = new_infusion
+        char_infusion.ElementQueue[1] = new_infusion
 
-    elseif #Infusion.ElementQueue < INFUSION_MAX_ELEMENTS then
-        Infusion.ElementQueue[#Infusion.ElementQueue + 1] = new_infusion
+    elseif #char_infusion.ElementQueue < INFUSION_MAX_ELEMENTS then
+        char_infusion.ElementQueue[#char_infusion.ElementQueue + 1] = new_infusion
     else
         print("Error: Infuse surpassed maximum index")
     end
 end
 
-function Infusion.retrieveInfusion()
-    if #Infusion.ElementQueue == 0 then
+local function Infusion.removeInfusion(char_infusion)
+
+    if #char_infusion.ElementQueue == 0 then
+        return 
+    end
+
+    local infusion_elements = #char_infusion.ElementQueue
+
+    for i = 2, infusion_elements, 1 do
+        char_infusion.ElementQueue[i-1] = char_infusion.ElementQueue[i]
+    end
+end
+
+local function Infusion.checkTopInfusion(char_infusion)
+    if #char_infusion.ElementQueue == 0 then
         return nil
     end
 
-    local retrieved_infusion = Infusion.ElementQueue[1]
-    local infusion_elements = #Infusion.ElementQueue
-
-    for i = 2, infusion_elements, 1 do
-        Infusion.ElementQueue[i-1] = Infusion.ElementQueue[i]
-    end
+    local retrieved_infusion = char_infusion.ElementQueue[1]
 
     return retrieved_infusion
 end
 
-function Infusion.retrieveStatus()
+function Infusion.retrieveInfusion(char_infusion)
+
+    local retrieved_infusion = Infusion.checkTopInfusion(char_infusion)
+    
+    Infusion.removeInfusion(char_infusion)
+
+    return retrieved_infusion
+end
+
+function Infusion.retrieveStatus(char_infusion)
     local retrieved_statuses = {}
 
-    for i = 1, #Infusion.ElementQueue, 1 do
-        if Infusion.ElementQueue[i].Type == "Status" then
-            retrieved_statuses[#retrieved_statuses+1] = Infusion.ElementQueue[i]
+    for i = 1, #char_infusion.ElementQueue, 1 do
+        if char_infusion.ElementQueue[i].Type == "Status" then
+            char_infusion[#retrieved_statuses+1] = char_infusion.ElementQueue[i]
         end
     end
 
