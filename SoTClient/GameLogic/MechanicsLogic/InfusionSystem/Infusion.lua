@@ -26,7 +26,7 @@ function Infusion.addInfusion(char_infusion, new_infusion)
     end
 end
 
-local function Infusion.removeInfusion(char_infusion)
+function Infusion.removeInfusion(char_infusion)
 
     if #char_infusion.ElementQueue == 0 then
         return 
@@ -39,7 +39,7 @@ local function Infusion.removeInfusion(char_infusion)
     end
 end
 
-local function Infusion.checkTopInfusion(char_infusion)
+function Infusion.checkTopInfusion(char_infusion)
     if #char_infusion.ElementQueue == 0 then
         return nil
     end
