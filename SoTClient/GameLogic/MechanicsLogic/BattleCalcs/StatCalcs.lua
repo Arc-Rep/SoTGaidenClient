@@ -25,11 +25,11 @@ end
 function DamageSkillCalculation(skill, atk_char, def_char)
     local damage_total = 0
     
-    if skill["DmgIncrement"] == nil then
+    if skill["DmgBase"] == nil then
        return "Error: Could not read skill" 
     end
 
-    for i = 1, skill["DmgIncrement"], 2 do
+    for i = 1, #skill["DmgIncrement"], 2 do
         local base_damage = skill["DmgBase"] + atk_char[skill["DmgIncrement"][i]] * skill["DmgIncrement"][i + 1]
         local base_damage_ward = def_char[BATTLE_DEFENCES[atk_char[skill]["DmgIncrement"][i]]]
         damage_total = damage_total + (base_damage - base_damage_ward)
@@ -37,7 +37,7 @@ function DamageSkillCalculation(skill, atk_char, def_char)
 
     local elem_res = 0
 
-    for i = 1, skill["Element"], 1 do
+    for i = 1, #skill["Element"], 1 do
         elem_res = elem_res + def_char["elem_res"][skill["Element"]]
     end
 
@@ -51,3 +51,5 @@ function DamageSkillCalculation(skill, atk_char, def_char)
 
     return damage_total
 end
+
+return Infusion
