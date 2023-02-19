@@ -10,12 +10,17 @@ function GameSetup.SetupPlayerUnits(unit_table, Squads)
     unit1["Status"] = "Player"
     unit1["Focus"] = "Manual"
     unit1["Team"] = 1
+    -- temp stats for unit1 (to be removed)
+    unit1["Str"] = 4
+    unit1["Def"] = 2
     unit1["ControlType"] = "Player"
     unit2["Actor"] = "Dylan"
     unit2["Status"] = "Follower"
     unit2["Focus"] = unit1
     unit2["Team"] = 1
     unit2["ControlType"] = "CPU-F"
+    unit2["Str"] = 3
+    unit2["Def"] = 1
 
     local unitenemy1 = {}
     unitenemy1["Actor"] = "Enemy"
@@ -23,6 +28,8 @@ function GameSetup.SetupPlayerUnits(unit_table, Squads)
     unitenemy1["Team"] = -1
     unitenemy1["ControlType"] = "CPU-H"
     unitenemy1["Focus"] = nil
+    unitenemy1["Str"] = 3
+    unitenemy1["Def"] = 1
     
     
     Squads[unit1["Team"]] = {}
@@ -44,8 +51,8 @@ function GameSetup.SetupPlayerInitPlacements(game_map, player_units)
         character["Infusion"] = Infusion.setup()
         last_placement_x, last_placement_y = missionmaputils.FindClosestEmptySpace(game_map, last_placement_x, last_placement_y)
         game_map[last_placement_x][last_placement_y]["Actor"] = character
-        player_units[k]["x"] = last_placement_x
-        player_units[k]["y"] = last_placement_y
+        character["x"] = last_placement_x
+        character["y"] = last_placement_y
     end
 end
 

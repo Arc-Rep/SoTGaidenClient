@@ -13,7 +13,7 @@ end
 
 function LevelGen.getPortableRandom()
     io.write(BitXOR(seed1, 65535) .. "\n")
-    seed1 = ((36969 * BitXOR(seed1, 65535)) % 4294967296 + BitRShift(seed1, 16)) % 4294967296 
+    seed1 = ((36969 * BitXOR(seed1, 65535)) % 4294967296 + BitRShift(seed1, 16)) % 4294967296
     seed2 = ((18000 * BitXOR(seed2, 65535)) % 4294967296 + BitRShift(seed2, 16)) % 4294967296
     io.write(seed1 .. " " .. seed2 .. "\n")
     local combined = (BitLShift(seed1, 16) % 4294967296 + seed2) % 4294967296;

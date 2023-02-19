@@ -32,19 +32,19 @@ function GameOverseer.SendCommand(game_map, command)
     --print("Tile right is " .. game_map[Squads[1][1]["x"] + 1][Squads[1][1]["y"]]["Tile"])
 
     if(command == "pressUp") then
-        move_done = CharAction.DoMovement(game_map, Squads[1][1], 0, -1)
+        move_done = CharAction.PlayerMoveEvent(game_map, Squads[1][1], 0, -1)
     elseif (command == "pressDown") then
-        move_done = CharAction.DoMovement(game_map, Squads[1][1], 0, 1)
+        move_done = CharAction.PlayerMoveEvent(game_map, Squads[1][1], 0, 1)
     elseif (command == "pressLeft") then
-        move_done = CharAction.DoMovement(game_map, Squads[1][1], -1, 0)
+        move_done = CharAction.PlayerMoveEvent(game_map, Squads[1][1], -1, 0)
     elseif (command == "pressRight") then
-        move_done = CharAction.DoMovement(game_map, Squads[1][1], 1, 0)
+        move_done = CharAction.PlayerMoveEvent(game_map, Squads[1][1], 1, 0)
     end
 
     if(move_done == true) then
         DoTurn(game_map)
     end
-    
+
     return game_map
 end
 

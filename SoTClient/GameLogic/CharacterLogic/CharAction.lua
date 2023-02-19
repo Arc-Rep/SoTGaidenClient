@@ -1,5 +1,5 @@
 local CharAction = {}
-
+local BasicAttack = require "SoTClient.GameLogic.MechanicsLogic.BattleCalcs.BasicAttack"
 local missionmaputils = require "SoTClient.GameLogic.Scenarios.MissionMapUtils"
 local follow = require "SoTClient.GameLogic.CharacterLogic.CharBehavior.CharFollow"
 
@@ -16,6 +16,9 @@ end
 local function BehaviourHandler_Enemy(game_map, char_list, char)
     local move_x, move_y, steps, temp_move_x, temp_move_y, temp_steps = nil, nil, nil, nil, nil, nil
     local cur_room = missionmaputils.GetCurrentRoom(game_map, char["x"], char["y"])
+    if(char["Status"] == "Follower" and missionmaputils.CheckDirectWalkDistance(char["x"], char["y"], char["Focus"]["x"], char["Focus"]["y"]) == 1) then
+        BasicAttack.doAttack(char, char["Focus"])
+    end
     if(char["Status"] == "Standby" or char["Status"] == "Follower") then
         print(cur_room["x"] .. " is the current x")
         for index, char_i in ipairs(char_list) do
@@ -43,7 +46,7 @@ end
 function CharAction.DoMovement(game_map, char, m_up_down, m_left_right)
     local cur_tile, desired_tile = game_map[char["x"]][char["y"]],
                                     game_map[char["x"] + m_up_down][char["y"] + m_left_right]
-
+    
     if(missionmaputils.CheckLegalMovement(game_map, char["x"], char["y"], m_up_down, m_left_right) == false) then
         return false
     end
@@ -56,6 +59,20 @@ function CharAction.DoMovement(game_map, char, m_up_down, m_left_right)
     return true
 end
 
+function CharAction.PlayerMoveEvent(game_map, char, m_up_down, m_left_right)
+    local desired_tile = game_map[char["x"] + m_up_down][char["y"] + m_left_right]
+
+    if(desired_tile["Actor"] ~= "") then
+        local neighbour = desired_tile["Actor"]
+
+        if neighbour["Team"] < 0 then
+            BasicAttack.doAttack(char, neighbour)
+            return true
+        end
+    end
+
+    return CharAction.DoMovement(game_map, char, m_up_down, m_left_right)
+end
 
 function CharAction.DoCharAction(map, unit_list,char)
     if(char["Team"] < 0) then

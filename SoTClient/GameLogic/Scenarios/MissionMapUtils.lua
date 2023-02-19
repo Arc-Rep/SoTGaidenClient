@@ -6,6 +6,9 @@ function MissionMapUtils.CheckCardinalDistance(tile1_x, tile1_y, tile2_x, tile2_
     return math.abs(tile1_x - tile2_x) + math.abs(tile1_y - tile2_y)
 end
 
+function MissionMapUtils.CheckDirectWalkDistance(tile1_x, tile1_y, tile2_x, tile2_y)
+    return math.max(math.abs(tile1_x - tile2_x), math.abs(tile1_y - tile2_y))
+end
 
 function MissionMapUtils.checkEmptySpace(map, x, y)
     if(x > map["x"] or y > map["y"]) then
