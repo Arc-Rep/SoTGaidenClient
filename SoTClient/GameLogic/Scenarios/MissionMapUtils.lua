@@ -1,6 +1,9 @@
 local MissionMapUtils = {}
 local math = require "math"
 
+function MissionMapUtils.CheckIfEnemy(char1, char2)
+    return (char1["Team"] > 0) ~= (char2["Team"] > 0)
+end
 
 function MissionMapUtils.CheckCardinalDistance(tile1_x, tile1_y, tile2_x, tile2_y)
     return math.abs(tile1_x - tile2_x) + math.abs(tile1_y - tile2_y)
@@ -21,7 +24,6 @@ function MissionMapUtils.checkEmptySpace(map, x, y)
 
     return false
 end
-
 
 function MissionMapUtils.CheckWallCollision(map, x, y, move_x, move_y)
 
@@ -88,6 +90,22 @@ function MissionMapUtils.GetCurrentRoom(game_map, x, y)
     end 
 
     return -1
+end
+
+-- TO ADD: for now, only check if enemies are hittable by basic, add to list hittable skills
+
+function MissionMapUtils.CheckHittableEnemies(game_map, char, char_list)
+    local hittable_enemies = {}
+    
+    for index, other_char in ipairs(char_list) do
+        if(MissionMapUtils.CheckIfEnemy(char, other_char) == true) then
+            if(MissionMapUtils.CheckDirectWalkDistance(char["x"], char["y"], other_char["x"], other_char["y"]) == 1) then
+                table.insert(hittable_enemies, other_char)
+            end
+        end
+    end
+
+    return hittable_enemies
 end
 
 return MissionMapUtils

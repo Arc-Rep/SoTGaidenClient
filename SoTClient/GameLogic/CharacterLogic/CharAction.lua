@@ -4,6 +4,11 @@ local missionmaputils = require "SoTClient.GameLogic.Scenarios.MissionMapUtils"
 local follow = require "SoTClient.GameLogic.CharacterLogic.CharBehavior.CharFollow"
 
 local function BehaviourHandler_Ally(game_map, char_list, char)
+    local hittables = missionmaputils.CheckHittableEnemies(game_map, char, char_list)
+    if(#hittables ~= 0) then
+        BasicAttack.doAttack(char, hittables[1])
+        return
+    end
     if(char["Status"] == "Follower") then
         --print("Data is " .. char["Focus"]["y"])
         local move_x, move_y, steps = follow.DoFollow(game_map, char["x"], char["y"], char["Focus"]["x"], char["Focus"]["y"])
@@ -16,8 +21,12 @@ end
 local function BehaviourHandler_Enemy(game_map, char_list, char)
     local move_x, move_y, steps, temp_move_x, temp_move_y, temp_steps = nil, nil, nil, nil, nil, nil
     local cur_room = missionmaputils.GetCurrentRoom(game_map, char["x"], char["y"])
-    if(char["Status"] == "Follower" and missionmaputils.CheckDirectWalkDistance(char["x"], char["y"], char["Focus"]["x"], char["Focus"]["y"]) == 1) then
+    local hittables = missionmaputils.CheckHittableEnemies(game_map, char, char_list)
+    if(#hittables ~= 0) then
+        char["Status"] = "Follower"
+        char["Focus"] = hittables[1]
         BasicAttack.doAttack(char, char["Focus"])
+        return
     end
     if(char["Status"] == "Standby" or char["Status"] == "Follower") then
         print(cur_room["x"] .. " is the current x")
