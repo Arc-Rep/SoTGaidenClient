@@ -19,7 +19,9 @@ end
 
 function DoTurn(game_map)
     for char_index, char in ipairs(unit_table) do
-        CharAction.DoCharAction(game_map, unit_table, char)
+        if char["ControlType"] ~= "Player" then
+            CharAction.DoCharAction(game_map, unit_table, char)
+        end
     end
 end
 

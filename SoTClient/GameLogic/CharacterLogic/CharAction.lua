@@ -74,7 +74,7 @@ function CharAction.PlayerMoveEvent(game_map, char, m_up_down, m_left_right)
     if(desired_tile["Actor"] ~= "") then
         local neighbour = desired_tile["Actor"]
 
-        if neighbour["Team"] < 0 then
+        if missionmaputils.CheckIfEnemy(char, neighbour) == true then
             BasicAttack.doAttack(char, neighbour)
             return true
         end
