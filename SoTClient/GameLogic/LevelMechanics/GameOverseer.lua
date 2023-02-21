@@ -19,11 +19,23 @@ function GameOverseer.getPlayerCharStats(game_map)
 end
 
 function DoTurn(game_map)
-    for char_index, char in ipairs(unit_table) do
-        if char["ControlType"] ~= "Player" then
+    for char_index, char in ipairs(Squads[global_turns]) do
+        if char["ControlType"] ~= "Player" and char["currentHP"] ~= 0 then
             CharAction.DoCharAction(game_map, unit_table, char)
         end
     end
+
+    if(global_turns == -1) then
+        global_turns = 1
+        return
+    elseif(global_turns + 1 >= #Squads)
+        global_turns = -1
+    else
+        global_turns += 1
+    end
+
+    return DoTurn(game_map)
+
 end
 
 function GameOverseer.SendCommand(game_map, command)

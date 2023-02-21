@@ -6,7 +6,7 @@ local follow = require "SoTClient.GameLogic.CharacterLogic.CharBehavior.CharFoll
 local function BehaviourHandler_Ally(game_map, char_list, char)
     local hittables = missionmaputils.CheckHittableEnemies(game_map, char, char_list)
     if(#hittables ~= 0) then
-        BasicAttack.doAttack(char, hittables[1])
+        BasicAttack.doAttack(game_map, char, hittables[1])
         return
     end
     if(char["Status"] == "Follower") then
@@ -25,7 +25,7 @@ local function BehaviourHandler_Enemy(game_map, char_list, char)
     if(#hittables ~= 0) then
         char["Status"] = "Follower"
         char["Focus"] = hittables[1]
-        BasicAttack.doAttack(char, char["Focus"])
+        BasicAttack.doAttack(game_map, char, char["Focus"])
         return
     end
     if(char["Status"] == "Standby" or char["Status"] == "Follower") then
@@ -69,13 +69,17 @@ function CharAction.DoMovement(game_map, char, m_up_down, m_left_right)
 end
 
 function CharAction.PlayerMoveEvent(game_map, char, m_up_down, m_left_right)
+    
+    if (char["x"] == nil or char["y"] == nil or char["currentHP"] == 0)
+        return
+
     local desired_tile = game_map[char["x"] + m_up_down][char["y"] + m_left_right]
 
     if(desired_tile["Actor"] ~= "") then
         local neighbour = desired_tile["Actor"]
 
         if missionmaputils.CheckIfEnemy(char, neighbour) == true then
-            BasicAttack.doAttack(char, neighbour)
+            BasicAttack.doAttack(game_map, char, neighbour)
             return true
         end
     end
