@@ -19,19 +19,10 @@ function GameOverseer.getPlayerCharStats(game_map)
 end
 
 function DoTurn(game_map)
-
-    for char_index, char in ipairs(Squads[global_turns]) do
-        CharAction.DoCharAction(game_map, unit_table, char)
-    end
-
-    if (#Squads <= global_turns) then
-        global_turns = 0
-    else
-        global_turns = global_turns + 1
-    end
-    
-    if(Squad[global_turns][1]["ControlType"] != "Player") then
-        doTurn(game_map)    
+    for char_index, char in ipairs(unit_table) do
+        if char["ControlType"] ~= "Player" then
+            CharAction.DoCharAction(game_map, unit_table, char)
+        end
     end
 end
 
@@ -47,20 +38,20 @@ function GameOverseer.SendCommand(game_map, command)
     --print("Tile left is " .. game_map[Squads[1][1]["x"] - 1][Squads[1][1]["y"]]["Tile"])
     --print("Tile right is " .. game_map[Squads[1][1]["x"] + 1][Squads[1][1]["y"]]["Tile"])
 
-    if (command == "pressUp") then
-        move_done = CharAction.DoMovement(game_map, Squads[1][1], 0, -1)
+    if(command == "pressUp") then
+        move_done = CharAction.PlayerMoveEvent(game_map, Squads[1][1], 0, -1)
     elseif (command == "pressDown") then
-        move_done = CharAction.DoMovement(game_map, Squads[1][1], 0, 1)
+        move_done = CharAction.PlayerMoveEvent(game_map, Squads[1][1], 0, 1)
     elseif (command == "pressLeft") then
-        move_done = CharAction.DoMovement(game_map, Squads[1][1], -1, 0)
+        move_done = CharAction.PlayerMoveEvent(game_map, Squads[1][1], -1, 0)
     elseif (command == "pressRight") then
-        move_done = CharAction.DoMovement(game_map, Squads[1][1], 1, 0)
+        move_done = CharAction.PlayerMoveEvent(game_map, Squads[1][1], 1, 0)
     end
 
     if(move_done == true) then
         DoTurn(game_map)
     end
-    
+
     return game_map
 end
 

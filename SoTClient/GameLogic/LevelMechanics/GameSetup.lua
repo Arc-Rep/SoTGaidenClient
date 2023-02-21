@@ -1,6 +1,7 @@
 local GameSetup = {}
 local missionmaputils = require "SoTClient.GameLogic.Scenarios.MissionMapUtils"
 local levelgen = require "SoTClient.GameLogic.Scenarios.LevelGen"
+local Infusion = require "SoTClient.GameLogic.MechanicsLogic.InfusionSystem.Infusion"
 
 function GameSetup.SetupPlayerUnits(unit_table, Squads)
     
@@ -9,12 +10,17 @@ function GameSetup.SetupPlayerUnits(unit_table, Squads)
     unit1["Status"] = "Player"
     unit1["Focus"] = "Manual"
     unit1["Team"] = 1
+    -- temp stats for unit1 (to be removed)
+    unit1["Str"] = 4
+    unit1["Def"] = 2
     unit1["ControlType"] = "Player"
     unit2["Actor"] = "Dylan"
     unit2["Status"] = "Follower"
     unit2["Focus"] = unit1
     unit2["Team"] = 1
     unit2["ControlType"] = "CPU-F"
+    unit2["Str"] = 3
+    unit2["Def"] = 1
 
     local unitenemy1 = {}
     unitenemy1["Actor"] = "Enemy"
@@ -22,6 +28,8 @@ function GameSetup.SetupPlayerUnits(unit_table, Squads)
     unitenemy1["Team"] = 0
     unitenemy1["ControlType"] = "CPU-H"
     unitenemy1["Focus"] = nil
+    unitenemy1["Str"] = 3
+    unitenemy1["Def"] = 1
     
     
     Squads[unit1["Team"]] = {}
@@ -40,16 +48,18 @@ function GameSetup.SetupPlayerInitPlacements(game_map, player_units)
     local last_placement_x, last_placement_y = game_map["entrance_x"], game_map["entrance_y"]
 
     for k, character in ipairs(player_units) do
+        character["Infusion"] = Infusion.setup()
         last_placement_x, last_placement_y = missionmaputils.FindClosestEmptySpace(game_map, last_placement_x, last_placement_y)
         game_map[last_placement_x][last_placement_y]["Actor"] = character
-        player_units[k]["x"] = last_placement_x
-        player_units[k]["y"] = last_placement_y
+        character["x"] = last_placement_x
+        character["y"] = last_placement_y
     end
 end
 
 function GameSetup.SetupEnemyInitPlacements(game_map, enemy_units, seed1, seed2)
 
     for index, enemy in ipairs(enemy_units) do
+        enemy["Infusion"] = Infusion.setup()
         local chosen_room = game_map["rooms"][levelgen.generateRandomBetween(1, #game_map["rooms"])]
         --print("Chosen room has " .. chosen_room["columns"] .. " and " .. chosen_room["rows"])
         enemy["x"], enemy["y"] = 
@@ -57,9 +67,8 @@ function GameSetup.SetupEnemyInitPlacements(game_map, enemy_units, seed1, seed2)
                 chosen_room["x"] + levelgen.generateRandomBetween(1, chosen_room["columns"]),
                 chosen_room["y"] + levelgen.generateRandomBetween(1, chosen_room["rows"]))
         game_map[enemy["x"]][enemy["y"]]["Actor"] = enemy
-        
     end
-
+    
 end
 
 return GameSetup
