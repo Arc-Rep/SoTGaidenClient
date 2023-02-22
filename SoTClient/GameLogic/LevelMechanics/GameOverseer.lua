@@ -28,10 +28,10 @@ function DoTurn(game_map)
     if(global_turns == -1) then
         global_turns = 1
         return
-    elseif(global_turns + 1 >= #Squads)
+    elseif(global_turns + 1 >= #Squads) then
         global_turns = -1
     else
-        global_turns += 1
+        global_turns = global_turns + 1
     end
 
     return DoTurn(game_map)
@@ -41,7 +41,7 @@ end
 function GameOverseer.SendCommand(game_map, command)
     local move_done = false
 
-    if global_turns != 1 then
+    if global_turns ~= 1 then
         return
     end
     --print("Player is in " .. Squads[1][1]["x"] .. " and " .. Squads[1][1]["y"])
