@@ -6,7 +6,6 @@ local BasicAttack = {}
 
 local base_attack_skill = {}
 
-base_attack_skill["Element"] = nil
 base_attack_skill["DmgBase"] = 10
 base_attack_skill["DmgIncrement"] = {"Str", 1.5}
 base_attack_skill["Element"] = {}
@@ -24,7 +23,6 @@ function BasicAttack.doAttack(game_map, atk_char, def_char)
 
     PerformSkill(game_map, atk_char, def_char, base_attack_skill)
 
-    return base_attack_damage
 end
 
 return BasicAttack

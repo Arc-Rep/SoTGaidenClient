@@ -13,6 +13,7 @@ function GameSetup.SetupPlayerUnits(unit_table, Squads)
     -- temp stats for unit1 (to be removed)
     unit1["Str"] = 4
     unit1["Def"] = 2
+    unit1["currentHP"] = 30
     unit1["ControlType"] = "Player"
     unit2["Actor"] = "Dylan"
     unit2["Status"] = "Follower"
@@ -21,6 +22,7 @@ function GameSetup.SetupPlayerUnits(unit_table, Squads)
     unit2["ControlType"] = "CPU-F"
     unit2["Str"] = 3
     unit2["Def"] = 1
+    unit2["currentHP"] = 30
 
     local unitenemy1 = {}
     unitenemy1["Actor"] = "Enemy"
@@ -30,6 +32,7 @@ function GameSetup.SetupPlayerUnits(unit_table, Squads)
     unitenemy1["Focus"] = nil
     unitenemy1["Str"] = 3
     unitenemy1["Def"] = 1
+    unitenemy1["currentHP"] = 30
     
     
     Squads[unit1["Team"]] = {}

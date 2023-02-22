@@ -11,6 +11,7 @@ local UnitTable = "SoTClient.GameLogic.CharacterLogic.UnitBase.UnitTable.lua"
 
 local unit_table = {}
 local Squads = {}
+local squad_team_num = 0
 
 local LocalBattles = {}
 
@@ -20,18 +21,17 @@ end
 
 function DoTurn(game_map)
     for char_index, char in ipairs(Squads[global_turns]) do
-        if char["ControlType"] ~= "Player" and char["currentHP"] ~= 0 then
+        if char["ControlType"] ~= "Player" and char["currentHP"] > 0 then
             CharAction.DoCharAction(game_map, unit_table, char)
         end
     end
 
-    if(global_turns == -1) then
-        global_turns = 1
+    global_turns = global_turns + 1
+
+    if (global_turns == 1) then
         return
-    elseif(global_turns + 1 >= #Squads) then
-        global_turns = -1
-    else
-        global_turns = global_turns + 1
+    elseif(global_turns >= squad_team_num) then
+        global_turns = 0
     end
 
     return DoTurn(game_map)
@@ -71,7 +71,8 @@ function GameOverseer.StartGame(MapData, player_squads, team_squads, seed1, seed
     MapData.generateMap(0, seed1, seed2, 0)
     GameSetup.SetupPlayerUnits(unit_table, Squads)
     GameSetup.SetupPlayerInitPlacements(MapData.GetMap(), Squads[1])
-    GameSetup.SetupEnemyInitPlacements(MapData.GetMap(), Squads[-1], seed1, seed2)
+    GameSetup.SetupEnemyInitPlacements(MapData.GetMap(), Squads[0], seed1, seed2)
+    squad_team_num = 2
     global_turns = 1
 end
 
