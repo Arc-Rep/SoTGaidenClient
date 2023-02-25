@@ -99,7 +99,9 @@ end
 
 function CharAction.DoCharAction(map, unit_list, char)
 
-    CharAction.CheckFocusExists(char)
+    if(char["Focus"] ~= nil) then
+        CharAction.CheckFocusExists(char)
+    end
 
     if(char["Team"] == 0) then
         BehaviourHandler_Enemy(map, unit_list, char)
