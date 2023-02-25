@@ -1,6 +1,10 @@
 local MissionMapUtils = {}
 local math = require "math"
 
+function MissionMapUtils.CheckIfDead(char)
+    return (char["x"] == nil or char["y"] == nil)
+end
+
 function MissionMapUtils.CheckIfEnemy(char1, char2)
     return (char1["Team"] > 0) ~= (char2["Team"] > 0)
 end
@@ -102,7 +106,7 @@ function MissionMapUtils.CheckHittableEnemies(game_map, char, char_list)
     local hittable_enemies = {}
     
     for index, other_char in ipairs(char_list) do
-        if(MissionMapUtils.CheckIfEnemy(char, other_char) == true) then
+        if(MissionMapUtils.CheckIfEnemy(char, other_char) == true and MissionMapUtils.CheckIfDead(other_char) == false) then
             if(MissionMapUtils.CheckDirectWalkDistance(char["x"], char["y"], other_char["x"], other_char["y"]) == 1) then
                 table.insert(hittable_enemies, other_char)
             end

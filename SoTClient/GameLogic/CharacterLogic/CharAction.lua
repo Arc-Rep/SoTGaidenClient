@@ -90,7 +90,17 @@ function CharAction.PlayerMoveEvent(game_map, char, m_up_down, m_left_right)
     return CharAction.DoMovement(game_map, char, m_up_down, m_left_right)
 end
 
-function CharAction.DoCharAction(map, unit_list,char)
+function CharAction.CheckFocusExists(unit)
+    if(missionmaputils.CheckIfDead(unit["Focus"]) == true) then
+        unit["Focus"] = nil
+        unit["Status"] = "Standby"
+    end
+end
+
+function CharAction.DoCharAction(map, unit_list, char)
+
+    CharAction.CheckFocusExists(char)
+
     if(char["Team"] == 0) then
         BehaviourHandler_Enemy(map, unit_list, char)
     else
