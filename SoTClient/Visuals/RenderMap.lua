@@ -145,5 +145,8 @@ function RenderMap.UpdateTilemap(map)
     return tilemap
 end
 
+function RenderMap.ShowSkillRangeOverlay(map, char, skill)
+
+end
 
 return RenderMap

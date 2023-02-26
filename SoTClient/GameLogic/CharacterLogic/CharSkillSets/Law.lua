@@ -2,6 +2,17 @@ local Law = {}
 
 local DEFAULT_STREAK_NUM = 3
 
+local function PrepareMirrorShift(skill, modifiers)
+    local mirror_shift = {}
+
+    mirror_shift["Focus"]           = "Enemy"
+    mirror_shift["Element"]         = {}
+    mirror_shift["Range"]           = 4
+    mirror_shift["TargetType"]      = "Omni"
+    mirror_shift["FocusType"]       = "Enemy"
+
+end
+
 local function PrepareStreakElement(streak, options, targets_left)
     local streak_elem = {}
 
@@ -30,7 +41,7 @@ end
 local function PrepareDivineStreak(skill, modifiers)
     local streak = {}
 
-    PrepareStreakElement(streak, modifiers)
+    PrepareStreakElement(streak, modifiers, DEFAULT_STREAK_NUM)
 
     skill["Data"] = streak
     skill["Modifiers"] = modifiers
@@ -62,7 +73,6 @@ local function PrepareHolyExtermination(skill, modifiers)
     holy_extermination["Focus"]         = "Enemy"
     holy_extermination["Element"]       = {"Light"}
     holy_extermination["TargetType"]    = "Self"
-    holy_extermination["FocusType"]     = "NULL"
     holy_extermination["DmgBase"]       = 20
     holy_extermination["AuraRadius"]    = 2
     holy_extermination["AuraType"]      = "Omni"
@@ -76,12 +86,19 @@ function InitializeChar(char, options)
 
     local skill_1, skill_2, skill_3, ultimate = {}, {}, {}, {}
 
+    PrepareDivineStreak(skill_1, {})
     skill_1["Name"]     = "Divine Streak"
+
+    PrepareBlindingWisp(skill_2, {})
     skill_2["Name"]     = "Blinding Wisp"
+    
+    PrepareHolyExtermination(skill_3, {})
     skill_3["Name"]     = "Holy Extermination"
+
+    PrepareMirrorShift(ultimate, {})
     ultimate["Name"]    = "Mirror Shift"
 
-    PrepareDivineStreak(skill_1, options["Skill1"])
+    --PrepareDivineStreak(skill_1, options["Skill1"])
 
     char["Skill1"] = skill_1
     char["Skill2"] = skill_2

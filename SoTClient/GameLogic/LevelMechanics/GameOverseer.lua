@@ -5,6 +5,7 @@ local GameOverseer = {}
 local global_turns = 1
 local GameSetup = require "SoTClient.GameLogic.LevelMechanics.GameSetup"
 local CharAction = require "SoTClient.GameLogic.CharacterLogic.CharAction"
+local BattleLogic = require "SoTClient.GameLogic.MechanicsLogic.BattleCalcs.BattleLogic"
 
 local missionmaputils = require "SoTClient.GameLogic.Scenarios.MissionMapUtils"
 local UnitTable = "SoTClient.GameLogic.CharacterLogic.UnitBase.UnitTable.lua"
@@ -14,6 +15,7 @@ local Squads = {}
 local squad_team_num = 0
 
 local LocalBattles = {}
+
 
 function GameOverseer.getPlayerCharStats(game_map)
     return Squads[1][1]
@@ -58,6 +60,14 @@ function GameOverseer.SendCommand(game_map, command)
         move_done = CharAction.PlayerMoveEvent(game_map, Squads[1][1], -1, 0)
     elseif (command == "pressRight") then
         move_done = CharAction.PlayerMoveEvent(game_map, Squads[1][1], 1, 0)
+    elseif (command == "pressSkill1") then
+        move_done = PerformSkill(game_map, Squads[1][1], command["Target"], Squads[1][1]["Skill1"])
+    elseif (command == "pressSkill2") then
+        move_done = PerformSkill(game_map, Squads[1][1], command["Target"], Squads[1][1]["Skill2"])
+    elseif (command == "pressSkill3") then
+        move_done = PerformSkill(game_map, Squads[1][1], command["Target"], Squads[1][1]["Skill3"])
+    elseif (command == "pressSkill4") then
+        move_done = PerformSkill(game_map, Squads[1][1], command["Target"], Squads[1][1]["Skill4"])
     end
 
     if(move_done == true) then
