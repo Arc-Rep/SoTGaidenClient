@@ -2,6 +2,7 @@ local GameSetup = {}
 local missionmaputils = require "SoTClient.GameLogic.Scenarios.MissionMapUtils"
 local levelgen = require "SoTClient.GameLogic.Scenarios.LevelGen"
 local Infusion = require "SoTClient.GameLogic.MechanicsLogic.InfusionSystem.Infusion"
+local Law_SkillSet = require "SoTClient.GameLogic.CharacterLogic.CharSkillSets.Law"
 
 function GameSetup.SetupPlayerUnits(unit_table, Squads)
     
@@ -10,6 +11,7 @@ function GameSetup.SetupPlayerUnits(unit_table, Squads)
     unit1["Status"] = "Player"
     unit1["Focus"] = "Manual"
     unit1["Team"] = 1
+    Law_SkillSet.InitializeChar(unit1, nil)
     -- temp stats for unit1 (to be removed)
     unit1["Str"] = 4
     unit1["Def"] = 2

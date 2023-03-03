@@ -8,6 +8,8 @@ local ScreenInfo = require "SoTClient.Visuals.ScreenInfo"
 local visual_tile_width, visual_tile_height
 
 local tilemap = {}
+local skill_tilemap_area = {}
+
 local RenderSurface = nil
 
 function RenderMap.SetCamera(map, focus, surface)
@@ -43,6 +45,7 @@ function ClearColumn(column, start_x, end_x)
         end
     end
 end
+
 
 function RenderMap.UpdateTilemap(map)
 
@@ -96,7 +99,7 @@ function RenderMap.UpdateTilemap(map)
                             tilemap[tile_x][tile_y]:setFillColor(0.5)
                             tilemap[tile_x][tile_y]:setStrokeColor(1, 0, 0)
                             tilemap[tile_x][tile_y]["Actor"] = nil
-                        end 
+                        end
                     else
                         tilemap[tile_x][tile_y] = display.newRect(
                             ((-Camera.getStartTileX() + tile_x) - Camera.getDeviationX()) * Camera.getRealTileSize(),
@@ -145,8 +148,30 @@ function RenderMap.UpdateTilemap(map)
     return tilemap
 end
 
-function RenderMap.ShowSkillRangeOverlay(map, char, skill)
+function RenderMap.ShowSkillRangeOverlay(map, skill_tile_list)
 
+    local skill_tile_idx = 1
+    for tile_idx in skill_tile_list do
+        skill_tilemap_area[skill_tile_idx] = display.newRect(
+            ((-Camera.getStartTileX() + tile_idx["x"]) - Camera.getDeviationX()) * Camera.getRealTileSize(),
+            ((-Camera.getStartTileY() + tile_idx["y"]) - Camera.getDeviationY()) * Camera.getRealTileSize(),
+            Camera.getRealTileSize(),
+            Camera.getRealTileSize()
+        )
+
+        skill_tilemap_area.strokeWidth = 3
+        skill_tilemap_area:setFillColor(0.2)
+        skill_tilemap_area:setStrokeColor(0, 0.5, 0,5)
+        RenderSurface:insert(skill_tilemap_area)
+    end
+
+end
+
+function RenderMap.ClearSkillRangeOverlay()
+    for index, value in ipairs(skill_tilemap_area) do
+        skill_tilemap_area:removeSelf()
+        skill_tilemap_area = nil
+    end
 end
 
 return RenderMap

@@ -21,14 +21,16 @@ function GetSkillMapRange(map, atk_char, skill)
     
     for x = -skill["Range"], skill["Range"], 1 do
         for y = -skill["Range"], skill["Range"], 1 do
-            if(x == y and skill["TargetType"] == "Diagonal" and map["Tile"] == 1) then
-                table.insert(skill_range_tile_list, {x = x, y = y})
-            elseif(x ~= 0 and y == 0 and ((skill["TargetType"] == "Horizontal" or skill["TargetType"] == "Rook"))) then
-                table.insert(skill_range_tile_list, {x = x, y = y})
-            elseif(x == 0 and y ~= 0 and ((skill["TargetType"] == "Vertical" or skill["TargetType"] == "Rook"))) then
-                table.insert(skill_range_tile_list, {x = x, y = y})
-            elseif(math.abs(x) + math.abs(y) <= skill["Range"] and skill["TargetType"] == "Omni") then
-                table.insert(skill_range_tile_list, {x = x, y = y})
+            if(map["Tile"] == 1) then
+                if(x == y and skill["TargetType"] == "Diagonal") then
+                    table.insert(skill_range_tile_list, {x = x, y = y})
+                elseif(x ~= 0 and y == 0 and ((skill["TargetType"] == "Horizontal" or skill["TargetType"] == "Rook"))) then
+                    table.insert(skill_range_tile_list, {x = x, y = y})
+                elseif(x == 0 and y ~= 0 and ((skill["TargetType"] == "Vertical" or skill["TargetType"] == "Rook"))) then
+                    table.insert(skill_range_tile_list, {x = x, y = y})
+                elseif(math.abs(x) + math.abs(y) <= skill["Range"] and skill["TargetType"] == "Omni") then
+                    table.insert(skill_range_tile_list, {x = x, y = y})
+                end
             end
         end
     end

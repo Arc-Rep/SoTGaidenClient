@@ -16,6 +16,9 @@ local DpadUI = display.newGroup()
 local abilityW = display.contentWidth/7
 local abilityH = display.contentHeight/14
 
+-- UI status registers
+local skill_range_showing = false
+
 local hpoptions = {
     width = 110,
     height = 73,
@@ -86,7 +89,21 @@ end
 
 
 local function tapListener(event)
-    print(event.type)
+    if(last_click + 300 > system.getTimer()) then
+		return false
+	end
+    if(skill_range_showing == false) then
+        if(event.y < display.contentHeight/100+40 + abilityH) then
+            GameOverseer.SendCommand(GetGameMap(), "pressSkill1")
+        elseif (event.y < display.contentHeight/100*10+50 + abilityH) then
+            GameOverseer.SendCommand(GetGameMap(), "pressSkill2")
+        elseif (event.y < display.contentHeight/100*20+50 + abilityH) then
+            GameOverseer.SendCommand(GetGameMap(), "pressSkill3")
+        else
+            GameOverseer.SendCommand(GetGameMap(), "pressSkill4")
+        end
+        --skill_range_showing = true
+    end
 end
 
 function CombatUI.createPlayerUI()

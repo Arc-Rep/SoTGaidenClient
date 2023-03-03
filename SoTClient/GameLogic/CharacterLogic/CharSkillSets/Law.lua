@@ -2,8 +2,7 @@ local Law = {}
 
 local DEFAULT_STREAK_NUM = 3
 
-local function PrepareMirrorShift(skill, modifiers)
-    local mirror_shift = {}
+local function PrepareMirrorShift(mirror_shift, modifiers)
 
     mirror_shift["Focus"]           = "Enemy"
     mirror_shift["Element"]         = {}
@@ -29,7 +28,7 @@ local function PrepareStreakElement(streak, options, targets_left)
         streak_elem["SequenceCriteria"]  = {"SeekRange", 3}
     end
 
-    table.insert(streak, streak_elem, #streak + 1)
+    table.insert(streak, #streak + 1, streak_elem)
 
     if(targets_left ~= 1) then
         return PrepareStreakElement(streak, options, targets_left - 1)
@@ -38,17 +37,14 @@ local function PrepareStreakElement(streak, options, targets_left)
     return
 end
 
-local function PrepareDivineStreak(skill, modifiers)
-    local streak = {}
+local function PrepareDivineStreak(streak, modifiers)
 
     PrepareStreakElement(streak, modifiers, DEFAULT_STREAK_NUM)
 
-    skill["Data"] = streak
-    skill["Modifiers"] = modifiers
+    streak["Modifiers"] = modifiers
 end
 
-local function PrepareBlindingWisp(skill, modifiers)
-    local blinding_wisp = {}
+local function PrepareBlindingWisp(blinding_wisp, modifiers)
 
     blinding_wisp["Focus"]          = "Enemy"
     blinding_wisp["Element"]        = {"Light"}
@@ -62,13 +58,11 @@ local function PrepareBlindingWisp(skill, modifiers)
     blinding_wisp["DmgIncrement"]   = {"Mag", 0.8}
     blinding_wisp["CritMod"]        = {0.3}
 
-    skill["Data"] = blinding_wisp
-    skill["Modifiers"] = modifiers
-    
+    blinding_wisp["Modifiers"] = modifiers
+
 end
 
-local function PrepareHolyExtermination(skill, modifiers)
-    local holy_extermination = {}
+local function PrepareHolyExtermination(holy_extermination, modifiers)
 
     holy_extermination["Focus"]         = "Enemy"
     holy_extermination["Element"]       = {"Light"}
@@ -79,10 +73,11 @@ local function PrepareHolyExtermination(skill, modifiers)
     holy_extermination["AuraDmg"]       = 20
     holy_extermination["DmgIncrement"]  = {"Mag", 1}
     holy_extermination["CritMod"]       = {0.4}
+
 end
 
 
-function InitializeChar(char, options)
+function Law.InitializeChar(char, options)
 
     local skill_1, skill_2, skill_3, ultimate = {}, {}, {}, {}
 

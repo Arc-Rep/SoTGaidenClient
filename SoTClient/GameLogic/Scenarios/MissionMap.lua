@@ -12,6 +12,9 @@ local min_y, max_y = 30, 40
 local min_room_wall_size, max_room_wall_size = 3, 10
 local min_room_num, max_room_num = 4, 10
 
+function GetGameMap()
+    return map
+end
 
 local function SelectFarTile(x, y, size_x, size_y, dist)
     local select_x, select_y
