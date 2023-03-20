@@ -133,12 +133,11 @@ function RenderMap.UpdateTilemap(map)
                             tilemap[tile_x][tile_y].strokeWidth = 3
                             tilemap[tile_x][tile_y]:setFillColor(0.8)
                             tilemap[tile_x][tile_y]:setStrokeColor(0, 1, 1)
+
+                            print("Hero here")
+                            print(tile_x)
+                            print(tile_y)
                         end
-                        local n = display.newRect(1893.25, 1587.1640625, 64, 64)
-                        n.strokeWidth = 3
-                        n:setFillColor(0)
-                        n:setStrokeColor(1, 0, 0)
-                        RenderSurface:insert(n)
                         RenderSurface:insert(tilemap[tile_x][tile_y])
                     end
                 end
@@ -148,30 +147,39 @@ function RenderMap.UpdateTilemap(map)
     return tilemap
 end
 
-function RenderMap.ShowSkillRangeOverlay(map, skill_tile_list)
-
-    local skill_tile_idx = 1
-    for tile_idx in skill_tile_list do
-        skill_tilemap_area[skill_tile_idx] = display.newRect(
-            ((-Camera.getStartTileX() + tile_idx["x"]) - Camera.getDeviationX()) * Camera.getRealTileSize(),
-            ((-Camera.getStartTileY() + tile_idx["y"]) - Camera.getDeviationY()) * Camera.getRealTileSize(),
-            Camera.getRealTileSize(),
-            Camera.getRealTileSize()
-        )
-
-        skill_tilemap_area.strokeWidth = 3
-        skill_tilemap_area:setFillColor(0.2)
-        skill_tilemap_area:setStrokeColor(0, 0.5, 0,5)
-        RenderSurface:insert(skill_tilemap_area)
+function RenderMap.ClearSkillRangeOverlay(map)
+    while (#skill_tilemap_area ~= 0) do
+        tile = table.remove(skill_tilemap_area, 1)
+        tile:removeSelf()
+        tile = nil
     end
 
+    RenderMap.UpdateTilemap(map)
 end
 
-function RenderMap.ClearSkillRangeOverlay()
-    for index, value in ipairs(skill_tilemap_area) do
-        skill_tilemap_area:removeSelf()
-        skill_tilemap_area = nil
+function RenderMap.ShowSkillRangeOverlay(map, skill_tile_list, event_function)
+
+    RenderMap.ClearSkillRangeOverlay(map)
+
+    for _, tile in pairs(skill_tile_list) do
+        skill_tilemap_area[#skill_tilemap_area + 1] = 
+            display.newRect(
+                ((-Camera.getStartTileX() + tile["x"]) - Camera.getDeviationX()) * Camera.getRealTileSize(),
+                ((-Camera.getStartTileY() + tile["y"]) - Camera.getDeviationY()) * Camera.getRealTileSize(),
+                Camera.getRealTileSize(),
+                Camera.getRealTileSize()
+            )
+        
+        skill_tilemap_area[#skill_tilemap_area].strokeWidth = 4
+        skill_tilemap_area[#skill_tilemap_area]:setFillColor(0.2)
+        skill_tilemap_area[#skill_tilemap_area]:setStrokeColor(0, 0.5, 0,5)
+        --skill_tilemap_area[#skill_tilemap_area].alpha = 0.3
+
+        skill_tilemap_area[#skill_tilemap_area]:addEventListener("tap", event_function(tile["x"], tile["y"]))
+
+        RenderSurface:insert(skill_tilemap_area[#skill_tilemap_area])
     end
+
 end
 
 return RenderMap

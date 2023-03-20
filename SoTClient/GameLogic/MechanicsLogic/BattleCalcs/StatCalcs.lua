@@ -40,7 +40,7 @@ function DamageSkillCalculation(skill, atk_char, def_char)
         local elem_res = 0
 
         for i = 1, #skill["Element"], 1 do
-            elem_res = elem_res + def_char["elem_res"][skill["Element"]]
+            elem_res = elem_res + def_char["elem_res"][skill["Element"][i]]
         end
 
         elem_res = elem_res / #skill["Element"]

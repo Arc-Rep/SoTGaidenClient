@@ -73,7 +73,7 @@ function scene:create( event )
 
 	
 	GameOverseer.StartGame(MapData, nil, nil, seed1, seed2)
-	MapRender.SetCamera(MapData.GetMap(), GameOverseer.getPlayerCharStats(MapData.GetMap()), sceneGroup)
+	MapRender.SetCamera(MapData.GetMap(), GameOverseer.getPlayerCharStats(), sceneGroup)
 	--sceneGroup:addEventListener("touch", touchListener)
 
 	--CombatUI

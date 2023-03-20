@@ -58,23 +58,25 @@ local essenceprogressView = widget.newProgressView(
         isAnimated = true
     }
 )
+
+local active_skill = nil
 ---------------------------------------------------------------------------------
 local last_click = system.getTimer()
 local touchListener = function(event)
-	if(last_click + 300 > system.getTimer()) then
+	if (last_click + 300 > system.getTimer() or active_skill ~= nil) then
 		return false
 	end
 	last_click = system.getTimer()
     local x, y = event.x, event.y
-	if(x > 170 ) then
+	if (x > 170) then
 		print(MapData.GetMap()[1][1])
-		GameOverseer.SendCommand(MapData.GetMap(),"pressRight")
+		GameOverseer.SendCommand("pressRight")
 	elseif (x < 92) then
-		GameOverseer.SendCommand(MapData.GetMap(),"pressLeft")
+		GameOverseer.SendCommand("pressLeft")
 	elseif (y < 883) then
-		GameOverseer.SendCommand(MapData.GetMap(),"pressUp")
+		GameOverseer.SendCommand("pressUp")
 	elseif (y > 969) then
-		GameOverseer.SendCommand(MapData.GetMap(),"pressDown")
+		GameOverseer.SendCommand("pressDown")
 	end
 	MapRender.UpdateTilemap(MapData.GetMap())
 
@@ -87,22 +89,54 @@ local touchListener = function(event)
     return true
 end
 
+local function skill_performer(tile_x, tile_y)
+    return function(event)
+        if(last_click + 300 > system.getTimer()) then
+            return false
+        end
+
+        local click_result = GameOverseer.SendCommand(active_skill, tile_x, tile_y)
+
+        if(click_result == true) then
+            MapRender.ClearSkillRangeOverlay(GetGameMap())
+            active_skill = nil
+        end
+    end
+end
 
 local function tapListener(event)
     if(last_click + 300 > system.getTimer()) then
 		return false
 	end
+
+
     if(skill_range_showing == false) then
+
+        local skill_map, skill_clicked, temp_skill
+
         if(event.y < display.contentHeight/100+40 + abilityH) then
-            GameOverseer.SendCommand(GetGameMap(), "pressSkill1")
+            skill_clicked = "pressSkill1"
+            temp_skill    = "performSkill1"
         elseif (event.y < display.contentHeight/100*10+50 + abilityH) then
-            GameOverseer.SendCommand(GetGameMap(), "pressSkill2")
+            skill_clicked = "pressSkill2"
+            temp_skill    = "performSkill2"
         elseif (event.y < display.contentHeight/100*20+50 + abilityH) then
-            GameOverseer.SendCommand(GetGameMap(), "pressSkill3")
-        else
-            GameOverseer.SendCommand(GetGameMap(), "pressSkill4")
+            skill_clicked = "pressSkill3"
+            temp_skill    = "performSkill3"
+        else    
+            skill_clicked = "pressSkill4"
+            temp_skill    = "performSkill4"
         end
-        --skill_range_showing = true
+
+        if(temp_skill == active_skill) then
+            MapRender.ClearSkillRangeOverlay(GetGameMap())
+            active_skill = nil
+            return
+        end
+
+        active_skill = temp_skill
+        skill_map = GameOverseer.SendCommand(skill_clicked)
+        MapRender.ShowSkillRangeOverlay(GetGameMap(), skill_map, skill_performer)
     end
 end
 

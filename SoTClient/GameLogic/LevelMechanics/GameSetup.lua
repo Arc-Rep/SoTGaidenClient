@@ -14,6 +14,7 @@ function GameSetup.SetupPlayerUnits(unit_table, Squads)
     Law_SkillSet.InitializeChar(unit1, nil)
     -- temp stats for unit1 (to be removed)
     unit1["Str"] = 4
+    unit1["Mag"] = 6
     unit1["Def"] = 2
     unit1["currentHP"] = 30
     unit1["ControlType"] = "Player"
@@ -34,6 +35,9 @@ function GameSetup.SetupPlayerUnits(unit_table, Squads)
     unitenemy1["Focus"] = nil
     unitenemy1["Str"] = 3
     unitenemy1["Def"] = 1
+    unitenemy1["Res"] = 3
+    unitenemy1["elem_res"] = {}
+    unitenemy1["elem_res"]["Light"] = 0.3
     unitenemy1["currentHP"] = 30
     
     

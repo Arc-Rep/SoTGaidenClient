@@ -9,32 +9,31 @@ local function PrepareMirrorShift(mirror_shift, modifiers)
     mirror_shift["Range"]           = 4
     mirror_shift["TargetType"]      = "Omni"
     mirror_shift["FocusType"]       = "Enemy"
-
+    mirror_shift["DmgBase"]         = 12
+    mirror_shift["DmgIncrement"]   = {"Mag", 1.5}
 end
 
 local function PrepareStreakElement(streak, options, targets_left)
-    local streak_elem = {}
 
-    streak_elem["Focus"]             = "Enemy"
-    streak_elem["Element"]           = {"Light"}
-    streak_elem["Range"]             = 3
-    streak_elem["TargetType"]        = "Omni"
-    streak_elem["FocusType"]         = "Char"
-    streak_elem["AuraRadius"]        = 0
-    streak_elem["DmgBase"]           = 10 - (DEFAULT_STREAK_NUM - targets_left) * 2
-    streak_elem["DmgIncrement"]      = {"Mag", 0.5, "Skl", 0.2}
-    streak_elem["CritMod"]           = {0.2}
+    streak["Focus"]             = "Enemy"
+    streak["Element"]           = {"Light"}
+    streak["Range"]             = 3
+    streak["TargetType"]        = "Omni"
+    streak["FocusType"]         = "Char"
+    streak["AuraRadius"]        = 0
+    streak["DmgBase"]           = 10 - (DEFAULT_STREAK_NUM - targets_left) * 2
+    streak["DmgIncrement"]      = {"Mag", 0.5, "Skl", 0.2}
+    streak["CritMod"]           = {0.2}
     if(targets_left ~= 1) then 
-        streak_elem["SequenceCriteria"]  = {"SeekRange", 3}
+        streak["SequenceCriteria"]  = {"SeekRange", 3}
     end
-
-    table.insert(streak, #streak + 1, streak_elem)
 
     if(targets_left ~= 1) then
-        return PrepareStreakElement(streak, options, targets_left - 1)
+        streak["Next"] = {}
+        PrepareStreakElement(streak["Next"], options, targets_left - 1)
     end
 
-    return
+    return streak
 end
 
 local function PrepareDivineStreak(streak, modifiers)
@@ -67,6 +66,7 @@ local function PrepareHolyExtermination(holy_extermination, modifiers)
     holy_extermination["Focus"]         = "Enemy"
     holy_extermination["Element"]       = {"Light"}
     holy_extermination["TargetType"]    = "Self"
+    holy_extermination["Range"]         = 0
     holy_extermination["DmgBase"]       = 20
     holy_extermination["AuraRadius"]    = 2
     holy_extermination["AuraType"]      = "Omni"

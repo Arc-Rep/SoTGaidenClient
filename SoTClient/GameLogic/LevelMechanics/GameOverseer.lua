@@ -17,14 +17,14 @@ local squad_team_num = 0
 local LocalBattles = {}
 
 
-function GameOverseer.getPlayerCharStats(game_map)
+function GameOverseer.getPlayerCharStats()
     return Squads[1][1]
 end
 
-function DoTurn(game_map)
+function DoTurn()
     for char_index, char in ipairs(Squads[global_turns]) do
         if char["ControlType"] ~= "Player" and char["currentHP"] > 0 then
-            CharAction.DoCharAction(game_map, unit_table, char)
+            CharAction.DoCharAction(GetGameMap(), unit_table, char)
         end
     end
 
@@ -36,12 +36,12 @@ function DoTurn(game_map)
         global_turns = 0
     end
 
-    return DoTurn(game_map)
+    return DoTurn()
 
 end
 
-function GameOverseer.SendCommand(game_map, command)
-    local move_done = false
+function GameOverseer.SendCommand(command, focus_x, focus_y)
+    local move_done, skill_activated = false, nil
 
     if global_turns ~= 1 then
         return
@@ -52,40 +52,64 @@ function GameOverseer.SendCommand(game_map, command)
     --print("Tile left is " .. game_map[Squads[1][1]["x"] - 1][Squads[1][1]["y"]]["Tile"])
     --print("Tile right is " .. game_map[Squads[1][1]["x"] + 1][Squads[1][1]["y"]]["Tile"])
 
+    print(focus_x)
+    print(focus_y)
+
     if(command == "pressUp") then
-        move_done = CharAction.PlayerMoveEvent(game_map, Squads[1][1], 0, -1)
+        move_done = CharAction.PlayerMoveEvent(GetGameMap(), Squads[1][1], 0, -1)
     elseif (command == "pressDown") then
-        move_done = CharAction.PlayerMoveEvent(game_map, Squads[1][1], 0, 1)
+        move_done = CharAction.PlayerMoveEvent(GetGameMap(), Squads[1][1], 0, 1)
     elseif (command == "pressLeft") then
-        move_done = CharAction.PlayerMoveEvent(game_map, Squads[1][1], -1, 0)
+        move_done = CharAction.PlayerMoveEvent(GetGameMap(), Squads[1][1], -1, 0)
     elseif (command == "pressRight") then
-        move_done = CharAction.PlayerMoveEvent(game_map, Squads[1][1], 1, 0)
+        move_done = CharAction.PlayerMoveEvent(GetGameMap(), Squads[1][1], 1, 0)
     elseif (command == "pressSkill1") then
         --move_done = PerformSkill(game_map, Squads[1][1], command["Target"], Squads[1][1]["Skill1"])
-        return GetSkillMapRange(game_map, Squads[1][1], Squads[1][1]["Skill1"])
+        return GetSkillMapRange(GetGameMap(), Squads[1][1], Squads[1][1]["Skill1"])
     elseif (command == "pressSkill2") then
         --move_done = PerformSkill(game_map, Squads[1][1], command["Target"], Squads[1][1]["Skill2"])
-        return GetSkillMapRange(game_map, Squads[1][1], Squads[1][1]["Skill2"])
+        return GetSkillMapRange(GetGameMap(), Squads[1][1], Squads[1][1]["Skill2"])
     elseif (command == "pressSkill3") then
         --move_done = PerformSkill(game_map, Squads[1][1], command["Target"], Squads[1][1]["Skill3"])
-        return GetSkillMapRange(game_map, Squads[1][1], Squads[1][1]["Skill3"])
+        return GetSkillMapRange(GetGameMap(), Squads[1][1], Squads[1][1]["Skill3"])
     elseif (command == "pressSkill4") then
         --move_done = PerformSkill(game_map, Squads[1][1], command["Target"], Squads[1][1]["Skill4"])
-        return GetSkillMapRange(game_map, Squads[1][1], Squads[1][1]["Skill4"])
+        return GetSkillMapRange(GetGameMap(), Squads[1][1], Squads[1][1]["Skill4"])
+    elseif (command == "performSkill1") then
+        if(GetGameMap()[focus_x]["y"]["Actor"] ~= nil) then
+            skill_activated = "Skill1"
+        end
+    elseif (command == "performSkill2") then
+        if(GetGameMap()[focus_x][focus_y]["Actor"] ~= nil) then
+            skill_activated = "Skill2"
+        end
+    elseif (command == "performSkill3") then
+        if(GetGameMap()[focus_x][focus_y]["Actor"] ~= nil) then
+            skill_activated = "Skill3"
+        end
+    elseif (command == "performSkill4") then
+        if(GetGameMap()[focus_x][focus_y]["Actor"] ~= nil) then
+            skill_activated = "Skill4"
+        end
+    end
+
+    if(skill_activated ~= nil) then
+        PerformSkill(GetGameMap(), Squads[1][1], GetGameMap()[focus_x][focus_y]["Actor"], Squads[1][1][skill_activated])
+        move_done = true
     end
 
     if(move_done == true) then
-        DoTurn(game_map)
+        DoTurn()
     end
-
-    return game_map
+    
+    return move_done
 end
 
 function GameOverseer.StartGame(MapData, player_squads, team_squads, seed1, seed2)
     MapData.generateMap(0, seed1, seed2, 0)
     GameSetup.SetupPlayerUnits(unit_table, Squads)
-    GameSetup.SetupPlayerInitPlacements(MapData.GetMap(), Squads[1])
-    GameSetup.SetupEnemyInitPlacements(MapData.GetMap(), Squads[0], seed1, seed2)
+    GameSetup.SetupPlayerInitPlacements(GetGameMap(), Squads[1])
+    GameSetup.SetupEnemyInitPlacements(GetGameMap(), Squads[0], seed1, seed2)
     squad_team_num = 2
     global_turns = 1
 end

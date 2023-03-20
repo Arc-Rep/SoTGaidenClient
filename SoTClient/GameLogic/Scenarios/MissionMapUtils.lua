@@ -29,6 +29,42 @@ function MissionMapUtils.checkEmptySpace(map, x, y)
     return false
 end
 
+-- Provided a range, it returns the in-bound section of such range 
+function MissionMapUtils.CheckValidMapRange(map, x_start, y_start, x_end, y_end)
+
+    if(x_start > map["x"] or y_start > map["y"] or x_end < 1 or y_end < 1) then
+        return nil, nil, nil, nil
+    end
+
+    local x_real_start, y_real_start, x_real_end, y_real_end
+
+    if (x_start < 1) then
+        x_real_start = 1
+    else 
+        x_real_start = x_start
+    end
+
+    if (y_start < 1) then
+        y_real_start = 1
+    else
+        y_real_start = y_start
+    end
+
+    if(x_end > map["x"]) then
+        x_real_end = map["x"]
+    else
+        x_real_end = x_end
+    end
+
+    if(y_end > map["y"]) then
+        y_real_end = map["y"]
+    else
+        y_real_end = y_end
+    end
+
+    return x_real_start, y_real_start, x_real_end, y_real_end
+end
+
 function MissionMapUtils.CheckWallCollision(map, x, y, move_x, move_y)
 
     if(move_x ~= 0 and map[x + move_x][y]["Tile"] ~= 1) then
