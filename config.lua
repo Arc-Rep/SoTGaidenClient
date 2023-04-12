@@ -3,9 +3,12 @@
 -- https://docs.coronalabs.com/guide/basics/configSettings
 --
 
-local display_ratio = display.pixelHeight/display.pixelWidth
+--local display_ratio = display.pixelHeight/display.pixelWidth
+
+-- Height and Width are inversed in landscape mode (aka display ratio is to the power of -1)
+local screen_height = 320
 local screen_width = 480
-local screen_height = display_ratio * screen_width
+
 
 application =
 {
@@ -13,9 +16,9 @@ application =
 	{
 		width = screen_width,
 		height = screen_height, 
-		scale = "letterbox",
+		scale = "adaptive",
 		fps = 60,
-		
+		--yAlign = "center", xAlign = "center",
 		--[[
 		imageSuffix =
 		{

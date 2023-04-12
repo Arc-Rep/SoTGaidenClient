@@ -66,7 +66,6 @@ function Dialog.setFullText(options)
     timer.cancel(delayTimer)
     letterLabel = display.newText(options)
     letterLabel:setFillColor( 1, 1, 1 )
-    letterLabel:rotate(90)
 end
 
 function Dialog.getStringTime(aSentence)
@@ -77,7 +76,6 @@ end
 function Dialog.ShowBackground(charDir)
     myImage = display.newImage(charDir)
     myImage:translate(500,500)
-    myImage:rotate(90)
     myImage.alpha = 0
     transition.to(myImage, { time=2000, alpha=1.0} )
 end
@@ -93,7 +91,6 @@ function Dialog.ShowCharOnLeft(options)
     leftchardir = options.character
     leftcharacter = display.newImage(options.character)
     leftcharacter:translate(300,300) --Global Values (char always same position)
-    leftcharacter:rotate(90)
     leftcharacter.alpha = 0
     transition.to(leftcharacter, { time=500, alpha=1.0} )
     table.insert(leftchararray,1,leftcharacter)
@@ -118,7 +115,6 @@ function Dialog.ShowCharOnRight(options)
     rightcharacter = display.newImage(options.character)
     rightcharacter:translate(300,800) --Global Values (char always same position)
     rightcharacter.xScale = -1
-    rightcharacter:rotate(90)
     rightcharacter.alpha = 0
     transition.to(rightcharacter, { time=500, alpha=1.0} )
     table.insert(rightchararray,1,rightcharacter)
@@ -140,7 +136,6 @@ function Dialog.TextBox(options)
 
     letterLabel = display.newText( options )
     letterLabel:setFillColor( 1, 1, 1 )
-    letterLabel:rotate(90)
     setText(letterLabel.text)
 
     if options.position == "left" then

@@ -12,49 +12,43 @@ local PlayerUI = display.newGroup()
 local AbilityUI = display.newGroup()
 local DpadUI = display.newGroup()
 
--- CREATE DEFAULT UI OPTIONS
-local abilityW = display.contentWidth/7
-local abilityH = display.contentHeight/14
-
 -- UI status registers
-local skill_range_showing = false
-
 local hpoptions = {
-    width = 110,
-    height = 73,
+    width = 60,
+    height = 20,
     numFrames = 3,
-    sheetContentWidth = 349,
-    sheetContentHeight = 73
+    sheetContentWidth = 1000,
+    sheetContentHeight = 20
 }
 local hpprogressSheet = graphics.newImageSheet( "GameResources/ToBeRemoved/health-bar.png", hpoptions )
 local hpprogressView = widget.newProgressView(
     {
         sheet = hpprogressSheet,
         fillWidth = 32,
-        fillHeight = 32,
-        left = 305,
-        top = 320,
-        width = 270,
+        fillHeight = 25,
+        left = 180,
+        top = 23,
+        width = 21,
         isAnimated = true
     }
 )
 
 local essenceoptions = {
-    width = 110,
-    height = 73,
+    width = 60,
+    height = 20,
     numFrames = 3,
-    sheetContentWidth = 349,
-    sheetContentHeight = 73
+    sheetContentWidth = 1000,
+    sheetContentHeight = 20
 }
 local essenceprogressSheet = graphics.newImageSheet( "GameResources/ToBeRemoved/mana-bar.png", essenceoptions )
 local essenceprogressView = widget.newProgressView(
     {
         sheet = essenceprogressSheet,
         fillWidth = 32,
-        fillHeight = 32,
-        left = 245,
-        top = 320,
-        width = 270,
+        fillHeight = 25,
+        left = 180,
+        top = 75,
+        width = 215,
         isAnimated = true
     }
 )
@@ -62,21 +56,31 @@ local essenceprogressView = widget.newProgressView(
 local active_skill = nil
 ---------------------------------------------------------------------------------
 local last_click = system.getTimer()
-local touchListener = function(event)
+local touchListener = function(event, dpad)
 	if (last_click + 300 > system.getTimer() or active_skill ~= nil) then
 		return false
 	end
 	last_click = system.getTimer()
-    local x, y = event.x, event.y
-	if (x > 170) then
-		print(MapData.GetMap()[1][1])
-		GameOverseer.SendCommand("pressRight")
-	elseif (x < 92) then
-		GameOverseer.SendCommand("pressLeft")
-	elseif (y < 883) then
-		GameOverseer.SendCommand("pressUp")
-	elseif (y > 969) then
-		GameOverseer.SendCommand("pressDown")
+    local relative_x, relative_y = dpad.x - event.x, dpad.y - event.y
+
+	if (relative_x > relative_y) then
+        if (relative_x + relative_y < dpad.contentWidth) then
+		    GameOverseer.SendCommand("pressDown")
+        elseif (relative_x + relative_y > dpad.contentWidth) then
+            GameOverseer.SendCommand("pressLeft")
+        else
+            return false
+        end
+	elseif (relative_x < relative_y) then
+        if (relative_x + relative_y < dpad.contentWidth) then
+		    GameOverseer.SendCommand("pressRight")
+        elseif (relative_x + relative_y > dpad.contentWidth) then
+            GameOverseer.SendCommand("pressUp")
+        else
+            return false
+        end
+    else
+        return false
 	end
 	MapRender.UpdateTilemap(MapData.GetMap())
 
@@ -104,124 +108,140 @@ local function skill_performer(tile_x, tile_y)
     end
 end
 
-local function tapListener(event)
+
+local function skillTapListener(event, skill) 
     if(last_click + 300 > system.getTimer()) then
 		return false
 	end
 
+    local skill_map, skill_clicked, temp_skill
 
-    if(skill_range_showing == false) then
+    skill_clicked = "press" .. skill
+    temp_skill = "perform" .. skill
 
-        local skill_map, skill_clicked, temp_skill
-
-        if(event.y < display.contentHeight/100+40 + abilityH) then
-            skill_clicked = "pressSkill1"
-            temp_skill    = "performSkill1"
-        elseif (event.y < display.contentHeight/100*10+50 + abilityH) then
-            skill_clicked = "pressSkill2"
-            temp_skill    = "performSkill2"
-        elseif (event.y < display.contentHeight/100*20+50 + abilityH) then
-            skill_clicked = "pressSkill3"
-            temp_skill    = "performSkill3"
-        else    
-            skill_clicked = "pressSkill4"
-            temp_skill    = "performSkill4"
-        end
-
-        if(temp_skill == active_skill) then
-            MapRender.ClearSkillRangeOverlay(GetGameMap())
-            active_skill = nil
-            return
-        end
-
-        active_skill = temp_skill
-        skill_map = GameOverseer.SendCommand(skill_clicked)
-        MapRender.ShowSkillRangeOverlay(GetGameMap(), skill_map, skill_performer)
+    if(temp_skill == active_skill) then
+        MapRender.ClearSkillRangeOverlay(GetGameMap())
+        active_skill = nil
+        return
     end
+
+    active_skill = temp_skill
+    skill_map = GameOverseer.SendCommand(skill_clicked)
+    MapRender.ShowSkillRangeOverlay(GetGameMap(), skill_map, skill_performer)
 end
 
 function CombatUI.createPlayerUI()
    
     --ABILITIES UI
-    local UIAbilitiesPanel = display.newRect(display.contentWidth/7.7,display.contentHeight/5,display.contentWidth/4, display.contentHeight/2.5)
+    local AbilityPanelW = display.contentWidth * 0.40
+    local AbilityPanelH = display.contentHeight * 0.20
+    local UIAbilitiesPanel = display.newRect(0, display.contentHeight, AbilityPanelW, AbilityPanelH)
+    UIAbilitiesPanel.anchorX = 0
+    UIAbilitiesPanel.anchorY = 1
     UIAbilitiesPanel.alpha = 0.5
-    local square1 = display.newRect(display.contentWidth/7.7,display.contentHeight/100+40,abilityW, abilityH)
-    local square2 = display.newRect(display.contentWidth/7.7,display.contentHeight/100*10+50,abilityW, abilityH)
-    local square3 = display.newRect(display.contentWidth/7.7,display.contentHeight/100*20+50,abilityW, abilityH)
-    local square4 = display.newRect(display.contentWidth/7.7,display.contentHeight/100*30+50,abilityW, abilityH)
-    square1:addEventListener("tap",tapListener)
-    square2:addEventListener("tap",tapListener)
-    square3:addEventListener("tap",tapListener)
-    square4:addEventListener("tap",tapListener)
-    AbilityUI:insert(square1)
-    AbilityUI:insert(square2)
-    AbilityUI:insert(square3)
-    AbilityUI:insert(square4)
+    -- CREATE DEFAULT UI OPTIONS
+    -- Each ability block occupies 1/5 of the Panel width.
+    -- Last 1/5 is for spacing
+    local AbilityW = AbilityPanelW/5 
+    -- Each ability block occupies 80% of the panel's height
+    local AbilityH = AbilityPanelH * 0.8
+    local AbilitySpacingW = AbilityW/5
+    local AbilityY = display.contentHeight - AbilityH/10
+    local AbilitySquares = {}
+    for square_idx = 1, 4, 1 do
+        AbilitySquares[square_idx] = 
+            display.newRect(AbilitySpacingW * square_idx + AbilityW * (square_idx - 1), AbilityY, AbilityW, AbilityH)
+        AbilitySquares[square_idx].anchorX = 0
+        AbilitySquares[square_idx].anchorY = 1
+        AbilitySquares[square_idx]:addEventListener("tap",function(event) skillTapListener(event, "Skill" .. square_idx) end)
+        AbilityUI:insert(AbilitySquares[square_idx])
+    end
     AbilityUI:insert(UIAbilitiesPanel)
 
     ---------------------------------------------------------------------------------
 
     --PLAYER UI
-    local UIPlayerPanel = display.newRect(display.contentWidth/1.14,display.contentHeight/4,display.contentWidth/4, display.contentHeight/2)
+    local UIPlayerPanelW = display.contentWidth * 0.50
+    local UIPlayerPanelH = display.contentHeight * 0.25
+    local UIPlayerPanel = display.newRect(0, 0, UIPlayerPanelW, UIPlayerPanelH)
     UIPlayerPanel.alpha = 0.5
     PlayerUI:insert(UIPlayerPanel)
     -- Create and position image to be masked
-    local portrait = display.newImageRect( "GameResources/ToBeRemoved/andre.png", 96, 128 )
-    portrait:rotate(90)
-    portrait:translate( display.contentWidth/1.14, display.contentHeight/20 )
+    local UIPlayerPortraitW = UIPlayerPanelH * 0.7
+    local UIPlayerPortraitH = UIPlayerPortraitW * 1.2
+    local UIPlayerPortrait = display.newImageRect( "GameResources/ToBeRemoved/andre.png", UIPlayerPortraitW, UIPlayerPortraitH)
+    local UIPlayerPortraitX = UIPlayerPanelW * 0.02
+    local UIPlayerPortraitY = UIPlayerPanelH * 0.08
+    UIPlayerPortrait:translate( UIPlayerPortraitX, UIPlayerPortraitY )
     -- Create mask and apply to image
     local mask = graphics.newMask( "GameResources/ToBeRemoved/circ_mask.png" )
-    portrait:setMask( mask )
+    UIPlayerPortrait:setMask( mask )
     -- Transform mask
-    portrait.maskScaleX, portrait.maskScaleY = 0.3,0.3
-    PlayerUI:insert(portrait)
+    UIPlayerPortrait.maskScaleX, UIPlayerPortrait.maskScaleY = 0.20,0.25
+    PlayerUI:insert(UIPlayerPortrait)
 
-    local portrait2 = display.newImageRect( "GameResources/ToBeRemoved/joao.png", 48, 69 )
-    portrait2:rotate(90)
-    portrait2:translate( display.contentWidth/1.04, display.contentHeight/8 )
+    -- UI Companion Variables
+    local UICompanionPanelW = UIPlayerPanelH * 0.5
+    local UICompanionPanelH = UICompanionPanelW
+    local UICompanionPanel1X = UIPlayerPortraitX + UIPlayerPortraitW
+    local UICompanionPanel1Y = -UIPlayerPortraitY
+    local UICompanionPanel1 = display.newImageRect( "GameResources/ToBeRemoved/joao.png", UICompanionPanelW, UICompanionPanelH )
+    UICompanionPanel1:translate( UICompanionPanel1X, UICompanionPanel1Y)
     local mask = graphics.newMask( "GameResources/ToBeRemoved/circ_mask.png" )
-    portrait2:setMask( mask )
-    portrait2.maskScaleX, portrait2.maskScaleY = 0.1,0.1
-    PlayerUI:insert(portrait2)
+    UICompanionPanel1:setMask( mask )
+    UICompanionPanel1.maskScaleX, UICompanionPanel1.maskScaleY = 0.08,0.1
+    PlayerUI:insert(UICompanionPanel1)
 
-    local portrait3 = display.newImageRect( "GameResources/ToBeRemoved/joao.png", 48, 69 )
-    portrait3:rotate(90)
-    portrait3:translate( display.contentWidth/1.14, display.contentHeight/7 )
-    local mask = graphics.newMask( "GameResources/ToBeRemoved/circ_mask.png" )
-    portrait3:setMask( mask )
-    portrait3.maskScaleX, portrait3.maskScaleY = 0.1,0.1
-    PlayerUI:insert(portrait3)
+    local UICompanionPanel2 = display.newImageRect( "GameResources/ToBeRemoved/joao.png", UICompanionPanelW, UICompanionPanelH )
+    local UICompanionPanel2X = UICompanionPanel1X
+    local UICompanionPanel2Y = UIPlayerPanelH - UIPlayerPortraitY
+    UICompanionPanel2.anchorY = 0.7
+    UICompanionPanel2:translate( UICompanionPanel2X, UICompanionPanel2Y )
+    UICompanionPanel2:setMask( mask )
+    UICompanionPanel2.maskScaleX, UICompanionPanel2.maskScaleY = 0.08,0.1
+    PlayerUI:insert(UICompanionPanel2)
 
-    local portrait4 = display.newImageRect( "GameResources/ToBeRemoved/joao.png", 48, 69 )
-    portrait4:rotate(90)
-    portrait4:translate( display.contentWidth/1.27, display.contentHeight/8 )
-    local mask = graphics.newMask( "GameResources/ToBeRemoved/circ_mask.png" )
-    portrait4:setMask( mask )
-    portrait4.maskScaleX, portrait4.maskScaleY = 0.1,0.1
-    PlayerUI:insert(portrait4)
+    local UICompanionPanel3 = display.newImageRect( "GameResources/ToBeRemoved/joao.png", UICompanionPanelW, UICompanionPanelH )
+    local UICompanionPanel3X = UICompanionPanel1X + UICompanionPanelW * 0.50
+    local UICompanionPanel3Y = UIPlayerPanelH/2
+    UICompanionPanel3.anchorY = 0.5
+    UICompanionPanel3:translate( UICompanionPanel3X, UICompanionPanel3Y )
+    UICompanionPanel3:setMask( mask )
+    UICompanionPanel3.maskScaleX, UICompanionPanel3.maskScaleY = 0.08,0.1
+    PlayerUI:insert(UICompanionPanel3)
 
-    local hpText = display.newText( Player.currenthp.."/"..Player.maxhp.."HP", 467, 450, native.systemFont, 26 )
+    local hpTextX = UIPlayerPanelW * 0.98
+    local hpTextY = UIPlayerPanelH * 0.01
+    local hpText = display.newText( Player.currenthp.."/"..Player.maxhp.."HP", hpTextX, hpTextY, native.systemFont, 24 )
+    hpText.anchorX = 1
     hpText:setFillColor( 1, 0, 0 )
-    hpText:rotate(90)
-    hpprogressView:rotate(90)
     PlayerUI:insert(hpText)
+    
+    hpprogressView.width = UIPlayerPanelW * 0.5
+    hpprogressView.top   = UICompanionPanel3Y
+    hpprogressView.left  = UICompanionPanel3X + UICompanionPanelW*5
     PlayerUI:insert(hpprogressView)
-
-    local essenceText = display.newText( Player.currentessence.."/"..Player.maxessence.."AP", 410, 450, native.systemFont, 26 )
+    local essenceTextX = UIPlayerPanelW * 0.98
+    local essenceTextY = UIPlayerPanelH / 2
+    local essenceText = display.newText( Player.currentessence.."/"..Player.maxessence.."AP", essenceTextX, essenceTextY, native.systemFont, 24 )
     essenceText:setFillColor( 0, 0, 1 )
-    essenceText:rotate(90)
-    essenceprogressView:rotate(90)
+    essenceText.anchorX = 1
+    essenceText.anchorY = 0
     PlayerUI:insert(essenceText)
     PlayerUI:insert(essenceprogressView)
     ---------------------------------------------------------------------------------
 
     --DIRECTIONAL PAD
-    local dpad = display.newImage( "GameResources/ToBeRemoved/directionalpad.png" )
+    local dpad  = display.newImage( "GameResources/ToBeRemoved/directionalpad.png" )
     dpad.alpha = 0.5
-    dpad:translate( display.contentWidth/3.6, display.contentHeight/1.15 )
-    dpad:scale(0.5,0.5)
+    dpad:scale(0.35,0.35)
+    dpad.anchorX = 1
+    dpad.anchorY = 1
+    local dpadSpacingRatioX = 0.01
+    local dpadSpacingRatioY = 0.01
+    dpad:translate( display.contentWidth * (1 - dpadSpacingRatioX), display.contentHeight * (1 - dpadSpacingRatioY))
     DpadUI:insert(dpad)
-    DpadUI:addEventListener("tap", touchListener)
+    DpadUI:addEventListener("tap", function(event) touchListener(event, dpad) end)
 
     --GLOBAL UI
     UIGroup:insert(PlayerUI)

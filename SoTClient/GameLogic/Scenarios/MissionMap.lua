@@ -29,36 +29,34 @@ local function SelectFarTile(x, y, size_x, size_y, dist)
 end
 
 local function CheckRoomSuitability(room)
-    local upper_wall, left_wall, right_wall, down_wall = 0, 0, 0, 0
-    if(room["x"] > 1) then
-        left_wall = 1
+
+    if(room["x"] + room["rows"] > map["x"]) then
+        room["rows"] = map["x"] - room["x"]
+        if(room["rows"] < min_room_wall_size) then
+            return false
+        end
     end
 
-    if(room["x"] + room["columns"] < map["x"]) then
-        right_wall = 1
+    if(room["y"] + room["columns"] > map["y"]) then
+        room["columns"] = map["y"] - room["y"]
+        if(room["columns"] < min_room_wall_size) then
+            return false
+        end
     end
 
-    if(room["y"] > 1) then
-        upper_wall = 1
-    end
-
-    if(room["y"] + room["rows"] < map["y"]) then
-        down_wall = 1
-    end
-    for i = 1 - upper_wall, room["rows"] + down_wall, 1 do
-        for j = 1 - left_wall, room["columns"] + right_wall, 1 do
-            if map[room["x"] + (i-1)][room["y"] + (j-1)]["Tile"] ~= empty then
+    for i = room["x"], room["x"] + room["rows"], 1 do
+        for j = room["y"], room["y"] + room["columns"], 1 do
+            if map[i][j]["Tile"] ~= empty then
                 return false
             end
         end
     end
-
 end
 
 local function ParseRoomToMap(room, room_x, room_y)
     for i=1, room["rows"], 1 do
         for j=1, room["columns"], 1 do
-            map[room_x + (i-1)][room_y + (j-1)]["Tile"] = room[i][j]
+            map[room_x + i][room_y + j]["Tile"] = room[i][j]
         end
     end
 end
@@ -154,6 +152,7 @@ end
 
 local function ConnectRooms(room_1, room_2)
 
+    local tunnel = {}
     local room_1_center_x, room_1_center_y = room_1["x"] + math.floor(room_1["columns"]/2), room_1["y"] + math.floor(room_1["rows"]/2)
     local room_2_center_x, room_2_center_y = room_2["x"] + math.floor(room_2["columns"]/2), room_2["y"] + math.floor(room_2["rows"]/2)
     local room_x_diff, room_y_diff = room_1_center_x - room_2_center_x, room_1_center_y - room_2_center_y
@@ -175,14 +174,18 @@ local function ConnectRooms(room_1, room_2)
     for i=1, math.abs(room_x_diff), 1 do
         if(map[room_1_center_x + i * x_step][room_1_center_y]["Tile"] == empty) then
             map[room_1_center_x + i * x_step][room_1_center_y]["Tile"] = walkable
+            tunnel[#tunnel + 1] = { x = room_1_center_x + i * x_step, y = room_1_center_y}
         end
     end
 
     for j=1, math.abs(room_y_diff), 1 do
         if(map[room_1_center_x - room_x_diff][room_1_center_y + j * y_step]["Tile"] == empty) then
             map[room_1_center_x - room_x_diff][room_1_center_y + j * y_step]["Tile"] = walkable
+            tunnel[#tunnel + 1] = { x = room_1_center_x - room_x_diff, y = room_1_center_y + j * y_step}
         end
     end
+
+    map["tunnels"][#map["tunnels"] + 1] = tunnel
 end
 
 local function UnitePartitions(partitions, part1, part2)
@@ -269,6 +272,7 @@ function MissionMap.generateMap(mission_type, seed1, seed2, difficulty_level)
     map["x"] = x
     map["y"] = y
     map["rooms"] = {}
+    map["tunnels"] = {}
 
     for i = 1, x, 1 do
         map[i] = {}

@@ -4,7 +4,7 @@ local math = require "math"
 
 local Camera = require "SoTClient.Visuals.CameraMap"
 local ScreenInfo = require "SoTClient.Visuals.ScreenInfo"
-
+local RenderTiles = require "SoTClient.Visuals.RenderTile"
 local visual_tile_width, visual_tile_height
 
 local tilemap = {}
@@ -22,6 +22,11 @@ function RenderMap.SetCamera(map, focus, surface)
             tilemap[tile_x][tile_y] = nil
         end
     end
+end
+
+function RenderMap.SetRenderMap(map, map_type, focus, surface)
+    RenderTiles.SetRenderTiles(map, map_type)
+    RenderMap.SetCamera(map, focus, surface)
 end
 
 function ClearRow(row, start_y, end_y)
@@ -101,12 +106,27 @@ function RenderMap.UpdateTilemap(map)
                             tilemap[tile_x][tile_y]["Actor"] = nil
                         end
                     else
-                        tilemap[tile_x][tile_y] = display.newRect(
-                            ((-Camera.getStartTileX() + tile_x) - Camera.getDeviationX()) * Camera.getRealTileSize(),
-                            ((-Camera.getStartTileY() + tile_y) - Camera.getDeviationY()) * Camera.getRealTileSize(),
-                            Camera.getRealTileSize(),
-                            Camera.getRealTileSize()
-                        )
+                        if(map[tile_x][tile_y]["Texture"] ~= nil) then
+                            tilemap[tile_x][tile_y] = display.newImageRect(
+                                map[tile_x][tile_y]["Texture"].filename,
+                                map[tile_x][tile_y]["Texture"].baseDir,
+                                Camera.getRealTileSize(),
+                                Camera.getRealTileSize()
+                            )
+                        else
+                            tilemap[tile_x][tile_y] = display.newImageRect(
+                                RenderTiles.ReturnDefaultEmptyTile().filename,
+                                RenderTiles.ReturnDefaultEmptyTile().baseDir,
+                                Camera.getRealTileSize(),
+                                Camera.getRealTileSize()
+                            )
+                        end
+
+                        tilemap[tile_x][tile_y].x = 
+                            ((-Camera.getStartTileX() + tile_x) - Camera.getDeviationX()) * Camera.getRealTileSize()
+                        tilemap[tile_x][tile_y].y = 
+                            ((-Camera.getStartTileY() + tile_y) - Camera.getDeviationY()) * Camera.getRealTileSize()
+
                         if(map[tile_x][tile_y]["Tile"] == 0) then
                             tilemap[tile_x][tile_y].strokeWidth = 3
                             tilemap[tile_x][tile_y]:setFillColor(0.5)

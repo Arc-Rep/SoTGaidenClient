@@ -54,29 +54,29 @@ local function BehaviourHandler_Enemy(game_map, char_list, char)
     end
 end
 
-function CharAction.DoMovement(game_map, char, m_up_down, m_left_right)
+function CharAction.DoMovement(game_map, char, move_x, move_y)
     local cur_tile, desired_tile = game_map[char["x"]][char["y"]],
-                                    game_map[char["x"] + m_up_down][char["y"] + m_left_right]
+                                    game_map[char["x"] + move_x][char["y"] + move_y]
 
-    if(missionmaputils.CheckLegalMovement(game_map, char["x"], char["y"], m_up_down, m_left_right) == false) then
+    if(missionmaputils.CheckLegalMovement(game_map, char["x"], char["y"], move_x, move_y) == false) then
         return false
     end
 
     cur_tile["Actor"] = ""
-    char["x"] = char["x"] + m_up_down
-    char["y"] = char["y"] + m_left_right
+    char["x"] = char["x"] + move_x
+    char["y"] = char["y"] + move_y
     desired_tile["Actor"] = char
 
     return true
 end
 
-function CharAction.PlayerMoveEvent(game_map, char, m_up_down, m_left_right)
+function CharAction.PlayerMoveEvent(game_map, char, move_x, move_y)
     
     if (char["x"] == nil or char["y"] == nil or char["currentHP"] == 0) then
         return false
     end
 
-    local desired_tile = game_map[char["x"] + m_up_down][char["y"] + m_left_right]
+    local desired_tile = game_map[char["x"] + move_x][char["y"] + move_y]
 
     if(desired_tile["Actor"] ~= "") then
         local neighbour = desired_tile["Actor"]
@@ -87,7 +87,7 @@ function CharAction.PlayerMoveEvent(game_map, char, m_up_down, m_left_right)
         end
     end
 
-    return CharAction.DoMovement(game_map, char, m_up_down, m_left_right)
+    return CharAction.DoMovement(game_map, char, move_x, move_y)
 end
 
 function CharAction.CheckFocusExists(unit)

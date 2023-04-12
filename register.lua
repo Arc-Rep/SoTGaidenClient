@@ -8,7 +8,6 @@ local background,usernameField,passwordField,userName,password,email,emailField,
 
 --ERRORS
 local regError = display.newText("Not a valid registration",390,370,450,0,"Arial",20)
-regError:rotate(90)
 regError.alpha=0
 ---------------------------------------------------------------------------------
 
@@ -84,17 +83,13 @@ function scene:create( event )
 
     background = display.newImage(grpReg, "GameResources/loginbackground.png")
     background:translate(150,750)
-    background:rotate(90)
     
     userName = display.newText("Username:",290,670,450,0,"Arial",40)
     userName.fill = { 1, 1, 1 }
-    userName:rotate(90)
     password = display.newText("Password:",190,670,450,0,"Arial",40)
     password.fill = {  1, 1, 1 }
-    password:rotate(90)
     email = display.newText("Email:",390,670,450,0,"Arial",40)
     email.fill = {  1, 1, 1 }
-    email:rotate(90)
     grpReg:insert(userName)
     grpReg:insert(password)
     grpReg:insert(email)
@@ -102,12 +97,10 @@ function scene:create( event )
     regInbtn = display.newRoundedRect(grpReg,120,850,260,80,20)
     regInbtn.fill =  {1,1,1}
     regInbtn.alpha = 0.4;
-    regInbtn:rotate(90)
     grpReg:insert(regInbtn)
 
     regInlbl = display.newText("APPLY", 120,850, "GameResources/Fonts/Oswald-Bold.ttf", 30)
     regInlbl.fill = {  1, 1, 1 }
-    regInlbl:rotate(90)
     grpReg:insert(regInlbl)
 
     regInbtn:addEventListener("tap", registerUserRequest)
@@ -115,11 +108,9 @@ function scene:create( event )
     backbtn = display.newRoundedRect(grpReg,120,250,260,80,20)
     backbtn.fill =  {1,1,1}
     backbtn.alpha = 0.4;
-    backbtn:rotate(90)
     grpReg:insert(backbtn)
 
     backlbl = display.newText("BACK", 120,250, "GameResources/Fonts/Oswald-Bold.ttf", 30)
-    backlbl:rotate(90)
     grpReg:insert(backlbl)
 
     backbtn:addEventListener("tap", goToMainMenu)

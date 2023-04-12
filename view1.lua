@@ -14,41 +14,6 @@ local Player = require "SoTClient.GameLogic.PlayerLogic.Player"
 local seed1, seed2 = 14638, 3527
 local cutscene = {false}
 
---[[local last_click = system.getTimer()
-
-local touchListener = function( event )
-	if(last_click + 300 > system.getTimer()) then
-		return false
-	end
-	last_click = system.getTimer()
-    local x, y = event.x, event.y
-	if( y < display.contentHeight/ 5) then
-		print(MapData.GetMap()[1][1])
-		GameOverseer.SendCommand(MapData.GetMap(),"pressUp")
-		print("Up")
-	elseif (y > display.contentHeight * (4/5)) then
-		GameOverseer.SendCommand(MapData.GetMap(),"pressDown")
-		print("Down")
-	elseif (x < display.contentWidth / 4) then
-		GameOverseer.SendCommand(MapData.GetMap(),"pressLeft")
-		print("Left")
-	elseif (x > display.contentWidth * (3 / 4)) then
-		GameOverseer.SendCommand(MapData.GetMap(),"pressRight")
-		print("Right")
-	end
-	MapRender.UpdateTilemap(MapData.GetMap())
-
-	--Move where you wanna call cutscenes
-	--if cutscene[1] == false then
-	--	composer.gotoScene("GameResources.Cutscenes.cutscene1",{time=2000, effect="fade"})
-	--	cutscene[1] = true
-	--end
-
-
-	
-    return true
-end]]--
-
 function scene:create( event )
 	local sceneGroup = self.view
 	
@@ -73,7 +38,7 @@ function scene:create( event )
 
 	
 	GameOverseer.StartGame(MapData, nil, nil, seed1, seed2)
-	MapRender.SetCamera(MapData.GetMap(), GameOverseer.getPlayerCharStats(), sceneGroup)
+	MapRender.SetRenderMap(MapData.GetMap(), nil, GameOverseer.getPlayerCharStats(), sceneGroup)
 	--sceneGroup:addEventListener("touch", touchListener)
 
 	--CombatUI

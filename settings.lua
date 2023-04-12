@@ -22,11 +22,9 @@ function scene:create( event )
     
     background = display.newImage(grpSett, "GameResources/loginbackground.png")
     background:translate(150,750)
-    background:rotate(90)
 
     music = display.newText("Music:",290,670,450,0,"Arial",40)
     music.fill = { 1, 1, 1 }
-    music:rotate(90)
     grpSett:insert(music)
 
     local slider = widget.newSlider(
@@ -43,11 +41,9 @@ function scene:create( event )
     backbtn = display.newRoundedRect(grpSett,120,250,260,80,20)
     backbtn.fill =  {1,1,1}
     backbtn.alpha = 0.4;
-    backbtn:rotate(90)
     grpSett:insert(backbtn)
 
     backlbl = display.newText("BACK", 120,250, "GameResources/Fonts/Oswald-Bold.ttf", 30)
-    backlbl:rotate(90)
     grpSett:insert(backlbl)
 
     backbtn:addEventListener("tap", goToMainMenu)

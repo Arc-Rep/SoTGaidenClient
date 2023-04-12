@@ -35,4 +35,7 @@ local tabButtons = {
 	buttons = tabButtons
 }]]--
 
+display.setDefault("anchorX", 0)
+display.setDefault("anchorY", 0)
+
 onFirstView()	-- invoke first tab button's onPress event manually

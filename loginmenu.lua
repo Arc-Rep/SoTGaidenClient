@@ -14,11 +14,9 @@ audio.setVolume( 0.1, { channel=1 } )
 audio.play( backgroundMusic, { channel=1, loops=-1 } )
 --ERRORS
 local loginError = display.newText("Login failed.",390,370,450,0,"Arial",20)
-loginError:rotate(90)
 loginError.alpha=0
 
 local loginError2 = display.newText("Empty Username",390,370,450,0,"Arial",20)
-loginError2:rotate(90)
 loginError2.alpha=0
 ---------------------------------------------------------------------------------
 
@@ -80,22 +78,18 @@ function scene:create( event )
 
 	background = display.newImage(grpMain, "GameResources/loginbackground.png")
 	background:translate(150,750)
-	background:rotate(90)
 	grpMain:insert(background)
 
 	Title = display.newText("Shards Of Tomorrow",340,570,450,0,"GameResources/Fonts/AlexBrush-Regular.ttf",100)
 	Title.fill = {1,1,1}
-	Title:rotate(90)
 	grpMain:insert(Title)
 	
 	--LOADING WAITER?
 	--[[signInbtn = display.newRoundedRect(grpMain, 120,550,260,80,20)
 	signInbtn.fill =  {1,1,1}
 	signInbtn.alpha = 0.4;
-	signInbtn:rotate(90)
 
 	signInlbl = display.newText("SIGN IN TO CONTINUE", 120,550, "GameResources/Fonts/Oswald-Bold.ttf", 30)
-	signInlbl:rotate(90)
 	transition.blink(signInlbl, {time=2000})
 	grpMain:insert(signInbtn)
 	grpMain:insert(signInlbl)]]--
@@ -106,18 +100,14 @@ function scene:create( event )
 
 	userName = display.newText("Username:",190,670,450,0,"Arial",40)
 	password = display.newText("Password:",90,670,450,0,"Arial",40)
-	userName:rotate(90)
-	password:rotate(90)
 	grpMain:insert(userName)
 	grpMain:insert(password)
 
 	signInbtn = display.newRoundedRect(grpMain, 120,850,240,80,20)
 	signInbtn.fill =  {1,1,1}
 	signInbtn.alpha = 0.4;
-	signInbtn:rotate(90)
 
 	signInlbl = display.newText("REGISTER", 120,850, "GameResources/Fonts/Oswald-Bold.ttf", 30)
-	signInlbl:rotate(90)
 	grpMain:insert(signInlbl)
 
 	signInbtn:addEventListener("tap", goToRegister)
@@ -125,12 +115,10 @@ function scene:create( event )
 	logInbtn = display.newRoundedRect(grpMain,120,250,260,80,20)
     logInbtn.fill =  {1,1,1}
     logInbtn.alpha = 0.4;
-    logInbtn:rotate(90)
     grpMain:insert(logInbtn)
 
     logInlbl = display.newText("LOGIN", 120,250, "GameResources/Fonts/Oswald-Bold.ttf", 30)
     logInlbl.fill = {  1, 1, 1 }
-    logInlbl:rotate(90)
     grpMain:insert(logInlbl)
 
     logInbtn:addEventListener("tap", loginUserRequest)
