@@ -80,14 +80,24 @@ local function SetNeighbourTextures(map, tile_x, tile_y)
         if(map[tile_x - 1][tile_y]["Tile"] == 0) then
 
             if(LAND(tile_y > 1, function () return map[tile_x][tile_y - 1]["Tile"] == 0 end)) then
-                map[tile_x - 1][tile_y - 1]["Texture"] = MapFiles["corner"][1][1]
-                map[tile_x - 1][tile_y]["Texture"]     = MapFiles["wall"][4][1]
-            elseif(LAND(LOR(tile_y == 1, function () return map[tile_x - 1][tile_y - 1]["Tile"] == 0 end), 
+                map[tile_x - 1][tile_y - 1]["Texture"] = MapFiles["wall"][7][1]
+                if(tile_y > 2) then
+                    map[tile_x - 1][tile_y - 2]["Texture"] = MapFiles["ceiling"][7][1]
+                end
+            end
+
+            if(LAND(tile_y < map["y"], function () return map[tile_x][tile_y + 1]["Tile"] == 0 end)) then
+                map[tile_x + 1][tile_y + 1]["Texture"] = MapFiles["wall"][1][1]
+            end
+
+            if(LAND(LOR(tile_y == 1, function () return map[tile_x - 1][tile_y - 1]["Tile"] == 0 end), 
                     LOR(tile_y == map["y"], function () return map[tile_x - 1][tile_y + 1]["Tile"] == 0 end))) then
                 map[tile_x - 1][tile_y]["Texture"] = MapFiles["wall"][4][1]
             elseif(LOR(tile_y == 1, function() return map[tile_x - 1][tile_y - 1]["Tile"] == 0 end)) then
                 map[tile_x - 1][tile_y]["Texture"]      = MapFiles["corner"][7][1]
                 map[tile_x - 1][tile_y - 1]["Texture"]  = MapFiles["corner_ceiling"][7][1]
+            elseif(LOR(tile_y < map["y"], function() return map[tile_x - 1][tile_y + 1]["Tile"] == 0 end)) then
+                map[tile_x - 1][tile_y]["Texture"]      = MapFiles["corner"][1][1]
             end
         end
     end
@@ -95,15 +105,25 @@ local function SetNeighbourTextures(map, tile_x, tile_y)
     if(LAND(tile_x < map["x"], function () return map[tile_x + 1][tile_y]["Texture"] == nil end)) then
         if(map[tile_x + 1][tile_y]["Tile"] == 0) then
 
+            if(LAND(tile_y > 1, function () return map[tile_x][tile_y - 1]["Tile"] == 0 end)) then
+                map[tile_x + 1][tile_y - 1]["Texture"] = MapFiles["wall"][9][1]
+                if(tile_y > 2) then
+                    map[tile_x + 1][tile_y - 2]["Texture"] = MapFiles["ceiling"][9][1]
+                end
+            end
+
             if(LAND(tile_y < map["y"], function () return map[tile_x][tile_y + 1]["Tile"] == 0 end)) then
-                map[tile_x + 1][tile_y + 1]["Texture"] = MapFiles["corner"][3][1]
-                map[tile_x + 1][tile_y]["Texture"]     = MapFiles["wall"][6][1]
-            elseif(LAND(LOR(tile_y == 1, function () return map[tile_x + 1][tile_y - 1]["Tile"] == 0 end), 
+                map[tile_x + 1][tile_y + 1]["Texture"] = MapFiles["wall"][3][1]
+            end
+
+            if(LAND(LOR(tile_y == 1, function () return map[tile_x + 1][tile_y - 1]["Tile"] == 0 end), 
                     LOR(tile_y == map["y"], function () return map[tile_x + 1][tile_y + 1]["Tile"] == 0 end))) then
                 map[tile_x + 1][tile_y]["Texture"]  = MapFiles["wall"][6][1]
             elseif(LOR(tile_y == 1, function() return map[tile_x + 1][tile_y - 1]["Tile"] == 0 end)) then
                 map[tile_x + 1][tile_y]["Texture"]      = MapFiles["corner"][9][1]
                 map[tile_x + 1][tile_y - 1]["Texture"]  = MapFiles["corner_ceiling"][9][1]
+            elseif(LOR(tile_y < map["y"], function() return map[tile_x + 1][tile_y + 1]["Tile"] == 0 end)) then
+                map[tile_x + 1][tile_y]["Texture"]      = MapFiles["corner"][3][1]
             end
         end
     end
@@ -114,6 +134,9 @@ local function SetNeighbourTextures(map, tile_x, tile_y)
             if(LAND(LOR(tile_x == 1, function() return map[tile_x - 1][tile_y - 1]["Tile"] == 0 end), 
                     LOR(tile_x == map["x"], function() return map[tile_x + 1][tile_y - 1]["Tile"] == 0 end))) then
                 map[tile_x][tile_y - 1]["Texture"]  = MapFiles["wall"][8][1]
+                if(tile_y > 2) then
+                    map[tile_x][tile_y - 2]["Texture"]  = MapFiles["ceiling"][8][1]
+                end
             end
         end
     end
@@ -192,7 +215,7 @@ function RenderTile.SetRenderTiles(map, map_type)
     LoadTileFiles(map_type)
 
     for index, room in ipairs(map["rooms"]) do
-        local room_x_start, room_y_start = room["x"], room["y"]
+        local room_x_start, room_y_start = room["x"] + 1, room["y"] + 1
         local room_x_end, room_y_end = room["x"] + room["rows"], room["y"] + room["columns"]
         for map_x = room_x_start, room_x_end, 1 do
             for map_y = room_y_start, room_y_end, 1 do

@@ -52,9 +52,6 @@ function GameOverseer.SendCommand(command, focus_x, focus_y)
     --print("Tile left is " .. game_map[Squads[1][1]["x"] - 1][Squads[1][1]["y"]]["Tile"])
     --print("Tile right is " .. game_map[Squads[1][1]["x"] + 1][Squads[1][1]["y"]]["Tile"])
 
-    print(focus_x)
-    print(focus_y)
-
     if(command == "pressUp") then
         move_done = CharAction.PlayerMoveEvent(GetGameMap(), Squads[1][1], 0, -1)
     elseif (command == "pressDown") then
@@ -64,16 +61,12 @@ function GameOverseer.SendCommand(command, focus_x, focus_y)
     elseif (command == "pressRight") then
         move_done = CharAction.PlayerMoveEvent(GetGameMap(), Squads[1][1], 1, 0)
     elseif (command == "pressSkill1") then
-        --move_done = PerformSkill(game_map, Squads[1][1], command["Target"], Squads[1][1]["Skill1"])
         return GetSkillMapRange(GetGameMap(), Squads[1][1], Squads[1][1]["Skill1"])
     elseif (command == "pressSkill2") then
-        --move_done = PerformSkill(game_map, Squads[1][1], command["Target"], Squads[1][1]["Skill2"])
         return GetSkillMapRange(GetGameMap(), Squads[1][1], Squads[1][1]["Skill2"])
     elseif (command == "pressSkill3") then
-        --move_done = PerformSkill(game_map, Squads[1][1], command["Target"], Squads[1][1]["Skill3"])
         return GetSkillMapRange(GetGameMap(), Squads[1][1], Squads[1][1]["Skill3"])
     elseif (command == "pressSkill4") then
-        --move_done = PerformSkill(game_map, Squads[1][1], command["Target"], Squads[1][1]["Skill4"])
         return GetSkillMapRange(GetGameMap(), Squads[1][1], Squads[1][1]["Skill4"])
     elseif (command == "performSkill1") then
         if(GetGameMap()[focus_x]["y"]["Actor"] ~= nil) then
