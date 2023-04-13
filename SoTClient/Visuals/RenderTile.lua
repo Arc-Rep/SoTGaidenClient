@@ -71,11 +71,6 @@ end
 -- To do: make function that releases textures
 
 local function SetNeighbourTextures(map, tile_x, tile_y)
-    print("Tiles")
-    print(tile_x)
-    print(tile_y)
-    print(map["x"])
-    print(map["y"])
     if(LAND(tile_x > 1, function () return map[tile_x - 1][tile_y]["Texture"] == nil end)) then
         if(map[tile_x - 1][tile_y]["Tile"] == 0) then
 
