@@ -6,17 +6,15 @@
 
 local composer = require( "composer" )
 local scene = composer.newScene()
-local MapRender = require "SotClient.Visuals.RenderMap"
+local RenderBroker = require "SotClient.Visuals.RenderBroker"
 local GameOverseer = require "SotClient.GameLogic.LevelMechanics.GameOverseer"
 local MapData = require "SoTClient.GameLogic.Scenarios.MissionMap"
-local CombatUI = require "SoTClient.Visuals.UI.CombatUI"
 local Player = require "SoTClient.GameLogic.PlayerLogic.Player"
 local seed1, seed2 = 14638, 3527
 local cutscene = {false}
 
 function scene:create( event )
 	local sceneGroup = self.view
-	
 	-- Called when the scene's view does not exist.
 	-- 
 	-- INSERT code here to initialize the scene
@@ -38,15 +36,13 @@ function scene:create( event )
 
 	
 	GameOverseer.StartGame(MapData, nil, nil, seed1, seed2)
-	MapRender.SetRenderMap(MapData.GetMap(), nil, GameOverseer.getPlayerCharStats(), sceneGroup)
-	--sceneGroup:addEventListener("touch", touchListener)
 
-	--CombatUI
 	Player.readPlayer()
-	CombatUI.setHP()
-	CombatUI.setEssence()
-	CombatUI.createPlayerUI()
 
+	RenderBroker.SetRenderBattle(MapData.GetMap(), nil, sceneGroup)
+	RenderBroker.UpdateRender()
+
+	
 	-- all objects must be added to group (e.g. self.view)
 	--sceneGroup:insert( background )
 	--sceneGroup:insert( title )
@@ -56,7 +52,7 @@ end
 function scene:show( event )
 	local sceneGroup = self.view
 	local phase = event.phase
-	MapRender.UpdateTilemap(MapData.GetMap())
+	RenderBroker.UpdateRender()
 	if phase == "will" then
 		-- Called when the scene is still off screen and is about to move on screen
 	elseif phase == "did" then

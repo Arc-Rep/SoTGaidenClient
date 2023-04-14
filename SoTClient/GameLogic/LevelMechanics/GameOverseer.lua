@@ -21,6 +21,10 @@ function GameOverseer.getPlayerCharStats()
     return Squads[1][1]
 end
 
+function GameOverseer.GetUnitList()
+    return unit_table
+end
+
 function DoTurn()
     for char_index, char in ipairs(Squads[global_turns]) do
         if char["ControlType"] ~= "Player" and char["currentHP"] > 0 then

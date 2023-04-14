@@ -5,16 +5,19 @@ local math = require "math"
 local Camera = require "SoTClient.Visuals.CameraMap"
 local ScreenInfo = require "SoTClient.Visuals.ScreenInfo"
 local RenderTiles = require "SoTClient.Visuals.RenderTile"
+local LazyEval = require "SoTClient.Utils.LazyEval"
+
 local visual_tile_width, visual_tile_height
 
 local tilemap = {}
+local charmap = {}
+local inbound_characters = {}
 local skill_tilemap_area = {}
 
-local RenderSurface = nil
+local RenderSurfaceMap = nil
 
-function RenderMap.SetCamera(map, focus, surface)
+function RenderMap.SetCamera(map, focus)
     Camera.setup(map, ScreenInfo, focus)
-    RenderSurface = surface
 
     for tile_x = 1, map["x"], 1 do
         tilemap[tile_x] = {}
@@ -24,9 +27,15 @@ function RenderMap.SetCamera(map, focus, surface)
     end
 end
 
-function RenderMap.SetRenderMap(map, map_type, focus, surface)
+function RenderMap.SetRenderMap(map, map_type, unit_list, focus, surface_map, surface_characters)
     RenderTiles.SetRenderTiles(map, map_type)
-    RenderMap.SetCamera(map, focus, surface)
+
+    RenderSurfaceMap   = surface_map
+    RenderSurfaceChars = surface_characters
+
+    RenderMap.SetCamera(map, focus)
+
+    inbound_characters = unit_list
 end
 
 function ClearRow(row, start_y, end_y)
@@ -51,6 +60,36 @@ function ClearColumn(column, start_x, end_x)
     end
 end
 
+function RenderMap.UpdateCharacters(move_x, move_y)
+    for i = 1, #inbound_characters, 1 do
+        local char_id = inbound_characters[i]["ID"]
+        if(inbound_characters[i]["x"] == nil) then
+            if(charmap[char_id] ~= nil) then
+                charmap[char_id]:removeSelf()
+                charmap[char_id] = nil
+            end
+        elseif(inbound_characters[i]["x"] >= Camera.getStartTileX() and
+           inbound_characters[i]["x"] < Camera.getStartTileX() + Camera.getTileWidth() and
+           inbound_characters[i]["y"] >= Camera.getStartTileY() and
+           inbound_characters[i]["y"] < Camera.getStartTileY() + Camera.getTileHeight()) then
+            if(charmap[char_id] ~= nil) then
+                charmap[char_id]:translate(
+                    ((-Camera.getStartTileX() + inbound_characters[i]["x"]) - Camera.getDeviationX()) * Camera.getRealTileSize() - charmap[char_id]["x"], 
+                    ((-Camera.getStartTileY() + inbound_characters[i]["y"]) - Camera.getDeviationY()) * Camera.getRealTileSize() - charmap[char_id]["y"])
+            else
+                charmap[char_id] = display.newRect(0, 0, Camera.getRealTileSize(),Camera.getRealTileSize())
+                charmap[char_id].x =
+                    ((-Camera.getStartTileX() + inbound_characters[i]["x"]) - Camera.getDeviationX()) * Camera.getRealTileSize()
+                charmap[char_id].y =
+                    ((-Camera.getStartTileY() + inbound_characters[i]["y"]) - Camera.getDeviationY()) * Camera.getRealTileSize()
+                charmap[char_id].strokeWidth = 3
+                charmap[char_id]:setFillColor(0.8)
+                charmap[char_id]:setStrokeColor(0, 1, 1)
+                RenderSurfaceChars:insert(charmap[char_id])
+            end
+        end
+    end
+end
 
 function RenderMap.UpdateTilemap(map)
 
@@ -93,18 +132,6 @@ function RenderMap.UpdateTilemap(map)
                         
                     if(tilemap[tile_x][tile_y] ~= nil) then
                         tilemap[tile_x][tile_y]:translate( -move_x * Camera.getRealTileSize(), -move_y * Camera.getRealTileSize())
-                        if(tilemap[tile_x][tile_y]["Actor"] == nil and map[tile_x][tile_y]["Actor"] ~= "") then
-                            tilemap[tile_x][tile_y].strokeWidth = 3
-                            tilemap[tile_x][tile_y]:setFillColor(0.8)
-                            tilemap[tile_x][tile_y]:setStrokeColor(0, 1, 1)
-                            tilemap[tile_x][tile_y]["Actor"] = map[tile_x][tile_y]["Actor"]
-                        
-                        elseif(tilemap[tile_x][tile_y]["Actor"] ~= nil and map[tile_x][tile_y]["Actor"] == "") then
-                            tilemap[tile_x][tile_y].strokeWidth = 3
-                            tilemap[tile_x][tile_y]:setFillColor(0.5)
-                            tilemap[tile_x][tile_y]:setStrokeColor(1, 0, 0)
-                            tilemap[tile_x][tile_y]["Actor"] = nil
-                        end
                     else
                         if(map[tile_x][tile_y]["Texture"] ~= nil) then
                             tilemap[tile_x][tile_y] = display.newImageRect(
@@ -126,7 +153,7 @@ function RenderMap.UpdateTilemap(map)
                             ((-Camera.getStartTileX() + tile_x) - Camera.getDeviationX()) * Camera.getRealTileSize()
                         tilemap[tile_x][tile_y].y = 
                             ((-Camera.getStartTileY() + tile_y) - Camera.getDeviationY()) * Camera.getRealTileSize()
-
+                        
                         if(map[tile_x][tile_y]["Tile"] == 0) then
                             tilemap[tile_x][tile_y].strokeWidth = 3
                             tilemap[tile_x][tile_y]:setFillColor(0.5)
@@ -149,21 +176,15 @@ function RenderMap.UpdateTilemap(map)
                             tilemap[tile_x][tile_y]:setStrokeColor(1, 1, 1)
                         end
 
-                        if(map[tile_x][tile_y]["Actor"] ~= "") then
-                            tilemap[tile_x][tile_y].strokeWidth = 3
-                            tilemap[tile_x][tile_y]:setFillColor(0.8)
-                            tilemap[tile_x][tile_y]:setStrokeColor(0, 1, 1)
-
-                            print("Hero here")
-                            print(tile_x)
-                            print(tile_y)
-                        end
-                        RenderSurface:insert(tilemap[tile_x][tile_y])
+                        RenderSurfaceMap:insert(tilemap[tile_x][tile_y])
                     end
                 end
             end
         end
     end
+
+    RenderMap.UpdateCharacters(move_x, move_y)
+
     return tilemap
 end
 
@@ -197,7 +218,7 @@ function RenderMap.ShowSkillRangeOverlay(map, skill_tile_list, event_function)
 
         skill_tilemap_area[#skill_tilemap_area]:addEventListener("tap", event_function(tile["x"], tile["y"]))
 
-        RenderSurface:insert(skill_tilemap_area[#skill_tilemap_area])
+        RenderSurfaceMap:insert(skill_tilemap_area[#skill_tilemap_area])
     end
 
 end

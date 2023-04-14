@@ -7,7 +7,6 @@ local Player = require "SoTClient.GameLogic.PlayerLogic.Player"
 
 local CombatUI = {}
 
-local UIGroup = display.newGroup()
 local PlayerUI = display.newGroup()
 local AbilityUI = display.newGroup()
 local DpadUI = display.newGroup()
@@ -130,7 +129,7 @@ local function skillTapListener(event, skill)
     MapRender.ShowSkillRangeOverlay(GetGameMap(), skill_map, skill_performer)
 end
 
-function CombatUI.createPlayerUI()
+function CombatUI.createPlayerUI(UIGroup)
    
     --ABILITIES UI
     local AbilityPanelW = display.contentWidth * 0.40

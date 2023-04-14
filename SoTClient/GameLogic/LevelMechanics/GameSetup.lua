@@ -8,6 +8,7 @@ function GameSetup.SetupPlayerUnits(unit_table, Squads)
     
     local unit1, unit2 = {}, {}
     unit1["Actor"] = "Law"
+    unit1["ID"] = 92475
     unit1["Status"] = "Player"
     unit1["Focus"] = "Manual"
     unit1["Team"] = 1
@@ -19,6 +20,7 @@ function GameSetup.SetupPlayerUnits(unit_table, Squads)
     unit1["currentHP"] = 30
     unit1["ControlType"] = "Player"
     unit2["Actor"] = "Dylan"
+    unit2["ID"] = 321475
     unit2["Status"] = "Follower"
     unit2["Focus"] = unit1
     unit2["Team"] = 1
@@ -29,6 +31,7 @@ function GameSetup.SetupPlayerUnits(unit_table, Squads)
 
     local unitenemy1 = {}
     unitenemy1["Actor"] = "Enemy"
+    unitenemy1["ID"] = -146
     unitenemy1["Status"] = "Standby"
     unitenemy1["Team"] = 0
     unitenemy1["ControlType"] = "CPU-H"
