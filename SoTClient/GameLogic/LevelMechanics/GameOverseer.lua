@@ -73,19 +73,19 @@ function GameOverseer.SendCommand(command, focus_x, focus_y)
     elseif (command == "pressSkill4") then
         return GetSkillMapRange(GetGameMap(), Squads[1][1], Squads[1][1]["Skill4"])
     elseif (command == "performSkill1") then
-        if(GetGameMap()[focus_x]["y"]["Actor"] ~= nil) then
+        if(GetGameMap()[focus_x][focus_y]["Actor"] ~= "") then
             skill_activated = "Skill1"
         end
     elseif (command == "performSkill2") then
-        if(GetGameMap()[focus_x][focus_y]["Actor"] ~= nil) then
+        if(GetGameMap()[focus_x][focus_y]["Actor"] ~= "") then
             skill_activated = "Skill2"
         end
     elseif (command == "performSkill3") then
-        if(GetGameMap()[focus_x][focus_y]["Actor"] ~= nil) then
+        if(GetGameMap()[focus_x][focus_y]["Actor"] ~= "") then
             skill_activated = "Skill3"
         end
     elseif (command == "performSkill4") then
-        if(GetGameMap()[focus_x][focus_y]["Actor"] ~= nil) then
+        if(GetGameMap()[focus_x][focus_y]["Actor"] ~= "") then
             skill_activated = "Skill4"
         end
     end

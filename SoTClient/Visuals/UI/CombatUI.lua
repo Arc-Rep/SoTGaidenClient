@@ -103,6 +103,7 @@ local function skill_performer(tile_x, tile_y)
         if(click_result == true) then
             MapRender.ClearSkillRangeOverlay(GetGameMap())
             active_skill = nil
+            MapRender.UpdateTilemap(GetGameMap())
         end
     end
 end
@@ -123,10 +124,12 @@ local function skillTapListener(event, skill)
         active_skill = nil
         return
     end
-
-    active_skill = temp_skill
+  
     skill_map = GameOverseer.SendCommand(skill_clicked)
-    MapRender.ShowSkillRangeOverlay(GetGameMap(), skill_map, skill_performer)
+    if(MapRender.ShowSkillRangeOverlay(GetGameMap(), skill_map, skill_performer) == true) then
+        active_skill = temp_skill
+    end
+
 end
 
 function CombatUI.createPlayerUI(UIGroup)

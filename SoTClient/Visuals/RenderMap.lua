@@ -37,11 +37,14 @@ function RenderMap.SetRenderMap(map, map_type, unit_list, focus, surface_map, su
     RenderMap.SetCamera(map, focus)
     RenderSurfaceMap:addEventListener("touch", 
         function(event) 
+            if(#skill_tilemap_area ~= 0) then
+                return
+            end 
             Camera.CameraDrag(event) 
             if(event.phase ~= "ended") then
                 RenderMap.UpdateTilemap(map)
             else
-                local function iter_animation() 
+                local function iter_animation()
                     RenderMap.UpdateTilemap(map)
                     if(Camera.CheckAnimationExists() == true) then 
                         timer.performWithDelay(10, function() iter_animation() end)
@@ -87,21 +90,20 @@ function RenderMap.UpdateCharacters(move_x, move_y)
            inbound_characters[i]["x"] < Camera.getStartTileX() + Camera.getTileWidth() and
            inbound_characters[i]["y"] >= Camera.getStartTileY() and
            inbound_characters[i]["y"] < Camera.getStartTileY() + Camera.getTileHeight()) then
-            if(charmap[char_id] ~= nil) then
-                charmap[char_id]:translate(
-                    ((-Camera.getStartTileX() + inbound_characters[i]["x"]) - Camera.getDeviationX()) * Camera.getRealTileSize() - charmap[char_id]["x"], 
-                    ((-Camera.getStartTileY() + inbound_characters[i]["y"]) - Camera.getDeviationY()) * Camera.getRealTileSize() - charmap[char_id]["y"])
-            else
+            if(charmap[char_id] == nil) then
                 charmap[char_id] = display.newRect(0, 0, Camera.getRealTileSize(),Camera.getRealTileSize())
-                charmap[char_id].x =
-                    ((-Camera.getStartTileX() + inbound_characters[i]["x"]) - Camera.getDeviationX()) * Camera.getRealTileSize()
-                charmap[char_id].y =
-                    ((-Camera.getStartTileY() + inbound_characters[i]["y"]) - Camera.getDeviationY()) * Camera.getRealTileSize()
                 charmap[char_id].strokeWidth = 3
                 charmap[char_id]:setFillColor(0.8)
                 charmap[char_id]:setStrokeColor(0, 1, 1)
                 RenderSurfaceChars:insert(charmap[char_id])
             end
+            charmap[char_id].x =
+                ((-Camera.getStartTileX() + inbound_characters[i]["x"]) - Camera.getDeviationX()) * Camera.getRealTileSize()
+            charmap[char_id].y =
+                ((-Camera.getStartTileY() + inbound_characters[i]["y"]) - Camera.getDeviationY()) * Camera.getRealTileSize()
+        elseif(charmap[char_id] ~= nil) then
+            charmap[char_id]:removeSelf()
+            charmap[char_id] = nil
         end
     end
 end
@@ -111,6 +113,7 @@ function RenderMap.UpdateTilemap(map)
     local move_x, move_y = Camera.updateFocusAnimated()
 
     if(move_x == 0 and move_y == 0 and map_created == true) then
+        RenderMap.UpdateCharacters(move_x, move_y)
         return
     end
 
@@ -222,6 +225,10 @@ function RenderMap.ShowSkillRangeOverlay(map, skill_tile_list, event_function)
 
     RenderMap.ClearSkillRangeOverlay(map)
 
+    if(Camera.CheckAnimationExists() == true) then
+        return false
+    end
+
     for _, tile in pairs(skill_tile_list) do
         skill_tilemap_area[#skill_tilemap_area + 1] = 
             display.newRect(
@@ -240,7 +247,7 @@ function RenderMap.ShowSkillRangeOverlay(map, skill_tile_list, event_function)
 
         RenderSurfaceMap:insert(skill_tilemap_area[#skill_tilemap_area])
     end
-
+    return true
 end
 
 return RenderMap
