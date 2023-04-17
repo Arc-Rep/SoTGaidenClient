@@ -72,7 +72,7 @@ function RenderBroker.SetRenderBattle(map, map_type, sceneGroup)
 end
 
 function RenderBroker.UpdateRender()
-	MapRender.UpdateTilemap(MapData.GetMap())
+    MapRender.UpdateTilemap(MapData.GetMap())
 end
 
 return RenderBroker

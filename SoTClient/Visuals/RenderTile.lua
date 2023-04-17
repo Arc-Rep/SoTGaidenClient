@@ -82,7 +82,7 @@ local function SetNeighbourTextures(map, tile_x, tile_y)
             end
 
             if(LAND(tile_y < map["y"], function () return map[tile_x][tile_y + 1]["Tile"] == 0 end)) then
-                map[tile_x + 1][tile_y + 1]["Texture"] = MapFiles["wall"][1][1]
+                map[tile_x - 1][tile_y + 1]["Texture"] = MapFiles["wall"][1][1]
             end
 
             if(LAND(LOR(tile_y == 1, function () return map[tile_x - 1][tile_y - 1]["Tile"] == 0 end), 

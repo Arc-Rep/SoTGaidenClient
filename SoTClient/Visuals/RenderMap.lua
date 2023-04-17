@@ -8,6 +8,7 @@ local RenderTiles = require "SoTClient.Visuals.RenderTile"
 local LazyEval = require "SoTClient.Utils.LazyEval"
 
 local visual_tile_width, visual_tile_height
+local map_created = false
 
 local tilemap = {}
 local charmap = {}
@@ -34,7 +35,21 @@ function RenderMap.SetRenderMap(map, map_type, unit_list, focus, surface_map, su
     RenderSurfaceChars = surface_characters
 
     RenderMap.SetCamera(map, focus)
-
+    RenderSurfaceMap:addEventListener("touch", 
+        function(event) 
+            Camera.CameraDrag(event) 
+            if(event.phase ~= "ended") then
+                RenderMap.UpdateTilemap(map)
+            else
+                local function iter_animation() 
+                    RenderMap.UpdateTilemap(map)
+                    if(Camera.CheckAnimationExists() == true) then 
+                        timer.performWithDelay(10, function() iter_animation() end)
+                    end
+                end
+                iter_animation()
+            end
+        end)
     inbound_characters = unit_list
 end
 
@@ -93,7 +108,11 @@ end
 
 function RenderMap.UpdateTilemap(map)
 
-    local move_x, move_y = Camera.updateFocus()
+    local move_x, move_y = Camera.updateFocusAnimated()
+
+    if(move_x == 0 and move_y == 0 and map_created == true) then
+        return
+    end
 
     local tile_x, tile_y = math.floor(Camera.getStartTileX()), math.floor(Camera.getStartTileY())
     local moved_tile_x, moved_tile_y = math.floor(Camera.getStartTileX() - move_x), math.floor(Camera.getStartTileY() - move_y)
@@ -130,9 +149,9 @@ function RenderMap.UpdateTilemap(map)
 
                 if(map[tile_x][tile_y] ~= nil) then
                         
-                    if(tilemap[tile_x][tile_y] ~= nil) then
-                        tilemap[tile_x][tile_y]:translate( -move_x * Camera.getRealTileSize(), -move_y * Camera.getRealTileSize())
-                    else
+                    if(tilemap[tile_x][tile_y] == nil) then
+                        --tilemap[tile_x][tile_y]:translate( -move_x * Camera.getRealTileSize(), -move_y * Camera.getRealTileSize())
+                           
                         if(map[tile_x][tile_y]["Texture"] ~= nil) then
                             tilemap[tile_x][tile_y] = display.newImageRect(
                                 map[tile_x][tile_y]["Texture"].filename,
@@ -148,11 +167,6 @@ function RenderMap.UpdateTilemap(map)
                                 Camera.getRealTileSize()
                             )
                         end
-
-                        tilemap[tile_x][tile_y].x = 
-                            ((-Camera.getStartTileX() + tile_x) - Camera.getDeviationX()) * Camera.getRealTileSize()
-                        tilemap[tile_x][tile_y].y = 
-                            ((-Camera.getStartTileY() + tile_y) - Camera.getDeviationY()) * Camera.getRealTileSize()
                         
                         if(map[tile_x][tile_y]["Tile"] == 0) then
                             tilemap[tile_x][tile_y].strokeWidth = 3
@@ -178,10 +192,16 @@ function RenderMap.UpdateTilemap(map)
 
                         RenderSurfaceMap:insert(tilemap[tile_x][tile_y])
                     end
+                    
+                    tilemap[tile_x][tile_y].x = 
+                    ((-Camera.getStartTileX() + tile_x) - Camera.getDeviationX()) * Camera.getRealTileSize()
+                    tilemap[tile_x][tile_y].y = 
+                    ((-Camera.getStartTileY() + tile_y) - Camera.getDeviationY()) * Camera.getRealTileSize()
                 end
             end
         end
     end
+    map_created = true
 
     RenderMap.UpdateCharacters(move_x, move_y)
 
