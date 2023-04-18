@@ -20,20 +20,6 @@ local camera_x_animation_offset_focus, camera_y_animation_offset_focus = 0, 0
 local camera_animation_speed_x, camera_animation_speed_y
 local focus_element_queue = {}
 
-
-function CameraMap.updateFocus()
-
-    local focus_move_x = focus_element_queue[1]["x"] - camera_x
-    local focus_move_y = focus_element_queue[1]["y"] - camera_y
-
-    camera_x = focus_element_queue[1]["x"]
-    camera_y = focus_element_queue[1]["y"]
-    camera_start_x = camera_x - camera_tile_width/2 + camera_drag_x/100
-    camera_start_y = camera_y - camera_tile_height/2 + camera_drag_y/100
-    --print("x, y " .. camera_start_x .. "/ " .. camera_start_y)
-    return focus_move_x, focus_move_y
-end
-
 function CameraMap.updateFocusAnimated()
 
     local camera_x_prev = camera_x
@@ -144,14 +130,14 @@ end
 
 function CameraMap.addFocus(focus)
     focus_element_queue[#focus_element_queue+1] = focus
-    CameraMap.updateFocus()
+    CameraMap.updateFocusAnimated()
 end
 
 function CameraMap.popFocus()
     if (#focus_element_queue ~= 0) then
         table.remove(focus_element_queue, #focus_element_queue)
     end
-    CameraMap.updateFocus()
+    CameraMap.updateFocusAnimated()
 end
 
 function CameraMap.getFocus()
