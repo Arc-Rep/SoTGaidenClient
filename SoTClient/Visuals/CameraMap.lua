@@ -105,11 +105,6 @@ end
 
 function CameraMap.CameraDrag(event)
 
-    if (camera_timer + 30 > system.getTimer()) then
-		return false
-	end
-	camera_timer = system.getTimer()
-
     if(event.phase == "began") then
         camera_drag_begin_x = event.x
         camera_drag_begin_y = event.y
@@ -132,7 +127,7 @@ function CameraMap.CameraDrag(event)
         camera_x_animation_offset_focus = camera_drag_x
         camera_y_animation_offset_focus = camera_drag_y
 
-    elseif(event.phase == "ended") then
+    elseif(event.phase == "ended" or event.phase == "cancelled") then
         camera_x_animation_offset_focus = 0
         camera_y_animation_offset_focus = 0
         camera_animation_speed_x = 0

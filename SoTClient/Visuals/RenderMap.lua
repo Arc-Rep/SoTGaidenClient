@@ -8,6 +8,7 @@ local RenderTiles = require "SoTClient.Visuals.RenderTile"
 local LazyEval = require "SoTClient.Utils.LazyEval"
 
 local visual_tile_width, visual_tile_height
+local camera_timer = 0
 local map_created = false
 
 local tilemap = {}
@@ -38,12 +39,10 @@ function RenderMap.SetRenderMap(map, map_type, unit_list, focus, surface_map, su
     RenderSurfaceMap:addEventListener("touch", 
         function(event) 
             if(#skill_tilemap_area ~= 0) then
-                return
+                return false
             end 
-            Camera.CameraDrag(event) 
-            if(event.phase ~= "ended") then
-                RenderMap.UpdateTilemap(map)
-            else
+            if(event.phase == "ended") then
+                Camera.CameraDrag(event) 
                 local function iter_animation()
                     RenderMap.UpdateTilemap(map)
                     if(Camera.CheckAnimationExists() == true) then 
@@ -51,7 +50,14 @@ function RenderMap.SetRenderMap(map, map_type, unit_list, focus, surface_map, su
                     end
                 end
                 iter_animation()
+                return true
             end
+            if (camera_timer + 30 > system.getTimer()) then
+                return false
+            end
+            camera_timer = system.getTimer()
+            Camera.CameraDrag(event)
+            RenderMap.UpdateTilemap(map) 
         end)
     inbound_characters = unit_list
 end
