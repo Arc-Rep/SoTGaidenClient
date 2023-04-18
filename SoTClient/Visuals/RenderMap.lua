@@ -21,9 +21,12 @@ local RenderSurfaceMap = nil
 function RenderMap.SetCamera(map, focus)
     Camera.setup(map, ScreenInfo, focus)
 
-    for tile_x = 1, map["x"], 1 do
+    local camera_tile_width = math.floor(Camera.getTileWidth()) + 1
+    local camera_tile_height = math.floor(Camera.getTileHeight()) + 1
+
+    for tile_x = -camera_tile_width, map["x"] + camera_tile_width, 1 do
         tilemap[tile_x] = {}
-        for tile_y = 1, map["y"], 1 do
+        for tile_y = -camera_tile_height, map["y"] + camera_tile_height, 1 do
             tilemap[tile_x][tile_y] = nil
         end
     end
@@ -152,62 +155,71 @@ function RenderMap.UpdateTilemap(map)
     for x = Camera.getStartTileX(), Camera.getStartTileX() + Camera.getTileWidth(), 1 do
         tile_x = math.floor(x)
 
-        if(map[tile_x] ~= nil) then
-            for y = Camera.getStartTileY(), Camera.getStartTileY() + Camera.getTileHeight(), 1 do
-                tile_y = math.floor(y)
+        for y = Camera.getStartTileY(), Camera.getStartTileY() + Camera.getTileHeight(), 1 do
+            tile_y = math.floor(y)
+            print(Camera.getTileWidth())
+            print(Camera.getTileHeight())
+            if(tilemap[tile_x][tile_y] == nil) then
+                
+                if(LOR(map[tile_x] == nil, function() return map[tile_x][tile_y] == nil end)) then
+                    tilemap[tile_x][tile_y] = display.newImageRect(
+                        RenderTiles.ReturnDefaultEmptyTile().filename,
+                        RenderTiles.ReturnDefaultEmptyTile().baseDir,
+                        Camera.getRealTileSize(),
+                        Camera.getRealTileSize()
+                    )                    
+                    tilemap[tile_x][tile_y].strokeWidth = 3
+                    tilemap[tile_x][tile_y]:setFillColor(0.5)
+                    tilemap[tile_x][tile_y]:setStrokeColor(0, 0, 0)
 
-                if(map[tile_x][tile_y] ~= nil) then
-                        
-                    if(tilemap[tile_x][tile_y] == nil) then
-                        --tilemap[tile_x][tile_y]:translate( -move_x * Camera.getRealTileSize(), -move_y * Camera.getRealTileSize())
-                           
-                        if(map[tile_x][tile_y]["Texture"] ~= nil) then
-                            tilemap[tile_x][tile_y] = display.newImageRect(
-                                map[tile_x][tile_y]["Texture"].filename,
-                                map[tile_x][tile_y]["Texture"].baseDir,
-                                Camera.getRealTileSize(),
-                                Camera.getRealTileSize()
-                            )
-                        else
-                            tilemap[tile_x][tile_y] = display.newImageRect(
-                                RenderTiles.ReturnDefaultEmptyTile().filename,
-                                RenderTiles.ReturnDefaultEmptyTile().baseDir,
-                                Camera.getRealTileSize(),
-                                Camera.getRealTileSize()
-                            )
-                        end
-                        
-                        if(map[tile_x][tile_y]["Tile"] == 0) then
-                            tilemap[tile_x][tile_y].strokeWidth = 3
-                            tilemap[tile_x][tile_y]:setFillColor(0.5)
-                            tilemap[tile_x][tile_y]:setStrokeColor(0, 0, 0)
-                        elseif(map[tile_x][tile_y]["Tile"] == 1) then
-                            tilemap[tile_x][tile_y].strokeWidth = 3
-                            tilemap[tile_x][tile_y]:setFillColor(0.5)
-                            tilemap[tile_x][tile_y]:setStrokeColor(1, 0, 0)
-                        elseif(map[tile_x][tile_y]["Tile"] == 2) then
-                            tilemap[tile_x][tile_y].strokeWidth = 3
-                            tilemap[tile_x][tile_y]:setFillColor(0.5)
-                            tilemap[tile_x][tile_y]:setStrokeColor(0, 1, 0)
-                        elseif(map[tile_x][tile_y]["Tile"] == 3) then
-                            tilemap[tile_x][tile_y].strokeWidth = 3
-                            tilemap[tile_x][tile_y]:setFillColor(0.5)
-                            tilemap[tile_x][tile_y]:setStrokeColor(0, 0, 1)
-                        else
-                            tilemap[tile_x][tile_y].strokeWidth = 3
-                            tilemap[tile_x][tile_y]:setFillColor(0.5)
-                            tilemap[tile_x][tile_y]:setStrokeColor(1, 1, 1)
-                        end
-
-                        RenderSurfaceMap:insert(tilemap[tile_x][tile_y])
+                else
+                    
+                    if(map[tile_x][tile_y]["Texture"] ~= nil) then
+                        tilemap[tile_x][tile_y] = display.newImageRect(
+                            map[tile_x][tile_y]["Texture"].filename,
+                            map[tile_x][tile_y]["Texture"].baseDir,
+                            Camera.getRealTileSize(),
+                            Camera.getRealTileSize()
+                        )
+                    else
+                        tilemap[tile_x][tile_y] = display.newImageRect(
+                            RenderTiles.ReturnDefaultEmptyTile().filename,
+                            RenderTiles.ReturnDefaultEmptyTile().baseDir,
+                            Camera.getRealTileSize(),
+                            Camera.getRealTileSize()
+                        )
                     end
                     
-                    tilemap[tile_x][tile_y].x = 
-                    ((-Camera.getStartTileX() + tile_x) - Camera.getDeviationX()) * Camera.getRealTileSize()
-                    tilemap[tile_x][tile_y].y = 
-                    ((-Camera.getStartTileY() + tile_y) - Camera.getDeviationY()) * Camera.getRealTileSize()
+                    if(map[tile_x][tile_y]["Tile"] == 0) then
+                        tilemap[tile_x][tile_y].strokeWidth = 3
+                        tilemap[tile_x][tile_y]:setFillColor(0.5)
+                        tilemap[tile_x][tile_y]:setStrokeColor(0, 0, 0)
+                    elseif(map[tile_x][tile_y]["Tile"] == 1) then
+                        tilemap[tile_x][tile_y].strokeWidth = 3
+                        tilemap[tile_x][tile_y]:setFillColor(0.5)
+                        tilemap[tile_x][tile_y]:setStrokeColor(1, 0, 0)
+                    elseif(map[tile_x][tile_y]["Tile"] == 2) then
+                        tilemap[tile_x][tile_y].strokeWidth = 3
+                        tilemap[tile_x][tile_y]:setFillColor(0.5)
+                        tilemap[tile_x][tile_y]:setStrokeColor(0, 1, 0)
+                    elseif(map[tile_x][tile_y]["Tile"] == 3) then
+                        tilemap[tile_x][tile_y].strokeWidth = 3
+                        tilemap[tile_x][tile_y]:setFillColor(0.5)
+                        tilemap[tile_x][tile_y]:setStrokeColor(0, 0, 1)
+                    else
+                        tilemap[tile_x][tile_y].strokeWidth = 3
+                        tilemap[tile_x][tile_y]:setFillColor(0.5)
+                        tilemap[tile_x][tile_y]:setStrokeColor(1, 1, 1)
+                    end
                 end
+                
+                RenderSurfaceMap:insert(tilemap[tile_x][tile_y])
             end
+            
+            tilemap[tile_x][tile_y].x = 
+            ((-Camera.getStartTileX() + tile_x) - Camera.getDeviationX()) * Camera.getRealTileSize()
+            tilemap[tile_x][tile_y].y = 
+            ((-Camera.getStartTileY() + tile_y) - Camera.getDeviationY()) * Camera.getRealTileSize()
         end
     end
     map_created = true

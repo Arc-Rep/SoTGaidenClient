@@ -18,7 +18,6 @@ local camera_drag_x, camera_drag_y = 0, 0
 local camera_x_animation_offset, camera_y_animation_offset = 0, 0
 local camera_x_animation_offset_focus, camera_y_animation_offset_focus = 0, 0
 local camera_animation_speed_x, camera_animation_speed_y
-local camera_timer
 local focus_element_queue = {}
 
 
@@ -208,9 +207,7 @@ function CameraMap.setup(Map, screen_info, focus)
     
     CameraMap.zoomSetup()
     CameraMap.addFocus(focus)
-
-    camera_timer = system.getTimer()
-
+     
     return true
 end
 
