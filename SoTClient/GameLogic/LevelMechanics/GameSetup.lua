@@ -28,20 +28,6 @@ function GameSetup.SetupPlayerUnits(unit_table, Squads)
     unit2["Str"] = 3
     unit2["Def"] = 1
     unit2["currentHP"] = 30
-
-    local unitenemy1 = {}
-    unitenemy1["Actor"] = "Enemy"
-    unitenemy1["ID"] = -146
-    unitenemy1["Status"] = "Standby"
-    unitenemy1["Team"] = 0
-    unitenemy1["ControlType"] = "CPU-H"
-    unitenemy1["Focus"] = nil
-    unitenemy1["Str"] = 3
-    unitenemy1["Def"] = 1
-    unitenemy1["Res"] = 3
-    unitenemy1["elem_res"] = {}
-    unitenemy1["elem_res"]["Light"] = 0.3
-    unitenemy1["currentHP"] = 30
     
     
     Squads[unit1["Team"]] = {}
@@ -50,10 +36,36 @@ function GameSetup.SetupPlayerUnits(unit_table, Squads)
     table.insert(Squads[unit1["Team"]], unit1)
     table.insert(Squads[unit1["Team"]], unit2)
 
-    Squads[unitenemy1["Team"]] = {}
-    table.insert(unit_table, unitenemy1)
-    table.insert( Squads[unitenemy1["Team"]], unitenemy1)
+    GameSetup.SetupEnemyUnits(game_map, unit_table, Squads, 1
+)
 end
+
+function GameSetup.SetupEnemyUnits(game_map, unit_table, Squads, difficulty)
+    local map_enemy_number = levelgen.generateRandomBetween(difficulty * 3, difficulty * 5)
+    local current_difficulty = (map_enemy_number - difficulty * 3)  / difficulty * 2;
+
+    Squads[0] = {}
+
+    for enemy_index = 1, map_enemy_number, 1 do
+        local enemy_unit = {}
+        enemy_unit["Actor"] = "Enemy"
+        enemy_unit["ID"] = "-" .. enemy_index
+        enemy_unit["Status"] = "Standby"
+        enemy_unit["Team"] = 0
+        enemy_unit["ControlType"] = "CPU-H"
+        enemy_unit["Focus"] = nil
+        enemy_unit["Str"] = 3
+        enemy_unit["Def"] = 1
+        enemy_unit["Res"] = 3
+        enemy_unit["elem_res"] = {}
+        enemy_unit["elem_res"]["Light"] = 0.3
+        enemy_unit["currentHP"] = 30
+
+        table.insert(unit_table, enemy_unit)
+        table.insert(Squads[enemy_unit["Team"]], enemy_unit)
+    end
+end
+
 
 function GameSetup.SetupPlayerInitPlacements(game_map, player_units)
 

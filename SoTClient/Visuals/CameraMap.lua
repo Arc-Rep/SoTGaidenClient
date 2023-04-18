@@ -38,9 +38,10 @@ function CameraMap.updateFocusAnimated()
 
     local camera_x_prev = camera_x
     local camera_y_prev = camera_y
-
-    camera_focus_x = focus_element_queue[1]["x"]
-    camera_focus_y = focus_element_queue[1]["y"]
+    if(focus_element_queue[1]["x"] ~= nil and focus_element_queue[1]["y"] ~= nil) then
+        camera_focus_x = focus_element_queue[1]["x"]
+        camera_focus_y = focus_element_queue[1]["y"]
+    end
     if(CameraMap.CheckAnimationExists() == true) then
         CameraMap.DoCameraAnimation(camera_x_animation_offset_focus,camera_y_animation_offset_focus)
     end

@@ -10,7 +10,7 @@ local RenderBroker = require "SotClient.Visuals.RenderBroker"
 local GameOverseer = require "SotClient.GameLogic.LevelMechanics.GameOverseer"
 local MapData = require "SoTClient.GameLogic.Scenarios.MissionMap"
 local Player = require "SoTClient.GameLogic.PlayerLogic.Player"
-local seed1, seed2 = 14638, 3527
+local seed1, seed2 = 14638, 3533
 local cutscene = {false}
 
 function scene:create( event )
