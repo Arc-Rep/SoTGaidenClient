@@ -11,46 +11,8 @@ local PlayerUI = display.newGroup()
 local AbilityUI = display.newGroup()
 local DpadUI = display.newGroup()
 
--- UI status registers
-local hpoptions = {
-    width = 60,
-    height = 20,
-    numFrames = 3,
-    sheetContentWidth = 1000,
-    sheetContentHeight = 20
-}
-local hpprogressSheet = graphics.newImageSheet( "GameResources/ToBeRemoved/health-bar.png", hpoptions )
-local hpprogressView = widget.newProgressView(
-    {
-        sheet = hpprogressSheet,
-        fillWidth = 32,
-        fillHeight = 25,
-        left = 180,
-        top = 23,
-        width = 21,
-        isAnimated = true
-    }
-)
-
-local essenceoptions = {
-    width = 60,
-    height = 20,
-    numFrames = 3,
-    sheetContentWidth = 1000,
-    sheetContentHeight = 20
-}
-local essenceprogressSheet = graphics.newImageSheet( "GameResources/ToBeRemoved/mana-bar.png", essenceoptions )
-local essenceprogressView = widget.newProgressView(
-    {
-        sheet = essenceprogressSheet,
-        fillWidth = 32,
-        fillHeight = 25,
-        left = 180,
-        top = 75,
-        width = 215,
-        isAnimated = true
-    }
-)
+local hpprogressView = nil
+local essenceprogressView = nil
 
 local active_skill = nil
 ---------------------------------------------------------------------------------
@@ -212,24 +174,83 @@ function CombatUI.createPlayerUI(UIGroup)
     UICompanionPanel3.maskScaleX, UICompanionPanel3.maskScaleY = 0.08,0.1
     PlayerUI:insert(UICompanionPanel3)
 
-    local hpTextX = UIPlayerPanelW * 0.98
-    local hpTextY = UIPlayerPanelH * 0.01
-    local hpText = display.newText( Player.currenthp.."/"..Player.maxhp.."HP", hpTextX, hpTextY, native.systemFont, 24 )
+    local hpTextX    = UIPlayerPanelW * 0.98
+    local hpTextY    = UIPlayerPanelH * 0.01
+    local hpTextSize = 24
+    local hpText = display.newText( Player.currenthp.."/"..Player.maxhp.."HP", hpTextX, hpTextY, native.systemFont, hpTextSize )
     hpText.anchorX = 1
     hpText:setFillColor( 1, 0, 0 )
     PlayerUI:insert(hpText)
+
+    -- UI status registers
+    local hpoptions = {
+        width = 72,
+        height = 72,
+        numFrames = 6
+    }
     
-    hpprogressView.width = UIPlayerPanelW * 0.5
-    hpprogressView.top   = UICompanionPanel3Y
-    hpprogressView.left  = UICompanionPanel3X + UICompanionPanelW*5
+    local hpprogressSheet = graphics.newImageSheet( "GameResources/ToBeRemoved/health-bar.png", hpoptions )
+
+    hpprogressView = widget.newProgressView(
+        {
+            sheet = hpprogressSheet,
+            fillWidth = UIPlayerPanelW * 0.05,
+            fillHeight = UIPlayerPanelH * 0.2,
+            fillOuterWidth = UIPlayerPanelW * 0.05,
+            fillOuterHeight = UIPlayerPanelH * 0.2,
+            left = UIPlayerPanelW * 0.31,
+            top = hpTextY + hpTextSize,
+            width = UIPlayerPanelW * 0.70,
+            fillOuterLeftFrame = 1,
+            fillOuterMiddleFrame = 2,
+            fillOuterRightFrame = 3,
+            fillInnerLeftFrame = 4,
+            fillInnerMiddleFrame = 5,
+            fillInnerRightFrame = 6,
+            isAnimated = true
+        }
+    )
+    hpprogressView:setProgress(1)
     PlayerUI:insert(hpprogressView)
-    local essenceTextX = UIPlayerPanelW * 0.98
-    local essenceTextY = UIPlayerPanelH / 2
-    local essenceText = display.newText( Player.currentessence.."/"..Player.maxessence.."AP", essenceTextX, essenceTextY, native.systemFont, 24 )
+
+    local essenceTextX    = UIPlayerPanelW * 0.98
+    local essenceTextY    = UIPlayerPanelH / 2
+    local essenceTextSize = 24
+    local essenceText = display.newText( Player.currentessence.."/"..Player.maxessence.."AP", essenceTextX, essenceTextY, native.systemFont, essenceTextSize )
     essenceText:setFillColor( 0, 0, 1 )
     essenceText.anchorX = 1
     essenceText.anchorY = 0
     PlayerUI:insert(essenceText)
+
+    
+    local essenceoptions = {
+        width = 72,
+        height = 72,
+        numFrames = 6
+    }
+
+    local essenceprogressSheet = graphics.newImageSheet( "GameResources/ToBeRemoved/mana-bar.png", essenceoptions )
+    
+    essenceprogressView = widget.newProgressView(
+        {
+            sheet = essenceprogressSheet,
+            fillWidth = UIPlayerPanelW * 0.05,
+            fillHeight = UIPlayerPanelH * 0.2,
+            fillOuterWidth = UIPlayerPanelW * 0.05,
+            fillOuterHeight = UIPlayerPanelH * 0.2,
+            left = UIPlayerPanelW * 0.31,
+            top = essenceTextY + hpTextSize,
+            width = UIPlayerPanelW * 0.70,
+            fillOuterLeftFrame = 1,
+            fillOuterMiddleFrame = 2,
+            fillOuterRightFrame = 3,
+            fillInnerLeftFrame = 4,
+            fillInnerMiddleFrame = 5,
+            fillInnerRightFrame = 6,
+            isAnimated = true
+        }
+    )
+    essenceprogressView:setProgress(1)
     PlayerUI:insert(essenceprogressView)
     ---------------------------------------------------------------------------------
 

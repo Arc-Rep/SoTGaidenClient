@@ -24,10 +24,10 @@ end
 -- create a tabBar widget with two buttons at the bottom of the screen
 
 -- table to setup buttons
-local tabButtons = {
-	{ label="First", defaultFile="button1.png", overFile="button1-down.png", width = 32, height = 32, onPress=onFirstView, selected=true },
-	{ label="Second", defaultFile="button2.png", overFile="button2-down.png", width = 32, height = 32, onPress=onSecondView },
-}
+--local tabButtons = {
+--	{ label="First", defaultFile="button1.png", overFile="button1-down.png", width = 32, height = 32, onPress=onFirstView, selected=true },
+--	{ label="Second", defaultFile="button2.png", overFile="button2-down.png", width = 32, height = 32, onPress=onSecondView },
+--}
 
 -- create the actual tabBar widget
 --[[local tabBar = widget.newTabBar{

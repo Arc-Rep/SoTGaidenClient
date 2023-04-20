@@ -55,9 +55,9 @@ function RenderBroker.SetTileMap(map, map_type)
 end
 
 function RenderBroker.SetUI()
-	CombatUI.setHP()
-	CombatUI.setEssence()
 	CombatUI.createPlayerUI(ui_group)
+    CombatUI.setHP()
+	CombatUI.setEssence()
 end
 
 function RenderBroker.SetRenderBattle(map, map_type, sceneGroup)
