@@ -110,8 +110,8 @@ function CameraMap.CameraDrag(event)
             camera_drag_y = CAMERA_MAX_TILE_DRAG
         end
 
-        camera_x_animation_offset_focus = camera_drag_x
-        camera_y_animation_offset_focus = camera_drag_y
+        camera_x_animation_offset_focus = -camera_drag_x
+        camera_y_animation_offset_focus = -camera_drag_y
 
     elseif(event.phase == "ended" or event.phase == "cancelled") then
         camera_x_animation_offset_focus = 0
