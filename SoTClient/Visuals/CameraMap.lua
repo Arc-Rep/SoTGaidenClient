@@ -33,11 +33,9 @@ function CameraMap.updateFocusAnimated()
     end
     camera_x = camera_focus_x + camera_x_animation_offset 
     camera_y = camera_focus_y + camera_y_animation_offset
-    print(camera_x_animation_offset)
-    print(camera_x_animation_offset_focus)
     camera_start_x = camera_x - camera_tile_width/2
     camera_start_y = camera_y - camera_tile_height/2
-    --print("x, y " .. camera_start_x .. "/ " .. camera_start_y)
+
     return camera_x - camera_x_prev, camera_y - camera_y_prev
 end
 

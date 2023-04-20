@@ -21,7 +21,7 @@ end
 function GetSkillMapRange(map, atk_char, skill)
     local skill_range_tile_list = {}
 
-    print(skill["Name"])
+    --print(skill["Name"])
 
     if (skill["TargetType"] == "Self") then
         return {{x = atk_char["x"], y = atk_char["y"]}}
@@ -38,8 +38,8 @@ function GetSkillMapRange(map, atk_char, skill)
         
     local relative_x = -skill["Range"]
     
-    print(atk_char["x"])
-    print(atk_char["y"])
+    --print(atk_char["x"])
+    --print(atk_char["y"])
 
     for x = skill_x_start, skill_x_end, 1 do
         local relative_y = -skill["Range"]

@@ -121,8 +121,9 @@ function RenderMap.UpdateTilemap(map)
 
     local move_x, move_y = Camera.updateFocusAnimated()
 
+    RenderMap.UpdateCharacters(move_x, move_y)
+
     if(move_x == 0 and move_y == 0 and map_created == true) then
-        RenderMap.UpdateCharacters(move_x, move_y)
         return
     end
 
@@ -157,8 +158,7 @@ function RenderMap.UpdateTilemap(map)
 
         for y = Camera.getStartTileY(), Camera.getStartTileY() + Camera.getTileHeight(), 1 do
             tile_y = math.floor(y)
-            print(Camera.getTileWidth())
-            print(Camera.getTileHeight())
+            
             if(tilemap[tile_x][tile_y] == nil) then
                 
                 if(LOR(map[tile_x] == nil, function() return map[tile_x][tile_y] == nil end)) then
@@ -223,8 +223,6 @@ function RenderMap.UpdateTilemap(map)
         end
     end
     map_created = true
-
-    RenderMap.UpdateCharacters(move_x, move_y)
 
     return tilemap
 end
