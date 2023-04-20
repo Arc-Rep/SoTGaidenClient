@@ -98,7 +98,7 @@ function CombatUI.createPlayerUI(UIGroup)
    
     --ABILITIES UI
     local AbilityPanelW = display.contentWidth * 0.40
-    local AbilityPanelH = display.contentHeight * 0.20
+    local AbilityPanelH = AbilityPanelW * 0.25
     local UIAbilitiesPanel = display.newRect(0, display.contentHeight, AbilityPanelW, AbilityPanelH)
     UIAbilitiesPanel.anchorX = 0
     UIAbilitiesPanel.anchorY = 1
@@ -126,57 +126,69 @@ function CombatUI.createPlayerUI(UIGroup)
 
     --PLAYER UI
     local UIPlayerPanelW = display.contentWidth * 0.50
-    local UIPlayerPanelH = display.contentHeight * 0.25
+    local UIPlayerPanelH = UIPlayerPanelW * 0.20
     local UIPlayerPanel = display.newRect(0, 0, UIPlayerPanelW, UIPlayerPanelH)
     UIPlayerPanel.alpha = 0.5
     PlayerUI:insert(UIPlayerPanel)
+
+    -- Define inter-component spacing
+    UIPlayerSpacingX = UIPlayerPanelW * 0.02
+    UIPlayerSpacingY = UIPlayerPanelH * 0.1
+
     -- Create and position image to be masked
-    local UIPlayerPortraitW = UIPlayerPanelH * 0.7
-    local UIPlayerPortraitH = UIPlayerPortraitW * 1.2
+    local UIPlayerPortraitW = UIPlayerPanelW * 0.15
+    local UIPlayerPortraitH = UIPlayerPanelH - (UIPlayerSpacingY * 2)
     local UIPlayerPortrait = display.newImageRect( "GameResources/ToBeRemoved/andre.png", UIPlayerPortraitW, UIPlayerPortraitH)
-    local UIPlayerPortraitX = UIPlayerPanelW * 0.02
-    local UIPlayerPortraitY = UIPlayerPanelH * 0.08
+    local UIPlayerPortraitX = UIPlayerSpacingX 
+    local UIPlayerPortraitY = UIPlayerSpacingY
     UIPlayerPortrait:translate( UIPlayerPortraitX, UIPlayerPortraitY )
     -- Create mask and apply to image
-    local mask = graphics.newMask( "GameResources/ToBeRemoved/circ_mask.png" )
+    local mask  = graphics.newMask( "GameResources/ToBeRemoved/circ_mask.png" )
     UIPlayerPortrait:setMask( mask )
     -- Transform mask
-    UIPlayerPortrait.maskScaleX, UIPlayerPortrait.maskScaleY = 0.20,0.25
+    UIPlayerPortrait.maskScaleX, UIPlayerPortrait.maskScaleY = 0.20, 0.25
     PlayerUI:insert(UIPlayerPortrait)
 
     -- UI Companion Variables
-    local UICompanionPanelW = UIPlayerPanelH * 0.5
-    local UICompanionPanelH = UICompanionPanelW
-    local UICompanionPanel1X = UIPlayerPortraitX + UIPlayerPortraitW
-    local UICompanionPanel1Y = -UIPlayerPortraitY
-    local UICompanionPanel1 = display.newImageRect( "GameResources/ToBeRemoved/joao.png", UICompanionPanelW, UICompanionPanelH )
-    UICompanionPanel1:translate( UICompanionPanel1X, UICompanionPanel1Y)
+    local UICompanionPanelW = UIPlayerPanelW * 0.3
+    local UICompanionPanelH = UIPlayerPanelH
+    local UICompanionPanelX = UIPlayerPortraitX + UIPlayerPortraitW
+    local UICompanionPanelY = 0
+    local UICompanionIconH  = UIPlayerPanelH * 0.5
+    local UICompanionIconW  = UICompanionIconH
+    local UICompanionMaskScaleX = 0.10
+    local UICompanionMaskScaleY = 0.12
+
+    local UICompanionIcon1X = UICompanionPanelX
+    local UICompanionIcon1Y = UICompanionPanelY
+    local UICompanionIcon1  = display.newImageRect( "GameResources/ToBeRemoved/joao.png", UICompanionIconW, UICompanionIconH )
+    UICompanionIcon1:translate( UICompanionIcon1X, UICompanionIcon1Y )
     local mask = graphics.newMask( "GameResources/ToBeRemoved/circ_mask.png" )
-    UICompanionPanel1:setMask( mask )
-    UICompanionPanel1.maskScaleX, UICompanionPanel1.maskScaleY = 0.08,0.1
-    PlayerUI:insert(UICompanionPanel1)
+    UICompanionIcon1:setMask( mask )
+    UICompanionIcon1.maskScaleX, UICompanionIcon1.maskScaleY = UICompanionMaskScaleX, UICompanionMaskScaleY
+    PlayerUI:insert(UICompanionIcon1)
 
-    local UICompanionPanel2 = display.newImageRect( "GameResources/ToBeRemoved/joao.png", UICompanionPanelW, UICompanionPanelH )
-    local UICompanionPanel2X = UICompanionPanel1X
-    local UICompanionPanel2Y = UIPlayerPanelH - UIPlayerPortraitY
-    UICompanionPanel2.anchorY = 0.7
-    UICompanionPanel2:translate( UICompanionPanel2X, UICompanionPanel2Y )
-    UICompanionPanel2:setMask( mask )
-    UICompanionPanel2.maskScaleX, UICompanionPanel2.maskScaleY = 0.08,0.1
-    PlayerUI:insert(UICompanionPanel2)
+    local UICompanionIcon2 = display.newImageRect( "GameResources/ToBeRemoved/joao.png", UICompanionIconW, UICompanionIconH )
+    local UICompanionIcon2X = UICompanionIcon1X
+    local UICompanionIcon2Y = UICompanionPanelH - UICompanionPanelY
+    UICompanionIcon2.anchorY = 1
+    UICompanionIcon2:translate( UICompanionIcon2X, UICompanionIcon2Y )
+    UICompanionIcon2:setMask( mask )
+    UICompanionIcon2.maskScaleX, UICompanionIcon2.maskScaleY = UICompanionMaskScaleX, UICompanionMaskScaleY
+    PlayerUI:insert(UICompanionIcon2)
 
-    local UICompanionPanel3 = display.newImageRect( "GameResources/ToBeRemoved/joao.png", UICompanionPanelW, UICompanionPanelH )
-    local UICompanionPanel3X = UICompanionPanel1X + UICompanionPanelW * 0.50
-    local UICompanionPanel3Y = UIPlayerPanelH/2
-    UICompanionPanel3.anchorY = 0.5
-    UICompanionPanel3:translate( UICompanionPanel3X, UICompanionPanel3Y )
-    UICompanionPanel3:setMask( mask )
-    UICompanionPanel3.maskScaleX, UICompanionPanel3.maskScaleY = 0.08,0.1
-    PlayerUI:insert(UICompanionPanel3)
+    local UICompanionIcon3 = display.newImageRect( "GameResources/ToBeRemoved/joao.png", UICompanionIconW, UICompanionIconH )
+    local UICompanionIcon3X = UICompanionIcon1X + UICompanionIconW * 0.7
+    local UICompanionIcon3Y = UIPlayerPanelH/2
+    UICompanionIcon3.anchorY = 0.5
+    UICompanionIcon3:translate( UICompanionIcon3X, UICompanionIcon3Y )
+    UICompanionIcon3:setMask( mask )
+    UICompanionIcon3.maskScaleX, UICompanionIcon3.maskScaleY = UICompanionMaskScaleX, UICompanionMaskScaleY
+    PlayerUI:insert(UICompanionIcon3)
 
     local hpTextX    = UIPlayerPanelW * 0.98
-    local hpTextY    = UIPlayerPanelH * 0.01
-    local hpTextSize = 24
+    local hpTextY    = UIPlayerPanelH * 0.001
+    local hpTextSize = UIPlayerPanelH * 0.25
     local hpText = display.newText( Player.currenthp.."/"..Player.maxhp.."HP", hpTextX, hpTextY, native.systemFont, hpTextSize )
     hpText.anchorX = 1
     hpText:setFillColor( 1, 0, 0 )
@@ -214,8 +226,8 @@ function CombatUI.createPlayerUI(UIGroup)
     PlayerUI:insert(hpprogressView)
 
     local essenceTextX    = UIPlayerPanelW * 0.98
-    local essenceTextY    = UIPlayerPanelH / 2
-    local essenceTextSize = 24
+    local essenceTextY    = hpTextY + hpTextSize + UIPlayerPanelH * 0.2
+    local essenceTextSize = UIPlayerPanelH * 0.25
     local essenceText = display.newText( Player.currentessence.."/"..Player.maxessence.."AP", essenceTextX, essenceTextY, native.systemFont, essenceTextSize )
     essenceText:setFillColor( 0, 0, 1 )
     essenceText.anchorX = 1
