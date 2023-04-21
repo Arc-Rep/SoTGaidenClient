@@ -17,6 +17,35 @@ function MissionMapUtils.CheckDirectWalkDistance(tile1_x, tile1_y, tile2_x, tile
     return math.max(math.abs(tile1_x - tile2_x), math.abs(tile1_y - tile2_y))
 end
 
+function MissionMapUtils.CheckRoomCardinalDist(room1, room2)
+    local dist_x, dist_y
+
+    if(room1["x"] >= room2["x"] + room2["columns"]) then
+        dist_x = room1["x"] - (room2["x"] + room2["columns"])
+
+    elseif(room2["x"] >= room1["x"] + room1["columns"]) then
+        dist_x = room2["x"] - (room1["x"] + room1["columns"])
+    else
+        dist_x = 0
+    end
+
+    if(room1["y"] >= room2["y"] + room2["rows"]) then
+        dist_y = room1["y"] - (room2["y"] + room2["rows"])
+
+    elseif(room2["y"] >= room1["y"] + room1["rows"]) then
+        dist_y = room2["y"] - (room1["y"] + room1["rows"])
+    else
+        dist_y = 0
+    end
+
+    return dist_x, dist_y
+end
+
+function MissionMapUtils.CheckRoomRealDistance(room1, room2)
+    local room_dist_x, room_dist_y = MissionMapUtils.CheckRoomCardinalDist(room1, room2)
+    return math.sqrt(room_dist_x^2 + room_dist_y^2)
+end
+
 function MissionMapUtils.checkEmptySpace(map, x, y)
     if(x > map["x"] or y > map["y"]) then
         return false

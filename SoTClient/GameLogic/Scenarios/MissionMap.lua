@@ -7,8 +7,8 @@ local levelgen = require "SoTClient.GameLogic.Scenarios.LevelGen"
 local missionmaputils = require "SoTClient.GameLogic.Scenarios.MissionMapUtils"
 local map = {}
 local empty, walkable, exit, entrance = 0, 1, 2, 3
-local min_x, max_x = 30, 40
-local min_y, max_y = 30, 40
+local min_x, max_x = 40, 50
+local min_y, max_y = 40, 50
 local min_room_wall_size, max_room_wall_size = 3, 10
 local min_room_num, max_room_num = 4, 10
 
@@ -49,6 +49,14 @@ local function CheckRoomSuitability(room)
             if map[i][j]["Tile"] ~= empty then
                 return false
             end
+        end
+    end
+
+    for i = 1, #map["rooms"], 1 do
+        local dist_x, dist_y = missionmaputils.CheckRoomCardinalDist(room, map["rooms"][i])
+
+        if(dist_x <= 2 and dist_y <= 2) then
+            return false
         end
     end
 end
@@ -123,20 +131,13 @@ local function MapRoomEssentials(mission_type)
 
 end
 
-local function CheckRoomDist(room1, room2)
-    local rect_x_beg, rect_x_end = math.min(room1["x"], room2["x"]), math.max(room1["columns"] + room1["x"],room2["columns"] + room2["x"])
-    local rect_y_beg, rect_y_end = math.min(room1["y"], room2["y"]), math.max(room1["rows"] + room1["y"],room2["rows"] + room2["y"])
-    local rect_x_dist, rect_y_dist= rect_x_end - rect_x_beg, rect_y_end - rect_y_beg
-    return math.sqrt(rect_x_dist^2 + rect_y_dist^2)
-end
-
 local function AssignClosestRoom(room_index, room)
 
     local closest_k, min_dist_found = nil, nil
 
     for k, checkroom in ipairs(map["rooms"]) do
         if(k ~= room_index) then
-            local cur_dist = CheckRoomDist(room, checkroom)
+            local cur_dist = missionmaputils.CheckRoomRealDistance(room, checkroom)
             if(min_dist_found == nil) or cur_dist < min_dist_found then
                 min_dist_found = cur_dist
                 closest_k = k
@@ -204,7 +205,7 @@ local function ConnectPartitions(room_partitions, part1, part2)
         if(part1 == temp_part1) then
             for k2, temp_part2  in ipairs(room_partitions) do
                 if(temp_part2 == part2) then
-                    temp_dist = CheckRoomDist(map["rooms"][k1], map["rooms"][k2])
+                    temp_dist = missionmaputils.CheckRoomRealDistance(map["rooms"][k1], map["rooms"][k2])
                     if((room1 == nil) or (temp_dist < min_dist)) then
                         room1 = k1
                         room2 = k2
@@ -268,7 +269,7 @@ end
 function MissionMap.generateMap(mission_type, seed1, seed2, difficulty_level)
     levelgen.setSeed(seed1, seed2)
     local x, y = levelgen.generateRandomBetween(min_x, max_x), levelgen.generateRandomBetween(min_y, max_y)
-    print( "x" .. x .. "\ny" .. y)
+    --print( "x" .. x .. "\ny" .. y)
     map["x"] = x
     map["y"] = y
     map["rooms"] = {}
