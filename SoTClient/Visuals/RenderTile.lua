@@ -184,7 +184,7 @@ local function SetTunnelTileTexture(map, tile_x, tile_y)
                 map[tile_x][tile_y]["Texture"] = MapFiles["floor"][5][1] -- wall left and below, to change to 1
             end
         elseif(tile_y < map["y"] and map[tile_x][tile_y + 1]["Tile"] == 1) then
-            map[tile_x][tile_y]["Texture"] = MapFiles["floor"][7][1]
+            map[tile_x][tile_y]["Texture"] = MapFiles["floor"][5][1] -- wall left and below, to change to 7
         else
             map[tile_x][tile_y]["Texture"] = MapFiles["floor"][4][1] -- dead end, to change
         end

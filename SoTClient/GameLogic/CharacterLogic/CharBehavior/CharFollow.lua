@@ -5,7 +5,7 @@ local missionmaputils = require "SoTClient.GameLogic.Scenarios.MissionMapUtils"
 
 local UP, LEFT, UNDIRECTED, DOWN, RIGHT  = -1, -1, 0, 1, 1
 local DIRECT_ORDER = {-1, 1, 0}
-local MAX_FOLLOW_RANGE = 5
+local MAX_FOLLOW_RANGE = 6
 
 local follow_map, direct_queue, semi_direct_queue, side_queue, back_queue = {}, {}, {}, {}, {}
 local start_x, start_y = 0, 0

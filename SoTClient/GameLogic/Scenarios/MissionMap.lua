@@ -55,7 +55,7 @@ local function CheckRoomSuitability(room)
     for i = 1, #map["rooms"], 1 do
         local dist_x, dist_y = missionmaputils.CheckRoomCardinalDist(room, map["rooms"][i])
 
-        if(dist_x <= 2 and dist_y <= 2) then
+        if(dist_x <= 3 and dist_y <= 3) then
             return false
         end
     end
@@ -70,7 +70,7 @@ local function ParseRoomToMap(room, room_x, room_y)
 end
 
 local function MakeRoom(room_x, room_y, min_room_size, max_room_size, room_type)
-    local room, added_tiles = {}, 0
+    local room = {}
     room["x"] = room_x
     room["y"] = room_y
     room["rows"] = levelgen.generateRandomBetween(
@@ -79,11 +79,15 @@ local function MakeRoom(room_x, room_y, min_room_size, max_room_size, room_type)
                                 min_room_wall_size, math.min(max_room_wall_size, map["y"] - room_y))  -- number of columns the room has
     room["type"] = room_type   -- type of room
     io.write("Rows " .. room["rows"] .. "and columns " .. room["columns"] .. "\n")
+
+    if(CheckRoomSuitability(room) == false) then
+        return false
+    end
+
     for i = 1, room["rows"], 1 do
         room[i] = {}
         for j = 1, room["columns"], 1 do
             room[i][j] = walkable
-            added_tiles = added_tiles + 1
         end
     end
 
@@ -91,9 +95,6 @@ local function MakeRoom(room_x, room_y, min_room_size, max_room_size, room_type)
         --SetupCustomRoom(room)
     end
 
-    if(CheckRoomSuitability(room) == false) then
-        return false
-    end
     -- TODO: add random room deformities 
     map["rooms"][#map["rooms"] + 1] = room
     ParseRoomToMap(room, room_x, room_y)
