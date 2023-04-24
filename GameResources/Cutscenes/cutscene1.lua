@@ -72,7 +72,7 @@ function scene:create( event )
 
     --SECURITY REASONS = system.DocumentsDirectory
     local optionsArray = JsonFuncs.LoadTable("cutscene.json",system.DocumentsDirectory)
-
+    
     --GeneralUtils.PrintTable(optionsArray)
     local myRectangle = display.newRect(300,600,display.contentWidth*2, display.contentHeight*2)
     myRectangle:addEventListener("tap",tapListener)
