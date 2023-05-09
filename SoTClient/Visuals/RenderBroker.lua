@@ -54,16 +54,14 @@ function RenderBroker.SetTileMap(map, map_type)
     MapRender.SetRenderMap(map, map_type, GameOverseer.GetUnitList(), GameOverseer.getPlayerCharStats(), tilemap_group, character_group)
 end
 
-function RenderBroker.SetUI()
-	CombatUI.createPlayerUI(ui_group)
-    CombatUI.setHP()
-	CombatUI.setEssence()
+function RenderBroker.SetUI(player_squad)
+	CombatUI.createPlayerUI(GameOverseer, player_squad, ui_group)
 end
 
-function RenderBroker.SetRenderBattle(map, map_type, sceneGroup)
+function RenderBroker.SetRenderBattle(map, player_squad, map_type, sceneGroup)
     RenderBroker.SetupBattleRenderGroups()
     RenderBroker.SetTileMap(map, map_type)
-    RenderBroker.SetUI()
+    RenderBroker.SetUI(player_squad)
 
     sceneGroup:insert(tilemap_group)
     sceneGroup:insert(character_group)

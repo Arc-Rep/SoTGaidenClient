@@ -39,7 +39,7 @@ function scene:create( event )
 
 	Player.readPlayer()
 
-	RenderBroker.SetRenderBattle(MapData.GetMap(), nil, sceneGroup)
+	RenderBroker.SetRenderBattle(MapData.GetMap(), GameOverseer.GetPlayerParty(), nil, sceneGroup)
 	RenderBroker.UpdateRender()
 
 	

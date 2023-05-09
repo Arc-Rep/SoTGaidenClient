@@ -11,23 +11,31 @@ function GameSetup.SetupPlayerUnits(unit_table, Squads)
     unit1["ID"] = 92475
     unit1["Status"] = "Player"
     unit1["Focus"] = "Manual"
+    unit1["Class"] = "Berserker"
     unit1["Team"] = 1
     Law_SkillSet.InitializeChar(unit1, nil)
     -- temp stats for unit1 (to be removed)
     unit1["Str"] = 4
     unit1["Mag"] = 6
     unit1["Def"] = 2
-    unit1["currentHP"] = 30
+    unit1["maxHP"] = 35
+    unit1["currentHP"] = unit1["maxHP"]
+    unit1["maxEssence"] = 3
+    unit1["currentEssence"] = unit1["maxEssence"]
     unit1["ControlType"] = "Player"
     unit2["Actor"] = "Dylan"
     unit2["ID"] = 321475
     unit2["Status"] = "Follower"
+    unit2["Class"] = "Berserker"
     unit2["Focus"] = unit1
     unit2["Team"] = 1
     unit2["ControlType"] = "CPU-F"
     unit2["Str"] = 3
     unit2["Def"] = 1
-    unit2["currentHP"] = 30
+    unit2["maxHP"] = 30
+    unit2["currentHP"] = unit2["maxHP"]
+    unit2["maxEssence"] = 3
+    unit2["currentEssence"] = unit2["maxEssence"]
     
     
     Squads[unit1["Team"]] = {}
@@ -51,6 +59,7 @@ function GameSetup.SetupEnemyUnits(game_map, unit_table, Squads, difficulty)
         enemy_unit["Actor"] = "Enemy"
         enemy_unit["ID"] = "-" .. enemy_index
         enemy_unit["Status"] = "Standby"
+        enemy_unit["Class"] = "Berserker"
         enemy_unit["Team"] = 0
         enemy_unit["ControlType"] = "CPU-H"
         enemy_unit["Focus"] = nil
@@ -59,7 +68,10 @@ function GameSetup.SetupEnemyUnits(game_map, unit_table, Squads, difficulty)
         enemy_unit["Res"] = 3
         enemy_unit["elem_res"] = {}
         enemy_unit["elem_res"]["Light"] = 0.3
-        enemy_unit["currentHP"] = 30
+        enemy_unit["maxHP"] = 30
+        enemy_unit["currentHP"] = enemy_unit["maxHP"]
+        enemy_unit["maxEssence"] = 3
+        enemy_unit["currentEssence"] = enemy_unit["maxEssence"]
 
         table.insert(unit_table, enemy_unit)
         table.insert(Squads[enemy_unit["Team"]], enemy_unit)

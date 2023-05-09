@@ -2,6 +2,11 @@
 local math = require "math"
 
 local MapUtils = require "SoTClient.GameLogic.Scenarios.MissionMapUtils"
+local Infusion = require "SoTClient.GameLogic.MechanicsLogic.InfusionSystem.Infusion"
+local Essence = require "SoTClient.GameLogic.MechanicsLogic.InfusionSystem.Essence"
+local StatCals = require "SoTClient.GameLogic.MechanicsLogic.BattleCalcs.StatCalcs"
+local CombatUI = require "SoTClient.Visuals.UI.CombatUI"
+local LazyEval = require "SoTClient.Utils.LazyEval"
 
 function KillCharacter(game_map, char)
     game_map[char["x"]][char["y"]]["Actor"] = ""
@@ -15,6 +20,10 @@ function ApplyDamage(game_map, char, damage)
         KillCharacter(game_map, char)
     else
         char["currentHP"] = char["currentHP"] - damage
+    end
+
+    if(char["HPBar"] ~= nil and char["HPText"] ~= nil) then
+        CombatUI.setHP(char)
     end
 end
 
@@ -72,6 +81,11 @@ function PerformSkill(game_map, atk_char, def_char, skill)
     print(atk_char["Actor"] .. " attacked " .. def_char["Actor"] .. " for " .. base_attack_damage .. " damage.\n")
 
     ApplyDamage(game_map, def_char, base_attack_damage)
+
+    if(atk_char["Class"] == "Berserker" and LAND(skill["Element"] ~= nil, function() return #skill["Element"] > 0 end)) then
+        Infusion.addInfusion(atk_char["Infusion"], Essence[skill["Element"][1]])
+        Infusion.addInfusion(def_char["Infusion"], Essence[skill["Element"][1]])
+    end
 
     return true
 end

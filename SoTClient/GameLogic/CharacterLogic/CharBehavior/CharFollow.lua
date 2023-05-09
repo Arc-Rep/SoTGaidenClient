@@ -49,29 +49,32 @@ local function GreedySearch(map, current_space_x, current_space_y)
 
     for i = 1, #x_order, 1 do
         local move_x = x_order[i]
-        for j = 1, #y_order, 1 do
-            local move_y = y_order[j]
+        if(follow_map[current_space_x + move_x] ~= nil) then
+            for j = 1, #y_order, 1 do
+                local move_y = y_order[j]
+                if(follow_map[current_space_x + move_x][current_space_y + move_y] ~= nil) then
+                    if((move_x ~= UNDIRECTED or move_y ~= UNDIRECTED) and (follow_map[current_space_x + move_x][current_space_y + move_y][1] > follow_map[current_space_x][current_space_y][1])) then
+                        if(destination_x == current_space_x + move_x and destination_y == current_space_y + move_y and
+                                missionmaputils.CheckWallCollision(map, grid_start_x + current_space_x, grid_start_y + current_space_y, move_x, move_y) == false ) then
+                            follow_map[destination_x][destination_y] = {follow_map[current_space_x][current_space_y][1] + 1, move_x, move_y}
+                            return
 
-            if((move_x ~= UNDIRECTED or move_y ~= UNDIRECTED) and (follow_map[current_space_x + move_x][current_space_y + move_y][1] > follow_map[current_space_x][current_space_y][1])) then
-                if(destination_x == current_space_x + move_x and destination_y == current_space_y + move_y and
-                        missionmaputils.CheckWallCollision(map, grid_start_x + current_space_x, grid_start_y + current_space_y, move_x, move_y) == false ) then
-                    follow_map[destination_x][destination_y] = {follow_map[current_space_x][current_space_y][1] + 1, move_x, move_y}
-                    return
+                        elseif(missionmaputils.CheckLegalMovement(map, grid_start_x + current_space_x, grid_start_y + current_space_y, move_x, move_y) == true) then
+                            follow_map[current_space_x + move_x][current_space_y + move_y] = {follow_map[current_space_x][current_space_y][1] + 1, move_x, move_y}
 
-                elseif(missionmaputils.CheckLegalMovement(map, grid_start_x + current_space_x, grid_start_y + current_space_y, move_x, move_y) == true) then
-                    follow_map[current_space_x + move_x][current_space_y + move_y] = {follow_map[current_space_x][current_space_y][1] + 1, move_x, move_y}
+                            local local_dif = math.abs(move_x - x_dif) + math.abs(move_y - y_dif)
+                            if(local_dif == 0) then
+                                direct_queue[#direct_queue+1] = {current_space_x + move_x, current_space_y + move_y}
+                            elseif(local_dif == 1) then
+                                semi_direct_queue[#semi_direct_queue+1] = {current_space_x + move_x, current_space_y + move_y}
+                            elseif(local_dif == 2) then
+                                side_queue[#side_queue+1] = {current_space_x + move_x, current_space_y + move_y}
+                            else
+                                back_queue[#back_queue+1] = {current_space_x + move_x, current_space_y + move_y}
+                            end
 
-                    local local_dif = math.abs(move_x - x_dif) + math.abs(move_y - y_dif)
-                    if(local_dif == 0) then
-                        direct_queue[#direct_queue+1] = {current_space_x + move_x, current_space_y + move_y}
-                    elseif(local_dif == 1) then
-                        semi_direct_queue[#semi_direct_queue+1] = {current_space_x + move_x, current_space_y + move_y}
-                    elseif(local_dif == 2) then
-                        side_queue[#side_queue+1] = {current_space_x + move_x, current_space_y + move_y}
-                    else
-                        back_queue[#back_queue+1] = {current_space_x + move_x, current_space_y + move_y}
+                        end
                     end
-
                 end
             end
         end

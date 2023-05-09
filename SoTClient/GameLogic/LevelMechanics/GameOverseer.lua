@@ -21,6 +21,10 @@ function GameOverseer.getPlayerCharStats()
     return Squads[1][1]
 end
 
+function GameOverseer.GetPlayerParty()
+    return Squads[1]
+end
+
 function GameOverseer.GetUnitList()
     return unit_table
 end

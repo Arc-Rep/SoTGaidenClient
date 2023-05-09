@@ -2,6 +2,7 @@ local CharAction = {}
 local BasicAttack = require "SoTClient.GameLogic.MechanicsLogic.BattleCalcs.BasicAttack"
 local missionmaputils = require "SoTClient.GameLogic.Scenarios.MissionMapUtils"
 local follow = require "SoTClient.GameLogic.CharacterLogic.CharBehavior.CharFollow"
+local LazyEval = require "SoTClient.Utils.LazyEval"
 
 local function BehaviourHandler_Ally(game_map, char_list, char)
     local hittables = missionmaputils.CheckHittableEnemies(game_map, char, char_list)
@@ -34,7 +35,9 @@ local function BehaviourHandler_Enemy(game_map, char_list, char)
             if (char_i["currentHP"] ~= 0) then
                 if(char_i["Team"] > 0 and cur_room == missionmaputils.GetCurrentRoom(game_map, char_i["x"], char_i["y"])) then
                     temp_move_x, temp_move_y, temp_steps = follow.DoFollow(game_map, char["x"], char["y"], char_i["x"], char_i["y"])
-                    if((steps == nil and temp_steps ~= nil) or temp_steps < steps) then
+                    if(temp_steps == nil) then
+
+                    elseif(LOR(steps == nil, function() return temp_steps < steps end)) then
                         char["Status"] = "Follower"
                         char["Focus"] = char_i
                         move_x = temp_move_x

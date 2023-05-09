@@ -13,6 +13,7 @@ function Infusion.setup()
 end
 
 function Infusion.addInfusion(char_infusion, new_infusion)
+
     if #char_infusion.ElementQueue == INFUSION_MAX_ELEMENTS then
         for i = INFUSION_MAX_ELEMENTS, 2, -1 do
             char_infusion.ElementQueue[i] = char_infusion.ElementQueue[i - 1]

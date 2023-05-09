@@ -1,6 +1,7 @@
 
 
 local Infusion = require "SoTClient.GameLogic.MechanicsLogic.InfusionSystem.Infusion"
+local math = require "math"
 
 BATTLE_DEFENCES = {}
 BATTLE_DEFENCES["Str"] = "Def"
@@ -16,14 +17,18 @@ function DamageInfuseCalculation(skill_damage, atk_char, def_char)
     end
 
     if infuse_element["Type"] == "Elemental" then
-        return skill_damage * (1 - def_char["elem_res"][infuse_element["Name"]])
+        local infusion_damage = damage_total * (1 - def_char["elem_res"][top_infusion["Name"]])
+        if(infusion_damage < 1) then
+            infusion_damage = 1
+        end
+        return math.floor(infusion_damage)
     end
 
     return 0
 end
 
 function DamageSkillCalculation(skill, atk_char, def_char)
-    local damage_total = 0
+    local damage_total, infusion_damage = 0, 0
 
     if skill["DmgBase"] == nil then
        return "Error: Could not read skill"
@@ -34,6 +39,8 @@ function DamageSkillCalculation(skill, atk_char, def_char)
         local base_damage_ward = def_char[BATTLE_DEFENCES[skill["DmgIncrement"][i]]]
         damage_total = damage_total + (base_damage - base_damage_ward)
     end
+
+    infusion_damage = DamageInfuseCalculation(damage_total, atk_char, def_char)
 
     if #skill["Element"] ~= 0 then
         
@@ -50,10 +57,9 @@ function DamageSkillCalculation(skill, atk_char, def_char)
         else
             damage_total = damage_total * (1 - elem_res)
         end
-
     end
 
-    return damage_total
+    return math.floor(damage_total, infusion_damage)
 end
 
 return Infusion
