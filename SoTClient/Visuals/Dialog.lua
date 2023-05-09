@@ -75,7 +75,7 @@ end
 
 function Dialog.ShowBackground(charDir)
     myImage = display.newImage(charDir)
-    myImage:translate(500,500)
+    myImage:translate(display.contentWidth*1,display.contentHeight*1)
     myImage.alpha = 0
     transition.to(myImage, { time=2000, alpha=1.0} )
 end
@@ -90,7 +90,7 @@ function Dialog.ShowCharOnLeft(options)
     end
     leftchardir = options.character
     leftcharacter = display.newImage(options.character)
-    leftcharacter:translate(300,300) --Global Values (char always same position)
+    leftcharacter:translate(display.contentWidth*0.05,display.contentHeight*0.1) --Global Values (char always same position)
     leftcharacter.alpha = 0
     transition.to(leftcharacter, { time=500, alpha=1.0} )
     table.insert(leftchararray,1,leftcharacter)
@@ -113,7 +113,7 @@ function Dialog.ShowCharOnRight(options)
     end
     rightchardir = options.character
     rightcharacter = display.newImage(options.character)
-    rightcharacter:translate(300,800) --Global Values (char always same position)
+    rightcharacter:translate(display.contentWidth*0.95,display.contentHeight*0.1) --Global Values (char always same position)
     rightcharacter.xScale = -1
     rightcharacter.alpha = 0
     transition.to(rightcharacter, { time=500, alpha=1.0} )
@@ -127,7 +127,7 @@ function Dialog.RemoveCharOnRight()
 end
 
 function Dialog.TextBox(options)
-    rectangle = display.newRoundedRect( options.x, options.y, options.height+20, options.width+20, 12 )
+    rectangle = display.newRoundedRect( options.x-10, options.y, options.width+10, options.height-30, 12 )
     rectangle.strokeWidth = 3
     rectangle:setFillColor( 0.5 )
     rectangle:setStrokeColor( 1, 0, 0 )
@@ -139,9 +139,9 @@ function Dialog.TextBox(options)
     setText(letterLabel.text)
 
     if options.position == "left" then
-        Dialog.CreateLoading(options.x-options.x/2,options.y+options.y/1.4)
+        Dialog.CreateLoading(options.x*15,options.y+options.y/5)
     else
-        Dialog.CreateLoading(options.x-options.x/2,options.y+options.y/4.2)
+        Dialog.CreateLoading(options.x+options.x/1.4,options.y+options.y/5)
     end 
     transition.to(fireSpin,{time=5000,alpha=1.0})
 end
