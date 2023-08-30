@@ -10,12 +10,12 @@ local BattleLogic = require "SoTClient.GameLogic.MechanicsLogic.BattleCalcs.Batt
 local missionmaputils = require "SoTClient.GameLogic.Scenarios.MissionMapUtils"
 local UnitTable = "SoTClient.GameLogic.CharacterLogic.UnitBase.UnitTable.lua"
 
+local Infusion = require "SoTClient.GameLogic.MechanicsLogic.InfusionSystem.Infusion"
+
 local unit_table = {}
 local Squads = {}
 local squad_team_num = 0
-
 local LocalBattles = {}
-
 
 function GameOverseer.getPlayerCharStats()
     return Squads[1][1]
@@ -33,6 +33,7 @@ function DoTurn()
     for char_index, char in ipairs(Squads[global_turns]) do
         if char["ControlType"] ~= "Player" and char["currentHP"] > 0 then
             CharAction.DoCharAction(GetGameMap(), unit_table, char)
+            Infusion.checkTurnEndTrigger(GetGameMap(), char)
         end
     end
 
@@ -95,11 +96,13 @@ function GameOverseer.SendCommand(command, focus_x, focus_y)
     end
 
     if(skill_activated ~= nil) then
-        PerformSkill(GetGameMap(), Squads[1][1], GetGameMap()[focus_x][focus_y]["Actor"], Squads[1][1][skill_activated])
+
+        Squads[1][1][skill_activated]["Effect"](GetGameMap(), Squads[1][1], focus_x, focus_y)
         move_done = true
     end
 
     if(move_done == true) then
+        Infusion.checkTurnEndTrigger(GetGameMap, Squads[1][1])
         DoTurn()
     end
     

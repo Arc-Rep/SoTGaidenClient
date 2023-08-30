@@ -30,22 +30,22 @@ end
 
 local function CheckRoomSuitability(room)
 
-    if(room["x"] + room["rows"] > map["x"]) then
-        room["rows"] = map["x"] - room["x"]
-        if(room["rows"] < min_room_wall_size) then
-            return false
-        end
-    end
-
-    if(room["y"] + room["columns"] > map["y"]) then
-        room["columns"] = map["y"] - room["y"]
+    if(room["x"] + room["columns"] > map["x"]) then
+        room["columns"] = map["x"] - room["x"]
         if(room["columns"] < min_room_wall_size) then
             return false
         end
     end
 
-    for i = room["x"], room["x"] + room["rows"], 1 do
-        for j = room["y"], room["y"] + room["columns"], 1 do
+    if(room["y"] + room["rows"] > map["y"]) then
+        room["rows"] = map["y"] - room["y"]
+        if(room["rows"] < min_room_wall_size) then
+            return false
+        end
+    end
+
+    for i = room["x"], room["x"] + room["columns"], 1 do
+        for j = room["y"], room["y"] + room["rows"], 1 do
             if map[i][j]["Tile"] ~= empty then
                 return false
             end
@@ -62,8 +62,8 @@ local function CheckRoomSuitability(room)
 end
 
 local function ParseRoomToMap(room, room_x, room_y)
-    for i=1, room["rows"], 1 do
-        for j=1, room["columns"], 1 do
+    for i=1, room["columns"], 1 do
+        for j=1, room["rows"], 1 do
             map[room_x + i][room_y + j]["Tile"] = room[i][j]
         end
     end
@@ -83,10 +83,10 @@ local function MakeRoom(room_x, room_y, min_room_size, max_room_size, room_type)
     if(CheckRoomSuitability(room) == false) then
         return false
     end
-
-    for i = 1, room["rows"], 1 do
+    
+    for i = 1, room["columns"], 1 do
         room[i] = {}
-        for j = 1, room["columns"], 1 do
+        for j = 1, room["rows"], 1 do
             room[i][j] = walkable
         end
     end
@@ -111,7 +111,7 @@ local function MapRoomEssentials(mission_type)
     entrance_room[entrance_x][entrance_y] = entrance
     map["entrance_x"] = entrance_room["x"] + entrance_x
     map["entrance_y"] = entrance_room["y"] + entrance_y
-    ParseRoomToMap(entrance_room, entrance_room["x"], entrance_room["y"])
+    map[entrance_room["x"] + entrance_x][entrance_room["y"] + entrance_y]["Tile"] = entrance
 
     if #map["rooms"] ~= 1 then
         repeat
@@ -128,7 +128,7 @@ local function MapRoomEssentials(mission_type)
     exit_room[exit_x][exit_y] = exit
     map["exit_x"] = exit_x
     map["exit_y"] = exit_y
-    ParseRoomToMap(exit_room, exit_room["x"], exit_room["y"])
+    map[exit_room["x"] + exit_x][exit_room["y"] + exit_y]["Tile"] = exit
 
 end
 

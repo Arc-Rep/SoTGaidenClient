@@ -30,7 +30,6 @@ local function BehaviourHandler_Enemy(game_map, char_list, char)
         return
     end
     if(char["Status"] == "Standby" or char["Status"] == "Follower") then
-        print(cur_room["x"] .. " is the current x")
         for index, char_i in ipairs(char_list) do
             if (char_i["currentHP"] ~= 0) then
                 if(char_i["Team"] > 0 and cur_room == missionmaputils.GetCurrentRoom(game_map, char_i["x"], char_i["y"])) then

@@ -17,6 +17,24 @@ function MissionMapUtils.CheckDirectWalkDistance(tile1_x, tile1_y, tile2_x, tile
     return math.max(math.abs(tile1_x - tile2_x), math.abs(tile1_y - tile2_y))
 end
 
+function MissionMapUtils.CheckGeneralDirection(tile1_x, tile1_y, tile2_x, tile2_y)
+    local tile_dist_x, tile_dist_y = tile2_x - tile1_x, tile2_y - tile1_y
+
+    if (tile_dist_x > 0) then
+        tile_dist_x = 1
+    elseif (tile_dist_x < 0) then
+        tile_dist_x = -1
+    end
+
+    if (tile_dist_y > 0) then
+        tile_dist_y = 1
+    elseif (tile_dist_y < 0) then
+        tile_dist_y = -1
+    end
+
+    return tile_dist_x, tile_dist_y
+end
+
 function MissionMapUtils.CheckRoomCardinalDist(room1, room2)
     local dist_x, dist_y
 
@@ -46,7 +64,7 @@ function MissionMapUtils.CheckRoomRealDistance(room1, room2)
     return math.sqrt(room_dist_x^2 + room_dist_y^2)
 end
 
-function MissionMapUtils.checkEmptySpace(map, x, y)
+function MissionMapUtils.CheckEmptySpace(map, x, y)
     if(x > map["x"] or y > map["y"]) then
         return false
     end
@@ -107,13 +125,12 @@ function MissionMapUtils.CheckWallCollision(map, x, y, move_x, move_y)
 end
 
 function MissionMapUtils.CheckLegalMovement(map, x, y, move_x, move_y)
-    return MissionMapUtils.checkEmptySpace(map, x + move_x, y + move_y) and not(MissionMapUtils.CheckWallCollision(map, x, y, move_x, move_y))
+    return MissionMapUtils.CheckEmptySpace(map, x + move_x, y + move_y) and not(MissionMapUtils.CheckWallCollision(map, x, y, move_x, move_y))
 end
-
 
 function MissionMapUtils.FindClosestEmptySpace(game_map, center_x, center_y)
 
-    if(MissionMapUtils.checkEmptySpace(game_map, center_x, center_y) == true) then return center_x, center_y end
+    if(MissionMapUtils.CheckEmptySpace(game_map, center_x, center_y) == true) then return center_x, center_y end
 
     local dist, deviation, max_dist = 1, nil, nil
     local side_placement, square_sides = nil, 4
@@ -127,7 +144,7 @@ function MissionMapUtils.FindClosestEmptySpace(game_map, center_x, center_y)
         max_dev = math.min(game_map["y"] - center_y, dist)
 
         for deviation = min_dev, max_dev, 1 do
-                if(MissionMapUtils.checkEmptySpace(game_map,center_x + (dist - deviation), center_y + deviation) == true) then
+                if(MissionMapUtils.CheckEmptySpace(game_map,center_x + (dist - deviation), center_y + deviation) == true) then
                     return center_x + (dist - deviation), center_y + deviation
                 end
         end
@@ -136,7 +153,7 @@ function MissionMapUtils.FindClosestEmptySpace(game_map, center_x, center_y)
         max_dev = math.min(center_y, dist)
 
         for deviation = min_dev, max_dev, 1 do
-            if(MissionMapUtils.checkEmptySpace(game_map, center_x - (dist - deviation), center_y - deviation) == true) then
+            if(MissionMapUtils.CheckEmptySpace(game_map, center_x - (dist - deviation), center_y - deviation) == true) then
                 return center_x - (dist - deviation), center_y - deviation
             end
         end
@@ -158,7 +175,7 @@ function MissionMapUtils.GetCurrentRoom(game_map, x, y)
         end
     end 
 
-    return -1
+    return nil
 end
 
 function MissionMapUtils.GetCharInSpace(map_tile)

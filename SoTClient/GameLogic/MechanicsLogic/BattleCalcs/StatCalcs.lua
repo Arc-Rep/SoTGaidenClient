@@ -28,16 +28,35 @@ function DamageInfuseCalculation(skill_damage, atk_char, def_char)
 end
 
 function DamageSkillCalculation(skill, atk_char, def_char)
-    local damage_total, infusion_damage = 0, 0
 
     if skill["DmgBase"] == nil then
        return "Error: Could not read skill"
     end
 
+    local base_dmg
+
+    if(skill["Modifiers"]["DmgBase"] ~= nil) then
+        base_dmg = skill["Modifiers"]["DmgBase"] * skill["DmgBase"]
+    else
+        base_dmg = skill["DmgBase"]
+    end
+
+    local damage_total = 0
+
     for i = 1, #skill["DmgIncrement"], 2 do
-        local base_damage = skill["DmgBase"] + atk_char[skill["DmgIncrement"][i]] * skill["DmgIncrement"][i + 1]
-        local base_damage_ward = def_char[BATTLE_DEFENCES[skill["DmgIncrement"][i]]]
-        damage_total = damage_total + (base_damage - base_damage_ward)
+        print(base_dmg)
+        print(skill["DmgIncrement"][i])
+        print(skill["DmgIncrement"][i + 1])
+        local damage_per_stat = base_dmg + atk_char[skill["DmgIncrement"][i]] * skill["DmgIncrement"][i + 1]
+        local damage_ward_per_stat
+        
+        if (def_char[BATTLE_DEFENCES[skill["DmgIncrement"][i]]] == nil) then
+            damage_ward_per_stat = 1
+        else
+            damage_ward_per_stat = 50 / (50 + def_char[BATTLE_DEFENCES[skill["DmgIncrement"][i]]])
+        end
+
+        damage_total = damage_total + (damage_per_stat * damage_ward_per_stat)
     end
 
     infusion_damage = DamageInfuseCalculation(damage_total, atk_char, def_char)
@@ -62,4 +81,21 @@ function DamageSkillCalculation(skill, atk_char, def_char)
     return math.floor(damage_total, infusion_damage)
 end
 
-return Infusion
+function CalculateHitOrMiss(skill)
+
+    local real_acc
+
+    if(skill["Modifiers"]["Accuracy"] ~= nil) then
+        real_acc = skill["Modifiers"]["Accuracy"] * skill["Accuracy"]
+    else
+        real_acc = skill["Accuracy"]
+    end
+
+    local skill_hit_value = math.random()
+
+    if(skill_hit_value < real_acc) then
+        return true
+    end
+
+    return false
+end

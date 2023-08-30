@@ -59,12 +59,48 @@ function Infusion.retrieveInfusion(char_infusion)
     return retrieved_infusion
 end
 
-function Infusion.retrieveStatus(char_infusion)
-    local retrieved_statuses = {}
+function Infusion.checkTurnEndEssenceTrigger(map, char)
+    local char_infusion = char["Infusion"]
 
     for i = 1, #char_infusion.ElementQueue, 1 do
-        if char_infusion.ElementQueue[i].Type == "Status" then
-            char_infusion[#retrieved_statuses+1] = char_infusion.ElementQueue[i]
+        if char_infusion.ElementQueue[i].Trigger == "TurnEnd" then
+            char_infusion.ElementQueue[i].Effect(map, char)
+        end
+    end
+
+    return retrieved_statuses
+end
+
+function Infusion.checkBeforeAttackEssenceTrigger(map, atk_char, attack)
+    local char_infusion = atk_char["Infusion"]
+
+    for i = 1, #char_infusion.ElementQueue, 1 do
+        if char_infusion.ElementQueue[i].Trigger == "BeforeAttack" then
+            char_infusion.ElementQueue[i].Effect(map, atk_char, attack)
+        end
+    end
+
+    return retrieved_statuses
+end
+
+function Infusion.checkOnAttackReceiveTrigger(map, def_char, attack)
+    local char_infusion = def_char["Infusion"]
+
+    for i = 1, #char_infusion.ElementQueue, 1 do
+        if char_infusion.ElementQueue[i].Trigger == "OnAttackReceive" then
+            char_infusion.ElementQueue[i].Effect(map, def_char, attack)
+        end
+    end
+
+    return retrieved_statuses
+end
+
+function Infusion.checkTurnEndTrigger(map, character)
+    local char_infusion = character["Infusion"]
+
+    for i = 1, #char_infusion.ElementQueue, 1 do
+        if char_infusion.ElementQueue[i].Trigger == "TurnEnd" then
+            char_infusion.ElementQueue[i].Effect(map, character)
         end
     end
 

@@ -211,7 +211,7 @@ function RenderTile.SetRenderTiles(map, map_type)
 
     for index, room in ipairs(map["rooms"]) do
         local room_x_start, room_y_start = room["x"] + 1, room["y"] + 1
-        local room_x_end, room_y_end = room["x"] + room["rows"], room["y"] + room["columns"]
+        local room_x_end, room_y_end = room["x"] + room["columns"], room["y"] + room["rows"]
         for map_x = room_x_start, room_x_end, 1 do
             for map_y = room_y_start, room_y_end, 1 do
                 SetRoomTileTexture(map, map_x, map_y)

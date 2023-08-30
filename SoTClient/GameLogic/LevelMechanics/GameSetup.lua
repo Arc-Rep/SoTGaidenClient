@@ -18,6 +18,7 @@ function GameSetup.SetupPlayerUnits(unit_table, Squads)
     unit1["Str"] = 4
     unit1["Mag"] = 6
     unit1["Def"] = 2
+    unit1["Skl"] = 8
     unit1["maxHP"] = 35
     unit1["currentHP"] = unit1["maxHP"]
     unit1["maxEssence"] = 3
