@@ -1,23 +1,22 @@
-local MissionMapUtils = {}
 local math = require "math"
 
-function MissionMapUtils.CheckIfDead(char)
-    return (char["x"] == nil or char["y"] == nil)
+function CheckIfDead(char)
+    return (char["x"] == nil or char["y"] == nil or char["currentHP"] == 0)
 end
 
-function MissionMapUtils.CheckIfEnemy(char1, char2)
+function CheckIfEnemy(char1, char2)
     return (char1["Team"] > 0) ~= (char2["Team"] > 0)
 end
 
-function MissionMapUtils.CheckCardinalDistance(tile1_x, tile1_y, tile2_x, tile2_y)
+function CheckCardinalDistance(tile1_x, tile1_y, tile2_x, tile2_y)
     return math.abs(tile1_x - tile2_x) + math.abs(tile1_y - tile2_y)
 end
 
-function MissionMapUtils.CheckDirectWalkDistance(tile1_x, tile1_y, tile2_x, tile2_y)
+function CheckDirectWalkDistance(tile1_x, tile1_y, tile2_x, tile2_y)
     return math.max(math.abs(tile1_x - tile2_x), math.abs(tile1_y - tile2_y))
 end
 
-function MissionMapUtils.CheckGeneralDirection(tile1_x, tile1_y, tile2_x, tile2_y)
+function CheckGeneralDirection(tile1_x, tile1_y, tile2_x, tile2_y)
     local tile_dist_x, tile_dist_y = tile2_x - tile1_x, tile2_y - tile1_y
 
     if (tile_dist_x > 0) then
@@ -35,7 +34,7 @@ function MissionMapUtils.CheckGeneralDirection(tile1_x, tile1_y, tile2_x, tile2_
     return tile_dist_x, tile_dist_y
 end
 
-function MissionMapUtils.CheckRoomCardinalDist(room1, room2)
+function CheckRoomCardinalDist(room1, room2)
     local dist_x, dist_y
 
     if(room1["x"] >= room2["x"] + room2["columns"]) then
@@ -59,17 +58,17 @@ function MissionMapUtils.CheckRoomCardinalDist(room1, room2)
     return dist_x, dist_y
 end
 
-function MissionMapUtils.CheckRoomRealDistance(room1, room2)
-    local room_dist_x, room_dist_y = MissionMapUtils.CheckRoomCardinalDist(room1, room2)
+function CheckRoomRealDistance(room1, room2)
+    local room_dist_x, room_dist_y = CheckRoomCardinalDist(room1, room2)
     return math.sqrt(room_dist_x^2 + room_dist_y^2)
 end
 
-function MissionMapUtils.CheckEmptySpace(map, x, y)
+function CheckEmptySpace(map, x, y)
     if(x > map["x"] or y > map["y"]) then
         return false
     end
 
-    if(map[x][y]["Tile"] == 1 and map[x][y]["Actor"] == "") then
+    if(map[x][y]["Tile"] == 1 and map[x][y]["Actor"] == nil) then
         return true
     end
 
@@ -77,7 +76,7 @@ function MissionMapUtils.CheckEmptySpace(map, x, y)
 end
 
 -- Provided a range, it returns the in-bound section of such range 
-function MissionMapUtils.CheckValidMapRange(map, x_start, y_start, x_end, y_end)
+function CheckValidMapRange(map, x_start, y_start, x_end, y_end)
 
     if(x_start > map["x"] or y_start > map["y"] or x_end < 1 or y_end < 1) then
         return nil, nil, nil, nil
@@ -112,7 +111,7 @@ function MissionMapUtils.CheckValidMapRange(map, x_start, y_start, x_end, y_end)
     return x_real_start, y_real_start, x_real_end, y_real_end
 end
 
-function MissionMapUtils.CheckWallCollision(map, x, y, move_x, move_y)
+function CheckWallCollision(map, x, y, move_x, move_y)
 
     if(move_x ~= 0 and map[x + move_x][y]["Tile"] ~= 1) then
         return true
@@ -124,13 +123,13 @@ function MissionMapUtils.CheckWallCollision(map, x, y, move_x, move_y)
     return false
 end
 
-function MissionMapUtils.CheckLegalMovement(map, x, y, move_x, move_y)
-    return MissionMapUtils.CheckEmptySpace(map, x + move_x, y + move_y) and not(MissionMapUtils.CheckWallCollision(map, x, y, move_x, move_y))
+function CheckLegalMovement(map, x, y, move_x, move_y)
+    return CheckEmptySpace(map, x + move_x, y + move_y) and not(CheckWallCollision(map, x, y, move_x, move_y))
 end
 
-function MissionMapUtils.FindClosestEmptySpace(game_map, center_x, center_y)
+function FindClosestEmptySpace(game_map, center_x, center_y)
 
-    if(MissionMapUtils.CheckEmptySpace(game_map, center_x, center_y) == true) then return center_x, center_y end
+    if(CheckEmptySpace(game_map, center_x, center_y) == true) then return center_x, center_y end
 
     local dist, deviation, max_dist = 1, nil, nil
     local side_placement, square_sides = nil, 4
@@ -144,7 +143,7 @@ function MissionMapUtils.FindClosestEmptySpace(game_map, center_x, center_y)
         max_dev = math.min(game_map["y"] - center_y, dist)
 
         for deviation = min_dev, max_dev, 1 do
-                if(MissionMapUtils.CheckEmptySpace(game_map,center_x + (dist - deviation), center_y + deviation) == true) then
+                if(CheckEmptySpace(game_map,center_x + (dist - deviation), center_y + deviation) == true) then
                     return center_x + (dist - deviation), center_y + deviation
                 end
         end
@@ -153,7 +152,7 @@ function MissionMapUtils.FindClosestEmptySpace(game_map, center_x, center_y)
         max_dev = math.min(center_y, dist)
 
         for deviation = min_dev, max_dev, 1 do
-            if(MissionMapUtils.CheckEmptySpace(game_map, center_x - (dist - deviation), center_y - deviation) == true) then
+            if(CheckEmptySpace(game_map, center_x - (dist - deviation), center_y - deviation) == true) then
                 return center_x - (dist - deviation), center_y - deviation
             end
         end
@@ -166,7 +165,7 @@ function MissionMapUtils.FindClosestEmptySpace(game_map, center_x, center_y)
     
 end
 
-function MissionMapUtils.GetCurrentRoom(game_map, x, y)
+function GetCurrentRoom(game_map, x, y)
     for index, room in ipairs(game_map["rooms"]) do
         if(x <= room["x"] + room["columns"] and x >= room["x"]) then
             if(y <= room["y"] + room["rows"] and y >= room["y"]) then
@@ -178,18 +177,18 @@ function MissionMapUtils.GetCurrentRoom(game_map, x, y)
     return nil
 end
 
-function MissionMapUtils.GetCharInSpace(map_tile)
+function GetCharInSpace(map_tile)
     return map_tile["Actor"]
 end
 
 -- TO ADD: for now, only check if enemies are hittable by basic, add to list hittable skills
 
-function MissionMapUtils.CheckHittableEnemies(game_map, char, char_list)
+function CheckHittableEnemies(game_map, char, char_list)
     local hittable_enemies = {}
     
     for index, other_char in ipairs(char_list) do
-        if(MissionMapUtils.CheckIfEnemy(char, other_char) == true and MissionMapUtils.CheckIfDead(other_char) == false) then
-            if(MissionMapUtils.CheckDirectWalkDistance(char["x"], char["y"], other_char["x"], other_char["y"]) == 1) then
+        if(CheckIfEnemy(char, other_char) == true and CheckIfDead(other_char) == false) then
+            if(CheckDirectWalkDistance(char["x"], char["y"], other_char["x"], other_char["y"]) == 1) then
                 table.insert(hittable_enemies, other_char)
             end
         end
@@ -197,5 +196,3 @@ function MissionMapUtils.CheckHittableEnemies(game_map, char, char_list)
 
     return hittable_enemies
 end
-
-return MissionMapUtils
