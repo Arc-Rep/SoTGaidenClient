@@ -21,14 +21,14 @@ local function PreparePiercingJudgement(piercing_judgement, modifiers)
     piercing_judgement["Blockable"]       = false
     piercing_judgement["Effect"]          = 
         function (map, char, focus_x, focus_y)
-            local dist_x, dist_y = missionmaputils.CheckGeneralDirection(char["x"], char["y"], focus_x, focus_y)
+            local dist_x, dist_y = CheckGeneralDirection(char["x"], char["y"], focus_x, focus_y)
             for i = 1, piercing_judgement["Range"], 1 do
 
                 local current_tile = map[char["x"] + dist_x * i][char["y"] + dist_y * i]
 
                 if (current_tile ~= nil) then
-                    if (current_tile["Actor"] ~= "") then
-                        if (missionmaputils.CheckIfEnemy(char, current_tile["Actor"])) then
+                    if (current_tile["Actor"] ~= nil) then
+                        if (CheckIfEnemy(char, current_tile["Actor"])) then
                             PerformSkill(map, char, current_tile["Actor"], piercing_judgement)
                         end
                     end
@@ -74,8 +74,8 @@ local function PrepareStreakElement(streak, options, targets_left)
                     tile = map[tile_x][tile_y]
 
                     if (LAND(
-                            tile["Actor"] ~= "" and tile_x ~= char_hit["x"] and tile_y ~= char_hit["y"],
-                            function() missionmaputils.CheckIfEnemy(char, tile["Actor"]) end
+                            tile["Actor"] ~= nil and tile_x ~= char_hit["x"] and tile_y ~= char_hit["y"],
+                            function() CheckIfEnemy(char, tile["Actor"]) end
                         )
                     ) then
                         table.insert(enemy_list, tile["Actor"])
@@ -128,7 +128,7 @@ local function PrepareWeightOfTheUndaunted(weight_of_the_undaunted, modifiers)
     weight_of_the_undaunted["Accuracy"]       = 1
     weight_of_the_undaunted["Effect"]         = 
         function (map, char, focus_x, focus_y)
-            local dist_x, dist_y = missionmaputils.CheckGeneralDirection(char["x"], char["y"], focus_x, focus_y)
+            local dist_x, dist_y = CheckGeneralDirection(char["x"], char["y"], focus_x, focus_y)
             local current_tile_x, current_tile_y = focus_x, focus_y
             local current_tile = nil
             local char_hit = map[focus_x][focus_y]["Actor"]
@@ -157,7 +157,7 @@ local function PrepareWeightOfTheUndaunted(weight_of_the_undaunted, modifiers)
                     break
                 end
 
-                if (current_tile["Actor"] ~= "") then
+                if (current_tile["Actor"] ~= nil) then
                     MoveCharacterTo(map, char_hit, current_tile_x - dist_x, current_tile_y - dist_y)
                     PerformSkill(map, char, current_tile["Actor"], weight_impact)
 
@@ -201,17 +201,17 @@ local function PrepareHolyExtermination(holy_extermination, modifiers)
                 --By removing from the end, we are sure that enemies are pushed from the outside first
                 local aura_tile = table.remove(aura_tile_list, #aura_tile_list)
                 local tile = map[aura_tile["x"]][aura_tile["y"]]
-                if (tile["Actor"] ~= "") then
-                    if (missionmaputils.CheckIfEnemy(char, tile["Actor"]) == true) then
+                if (tile["Actor"] ~= nil) then
+                    if (CheckIfEnemy(char, tile["Actor"]) == true) then
                         local enemy = tile["Actor"]
                         --Character is pushed backwards from the player's perspective
-                        local dir_x, dir_y = missionmaputils.CheckGeneralDirection(char["x"], char["y"], enemy["x"], enemy["y"])
+                        local dir_x, dir_y = CheckGeneralDirection(char["x"], char["y"], enemy["x"], enemy["y"])
                         PerformSkill(map, char, enemy, holy_extermination_aura)
                         if (
                             LAND(
-                                not(missionmaputils.CheckIfDead(enemy)),
+                                not(CheckIfDead(enemy)),
                                 function() 
-                                    return missionmaputils.CheckEmptySpace(map, enemy["x"] + dir_x, enemy["y"] + dir_y) == true
+                                    return CheckEmptySpace(map, enemy["x"] + dir_x, enemy["y"] + dir_y) == true
                                 end
                             ) 
                         ) then

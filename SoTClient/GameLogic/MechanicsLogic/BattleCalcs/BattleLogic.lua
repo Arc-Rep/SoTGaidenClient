@@ -9,7 +9,7 @@ local CombatUI = require "SoTClient.Visuals.UI.CombatUI"
 local LazyEval = require "SoTClient.Utils.LazyEval"
 
 function KillCharacter(game_map, char)
-    game_map[char["x"]][char["y"]]["Actor"] = ""
+    game_map[char["x"]][char["y"]]["Actor"] = nil
     char["x"] = nil
     char["y"] = nil
 end
@@ -33,7 +33,7 @@ end
 function GetOmniSkillMapRange(map, atk_char, skill)
 
     local skill_x_start, skill_y_start, skill_x_end, skill_y_end = 
-        MapUtils.CheckValidMapRange(
+        CheckValidMapRange(
             map,
             atk_char["x"] - skill["Range"],
             atk_char["y"] - skill["Range"],
@@ -58,7 +58,7 @@ function GetOmniSkillMapRange(map, atk_char, skill)
             current_x = atk_char["x"] + idx
 
             x_char_dir, y_char_dir = 
-                MapUtils.CheckGeneralDirection(current_x, upper_y, atk_char["x"], atk_char["y"])
+                CheckGeneralDirection(current_x, upper_y, atk_char["x"], atk_char["y"])
 
             if (not(current_x < skill_x_start or current_x > skill_x_end) and
                 SightedTiles[current_x + x_char_dir] ~= nil) 
@@ -77,7 +77,7 @@ function GetOmniSkillMapRange(map, atk_char, skill)
                     table.insert(skill_range_tile_list, {x = current_x, y = upper_y})
                 end
 
-                x_char_dir, y_char_dir = MapUtils.CheckGeneralDirection(current_x, lower_y, atk_char["x"], atk_char["y"])
+                x_char_dir, y_char_dir = CheckGeneralDirection(current_x, lower_y, atk_char["x"], atk_char["y"])
 
                 -- lower corner (provided it is different from upper)
                 if (
@@ -118,7 +118,7 @@ function GetSkillMapRange(map, atk_char, skill)
     end
 
     local skill_x_start, skill_y_start, skill_x_end, skill_y_end = 
-        MapUtils.CheckValidMapRange(
+        CheckValidMapRange(
             map,
             atk_char["x"] - skill["Range"],
             atk_char["y"] - skill["Range"],
@@ -136,9 +136,9 @@ function GetSkillMapRange(map, atk_char, skill)
         for x = atk_char["x"] - 1, skill_x_start, -1 do
             if (LOR(map[x][atk_char["y"]]["Tile"] == 0,
                 function() return LAND(
-                    skill["Blockable"] == true and map[x][atk_char["y"]]["Actor"] ~= "",
+                    skill["Blockable"] == true and map[x][atk_char["y"]]["Actor"] ~= nil,
                     function() 
-                        local is_enemy = MapUtils.CheckIfEnemy(atk_char, map[x][atk_char["y"]]["Actor"])
+                        local is_enemy = CheckIfEnemy(atk_char, map[x][atk_char["y"]]["Actor"])
                         if (is_enemy == true) then
                             table.insert(skill_range_tile_list, {x = x, y = atk_char["y"]})
                         end
@@ -155,9 +155,9 @@ function GetSkillMapRange(map, atk_char, skill)
         for x = atk_char["x"] + 1, skill_x_end, 1 do
             if (LOR(map[x][atk_char["y"]]["Tile"] == 0,
                 function() return LAND(
-                    skill["Blockable"] == true and map[x][atk_char["y"]]["Actor"] ~= "",
+                    skill["Blockable"] == true and map[x][atk_char["y"]]["Actor"] ~= nil,
                     function() 
-                        local is_enemy = MapUtils.CheckIfEnemy(atk_char, map[x][atk_char["y"]]["Actor"])
+                        local is_enemy = CheckIfEnemy(atk_char, map[x][atk_char["y"]]["Actor"])
                         if (is_enemy == true) then
                             table.insert(skill_range_tile_list, {x = x, y = atk_char["y"]})
                         end
@@ -178,9 +178,9 @@ function GetSkillMapRange(map, atk_char, skill)
         for y = atk_char["y"] - 1, skill_y_start, -1 do
             if (LOR(map[atk_char["x"]][y]["Tile"] == 0,
                 function() return LAND(
-                    skill["Blockable"] == true and map[atk_char["x"]][y]["Actor"] ~= "",
+                    skill["Blockable"] == true and map[atk_char["x"]][y]["Actor"] ~= nil,
                     function() 
-                        local is_enemy = MapUtils.CheckIfEnemy(atk_char, map[atk_char["x"]][y]["Actor"])
+                        local is_enemy = CheckIfEnemy(atk_char, map[atk_char["x"]][y]["Actor"])
                         if (is_enemy == true) then
                             table.insert(skill_range_tile_list, {x = atk_char["x"], y = y})
                         end
@@ -197,9 +197,9 @@ function GetSkillMapRange(map, atk_char, skill)
         for y = atk_char["y"] + 1, skill_y_end, 1 do
             if (LOR(map[atk_char["x"]][y]["Tile"] == 0,
                 function() return LAND(
-                    skill["Blockable"] == true and map[atk_char["x"]][y]["Actor"] ~= "",
+                    skill["Blockable"] == true and map[atk_char["x"]][y]["Actor"] ~= nil,
                     function() 
-                        local is_enemy = MapUtils.CheckIfEnemy(atk_char, map[atk_char["x"]][y]["Actor"])
+                        local is_enemy = CheckIfEnemy(atk_char, map[atk_char["x"]][y]["Actor"])
                         if (is_enemy == true) then
                             table.insert(skill_range_tile_list, {x = atk_char["x"], y = y})
                         end
@@ -241,9 +241,9 @@ function GetSkillMapRange(map, atk_char, skill)
                 x_diagonal, y_diagonal = atk_char["x"] + x_dir * dist, atk_char["y"] + y_dir * dist
                 if (LOR(map[x_diagonal][y_diagonal]["Tile"] == 0,
                     function() return LAND(
-                        skill["Blockable"] == true and map[x_diagonal][y_diagonal]["Actor"] ~= "",
+                        skill["Blockable"] == true and map[x_diagonal][y_diagonal]["Actor"] ~= nil,
                         function() 
-                            local is_enemy = MapUtils.CheckIfEnemy(atk_char, map[x_diagonal][y_diagonal]["Actor"])
+                            local is_enemy = CheckIfEnemy(atk_char, map[x_diagonal][y_diagonal]["Actor"])
                             if (is_enemy == true) then
                                 table.insert(skill_range_tile_list, {x = x_diagonal, y = y_diagonal})
                             end

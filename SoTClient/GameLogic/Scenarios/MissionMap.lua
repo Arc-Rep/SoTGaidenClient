@@ -30,9 +30,9 @@ end
 
 local function CheckRoomSuitability(room)
 
-    if(room["x"] + room["columns"] > map["x"]) then
+    if (room["x"] + room["columns"] > map["x"]) then
         room["columns"] = map["x"] - room["x"]
-        if(room["columns"] < min_room_wall_size) then
+        if (room["columns"] < min_room_wall_size) then
             return false
         end
     end
@@ -53,7 +53,7 @@ local function CheckRoomSuitability(room)
     end
 
     for i = 1, #map["rooms"], 1 do
-        local dist_x, dist_y = missionmaputils.CheckRoomCardinalDist(room, map["rooms"][i])
+        local dist_x, dist_y = CheckRoomCardinalDist(room, map["rooms"][i])
 
         if(dist_x <= 3 and dist_y <= 3) then
             return false
@@ -138,7 +138,7 @@ local function AssignClosestRoom(room_index, room)
 
     for k, checkroom in ipairs(map["rooms"]) do
         if(k ~= room_index) then
-            local cur_dist = missionmaputils.CheckRoomRealDistance(room, checkroom)
+            local cur_dist = CheckRoomRealDistance(room, checkroom)
             if(min_dist_found == nil) or cur_dist < min_dist_found then
                 min_dist_found = cur_dist
                 closest_k = k
@@ -206,7 +206,7 @@ local function ConnectPartitions(room_partitions, part1, part2)
         if(part1 == temp_part1) then
             for k2, temp_part2  in ipairs(room_partitions) do
                 if(temp_part2 == part2) then
-                    temp_dist = missionmaputils.CheckRoomRealDistance(map["rooms"][k1], map["rooms"][k2])
+                    temp_dist = CheckRoomRealDistance(map["rooms"][k1], map["rooms"][k2])
                     if((room1 == nil) or (temp_dist < min_dist)) then
                         room1 = k1
                         room2 = k2
@@ -281,7 +281,7 @@ function MissionMap.generateMap(mission_type, seed1, seed2, difficulty_level)
         for j = 1, y, 1 do
             map[i][j] = {}
             map[i][j]["Tile"] = empty
-            map[i][j]["Actor"] = ""
+            map[i][j]["Actor"] = nil
         end
     end
 
