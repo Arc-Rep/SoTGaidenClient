@@ -37,8 +37,26 @@ local function PreparePiercingJudgement(piercing_judgement, modifiers)
         end
 end
 
-local function PrepareStreakElement(streak, options, targets_left)
+local function PrepareStreakElement(streak)
+    local streak_element = {}
 
+    streak_element["Focus"]        = streak["Focus"]
+    streak_element["Element"]      = streak["Element"]
+    streak_element["Accuracy"]     = streak["Accuracy"]
+    streak_element["Range"]        = streak["Range"]   
+    streak_element["TargetType"]   = streak["TargetType"]  
+    streak_element["FocusType"]    = streak["FocusType"]  
+    streak_element["AuraRadius"]   = streak["AuraRadius"]    
+    streak_element["DmgBase"]      = streak["DmgBase"] 
+    streak_element["DmgIncrement"] = streak["DmgIncrement"]
+    streak_element["CritMod"]      = streak["CritMod"]
+    streak_element["Modifiers"]    = streak["Modifiers"]
+
+    return streak_element
+end
+
+local function PrepareDivineStreak(streak, modifiers)
+    streak["Modifiers"]         = modifiers
     streak["Focus"]             = "Enemy"
     streak["Element"]           = {"Light"}
     streak["Accuracy"]          = "Always"
@@ -46,25 +64,30 @@ local function PrepareStreakElement(streak, options, targets_left)
     streak["TargetType"]        = "Omni"
     streak["FocusType"]         = "Char"
     streak["AuraRadius"]        = 0
-    streak["DmgBase"]           = 10 - (DEFAULT_STREAK_NUM - targets_left) * 2
+    streak["DmgBase"]           = 10
     streak["DmgIncrement"]      = {"Mag", 0.5, "Skl", 0.2}
     streak["CritMod"]           = {0.2}
     streak["EffectModifier"]    = 3
     streak["Effect"]            =
         function(map, char, focus_x, focus_y)
+
             PerformSkill(map, char, map[focus_x][focus_y]["Actor"], streak)
 
-            local sub_hit = streak
-            local char_hit = map[focus_x][focus_y]["Actor"]
+            local char_hit = {}
 
-            for i = 1, streak["EffectModifier"], 1 do
-                sub_hit["DmgBase"] = sub_hit["DmgBase"] / 2
+            char_hit["x"] = focus_x
+            char_hit["y"] = focus_y
+
+            local streak_hit = PrepareStreakElement(streak)
+
+            for streak_index = 1, streak["EffectModifier"], 1 do
+                streak_hit["DmgBase"] = streak_hit["DmgBase"] / ((streak_index - 1) * 2)
                 
-                if (sub_hit["DmgBase"] < 1) then
+                if (streak["DmgBase"] < 1) then
                     break
                 end
 
-                local aura_tile_list = GetSkillMapRange(map, char_hit, sub_hit)
+                local aura_tile_list = GetSkillMapRange(map, char_hit, streak)
 
                 local enemy_list = {}
                 
@@ -75,7 +98,7 @@ local function PrepareStreakElement(streak, options, targets_left)
 
                     if (LAND(
                             tile["Actor"] ~= nil and tile_x ~= char_hit["x"] and tile_y ~= char_hit["y"],
-                            function() CheckIfEnemy(char, tile["Actor"]) end
+                            function() return CheckIfEnemy(char, tile["Actor"]) end
                         )
                     ) then
                         table.insert(enemy_list, tile["Actor"])
@@ -86,31 +109,20 @@ local function PrepareStreakElement(streak, options, targets_left)
                     break
                 end
 
-                if (#enemy_list == 1) then
-                    char_hit = enemy_list[1]
-                else
-                    char_hit = enemy_list[generateRandomBetween(1, #enemy_list)]
-                end
+                local char_chosen
                 
+                if (#enemy_list == 1) then
+                    char_chosen = enemy_list[1]
+                else
+                    char_chosen = enemy_list[LevelGen.generateRandomBetween(1, #enemy_list)]
+                end
+
+                char_hit["x"] = char_chosen["x"]
+                char_hit["y"] = char_chosen["y"]
             end
         end
-    if(targets_left ~= 1) then 
-        streak["SequenceCriteria"]  = {"SeekRange", 3}
-    end
-
-    if(targets_left ~= 1) then
-        streak["Next"] = {}
-        PrepareStreakElement(streak["Next"], options, targets_left - 1)
-    end
 
     return streak
-end
-
-local function PrepareDivineStreak(streak, modifiers)
-
-    PrepareStreakElement(streak, modifiers, DEFAULT_STREAK_NUM)
-
-    streak["Modifiers"] = modifiers
 end
 
 local function PrepareWeightOfTheUndaunted(weight_of_the_undaunted, modifiers)

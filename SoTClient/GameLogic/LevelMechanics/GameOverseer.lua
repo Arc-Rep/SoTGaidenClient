@@ -3,6 +3,7 @@ local GameOverseer = {}
 
 -- 0 = Enemies, 1 = Player1 & Allies, 2 = Player2 & Allies, ...
 local global_turns = 1
+local current_turn_player_index = 1
 local GameSetup = require "SoTClient.GameLogic.LevelMechanics.GameSetup"
 local CharAction = require "SoTClient.GameLogic.CharacterLogic.CharAction"
 local BattleLogic = require "SoTClient.GameLogic.MechanicsLogic.BattleCalcs.BattleLogic"
@@ -15,6 +16,7 @@ local Infusion = require "SoTClient.GameLogic.MechanicsLogic.InfusionSystem.Infu
 local unit_table = {}
 local Squads = {}
 local squad_team_num = 0
+local current_turn_player_index = 1
 local LocalBattles = {}
 
 function GameOverseer.getPlayerCharStats()
@@ -29,32 +31,56 @@ function GameOverseer.GetUnitList()
     return unit_table
 end
 
-function DoTurn()
-    for char_index, char in ipairs(Squads[global_turns]) do
-        if char["ControlType"] ~= "Player" and char["currentHP"] > 0 then
-            DoCharAction(GetGameMap(), unit_table, char)
-            Infusion.checkTurnEndTrigger(GetGameMap(), char)
-        end
+function GameOverseer.DoTurnEnd()
+    -- Get current character index
+    local char = Squads[global_turns][current_turn_player_index]
+    -- Clear animations
+    char["animation"] = nil
+
+    Infusion.checkTurnEndTrigger(GetGameMap(), char)
+
+    current_turn_player_index = current_turn_player_index + 1
+
+    if (current_turn_player_index > #Squads[global_turns]) then
+        global_turns = global_turns + 1
+        current_turn_player_index = 1
     end
 
-    global_turns = global_turns + 1
-
-    if (global_turns == 1) then
-        return
-    elseif(global_turns >= squad_team_num) then
+    if(global_turns >= squad_team_num) then
         global_turns = 0
     end
 
-    return DoTurn()
+    return GameOverseer.DoTurn()
+end
 
+function GameOverseer.DoTurn()
+    -- Get current character index
+    local char = Squads[global_turns][current_turn_player_index]
+
+    if CheckIfDead(char) then
+        if (char["ControlType"] == "Player") then
+            return -- End of game
+        end
+        return GameOverseer.DoTurnEnd()
+    elseif char["ControlType"] ~= "Player" then
+        print("Turn of:")
+        print(global_turns)
+        print(current_turn_player_index)
+        if(DoCharAction(GetGameMap(), unit_table, char, GameOverseer.DoTurnEnd) == true) then
+            return GameOverseer.DoTurnEnd()
+        end
+    end
+    
 end
 
 function GameOverseer.SendCommand(command, focus_x, focus_y)
     local move_done, skill_activated = false, nil
+    local current_char = Squads[global_turns][current_turn_player_index]
 
-    if global_turns ~= 1 then
+    if current_char["ControlType"] ~= "Player" or CheckIfDead(current_char) then
         return
     end
+
     --print("Player is in " .. Squads[1][1]["x"] .. " and " .. Squads[1][1]["y"])
     --print("Tile above is " .. game_map[Squads[1][1]["x"]][Squads[1][1]["y"] - 1]["Tile"])
     --print("Tile below is " .. game_map[Squads[1][1]["x"]][Squads[1][1]["y"] + 1]["Tile"])
@@ -62,13 +88,13 @@ function GameOverseer.SendCommand(command, focus_x, focus_y)
     --print("Tile right is " .. game_map[Squads[1][1]["x"] + 1][Squads[1][1]["y"]]["Tile"])
 
     if(command == "pressUp") then
-        move_done = PlayerMoveEvent(GetGameMap(), Squads[1][1], 0, -1)
+        move_done = PlayerMoveEvent(GetGameMap(), Squads[1][1], 0, -1, GameOverseer.DoTurnEnd)
     elseif (command == "pressDown") then
-        move_done = PlayerMoveEvent(GetGameMap(), Squads[1][1], 0, 1)
+        move_done = PlayerMoveEvent(GetGameMap(), Squads[1][1], 0, 1, GameOverseer.DoTurnEnd)
     elseif (command == "pressLeft") then
-        move_done = PlayerMoveEvent(GetGameMap(), Squads[1][1], -1, 0)
+        move_done = PlayerMoveEvent(GetGameMap(), Squads[1][1], -1, 0, GameOverseer.DoTurnEnd)
     elseif (command == "pressRight") then
-        move_done = PlayerMoveEvent(GetGameMap(), Squads[1][1], 1, 0)
+        move_done = PlayerMoveEvent(GetGameMap(), Squads[1][1], 1, 0, GameOverseer.DoTurnEnd)
     elseif (command == "pressSkill1") then
         return GetSkillMapRange(GetGameMap(), Squads[1][1], Squads[1][1]["Skill1"])
     elseif (command == "pressSkill2") then
@@ -96,16 +122,14 @@ function GameOverseer.SendCommand(command, focus_x, focus_y)
     end
 
     if(skill_activated ~= nil) then
-
-        Squads[1][1][skill_activated]["Effect"](GetGameMap(), Squads[1][1], focus_x, focus_y)
+        doCharActionSkill(GetGameMap(), Squads[1][1], Squads[1][1][skill_activated], focus_x, focus_y)
         move_done = true
     end
 
     if(move_done == true) then
-        Infusion.checkTurnEndTrigger(GetGameMap, Squads[1][1])
-        DoTurn()
+        GameOverseer.DoTurnEnd()
     end
-    
+
     return move_done
 end
 

@@ -6,6 +6,7 @@ local Camera = require "SoTClient.Visuals.CameraMap"
 local ScreenInfo = require "SoTClient.Visuals.ScreenInfo"
 local RenderTiles = require "SoTClient.Visuals.RenderTile"
 local LazyEval = require "SoTClient.Utils.LazyEval"
+local EventManager = require "SoTClient.Visuals.Events.EventManager"
 
 local visual_tile_width, visual_tile_height
 local camera_timer = 0
@@ -18,7 +19,9 @@ local skill_tilemap_area = {}
 
 local RenderSurfaceMap = nil
 
-function RenderMap.SetCamera(map, focus)
+function RenderMap.SetCamera(focus)
+
+    local map = GetGameMap()
     Camera.setup(map, ScreenInfo, focus)
 
     local camera_tile_width = math.floor(Camera.getTileWidth()) + 1
@@ -32,38 +35,6 @@ function RenderMap.SetCamera(map, focus)
     end
 end
 
-function RenderMap.SetRenderMap(map, map_type, unit_list, focus, surface_map, surface_characters)
-    RenderTiles.SetRenderTiles(map, map_type)
-
-    RenderSurfaceMap   = surface_map
-    RenderSurfaceChars = surface_characters
-
-    RenderMap.SetCamera(map, focus)
-    RenderSurfaceMap:addEventListener("touch", 
-        function(event) 
-            if(#skill_tilemap_area ~= 0) then
-                return false
-            end 
-            if(event.phase == "ended") then
-                Camera.CameraDrag(event) 
-                local function iter_animation()
-                    RenderMap.UpdateTilemap(map)
-                    if(Camera.CheckAnimationExists() == true) then 
-                        timer.performWithDelay(10, function() iter_animation() end)
-                    end
-                end
-                iter_animation()
-                return true
-            end
-            if (camera_timer + 30 > system.getTimer()) then
-                return false
-            end
-            camera_timer = system.getTimer()
-            Camera.CameraDrag(event)
-            RenderMap.UpdateTilemap(map) 
-        end)
-    inbound_characters = unit_list
-end
 
 function ClearRow(row, start_y, end_y)
     for tile_y = start_y, end_y, 1 do
@@ -87,11 +58,32 @@ function ClearColumn(column, start_x, end_x)
     end
 end
 
+function RenderMap.PerformAnimation(object, params)
+    if Camera.CheckAnimationExists() == false then
+        local onAnimationCompleteFunction = object.animation.onComplete
+        local afterAnimationFunction = nil
+
+        if onAnimationCompleteFunction ~= nil then
+            afterAnimationFunction = onAnimationCompleteFunction()
+        end
+        Camera.EndFocusAnimation()
+        RenderMap.UpdateTilemap()
+        if afterAnimationFunction ~= nil then
+            afterAnimationFunction()
+        end
+    else
+        RenderMap.UpdateTilemap()
+        timer.performWithDelay(20, function() RenderMap.PerformAnimation(object, params) end)    
+    end
+end
+
 function RenderMap.UpdateCharacters(move_x, move_y)
     for i = 1, #inbound_characters, 1 do
         local char_id = inbound_characters[i]["ID"]
-        if(inbound_characters[i]["x"] == nil) then
+        if(inbound_characters[i]["animation"] ~= nil) then
+        elseif(inbound_characters[i]["x"] == nil) then
             if(charmap[char_id] ~= nil) then
+                inbound_characters[i]["Texture"] = nil
                 charmap[char_id]:removeSelf()
                 charmap[char_id] = nil
             end
@@ -105,6 +97,7 @@ function RenderMap.UpdateCharacters(move_x, move_y)
                 charmap[char_id]:setFillColor(0.8)
                 charmap[char_id]:setStrokeColor(0, 1, 1)
                 RenderSurfaceChars:insert(charmap[char_id])
+                inbound_characters[i]["Texture"] = charmap[char_id]
             end
             charmap[char_id].x =
                 ((-Camera.getStartTileX() + inbound_characters[i]["x"]) - Camera.getDeviationX()) * Camera.getRealTileSize()
@@ -117,9 +110,10 @@ function RenderMap.UpdateCharacters(move_x, move_y)
     end
 end
 
-function RenderMap.UpdateTilemap(map)
+function RenderMap.UpdateTilemap()
 
     local move_x, move_y = Camera.updateFocusAnimated()
+    local map = GetGameMap()
 
     RenderMap.UpdateCharacters(move_x, move_y)
 
@@ -160,7 +154,6 @@ function RenderMap.UpdateTilemap(map)
             tile_y = math.floor(y)
             
             if(tilemap[tile_x][tile_y] == nil) then
-                
                 if(LOR(map[tile_x] == nil, function() return map[tile_x][tile_y] == nil end)) then
                     tilemap[tile_x][tile_y] = display.newImageRect(
                         RenderTiles.ReturnDefaultEmptyTile().filename,
@@ -227,19 +220,19 @@ function RenderMap.UpdateTilemap(map)
     return tilemap
 end
 
-function RenderMap.ClearSkillRangeOverlay(map)
+function RenderMap.ClearSkillRangeOverlay()
     while (#skill_tilemap_area ~= 0) do
         tile = table.remove(skill_tilemap_area, 1)
         tile:removeSelf()
         tile = nil
     end
 
-    RenderMap.UpdateTilemap(map)
+    RenderMap.UpdateTilemap()
 end
 
-function RenderMap.ShowSkillRangeOverlay(map, skill_tile_list, event_function)
+function RenderMap.ShowSkillRangeOverlay(skill_tile_list, event_function)
 
-    RenderMap.ClearSkillRangeOverlay(map)
+    RenderMap.ClearSkillRangeOverlay()
 
     if(Camera.CheckAnimationExists() == true) then
         return false
@@ -264,6 +257,57 @@ function RenderMap.ShowSkillRangeOverlay(map, skill_tile_list, event_function)
         RenderSurfaceMap:insert(skill_tilemap_area[#skill_tilemap_area])
     end
     return true
+end
+
+
+local function MapTouchEvent(event)
+    if(event.phase == "ended") then
+        Camera.CameraDrag(event) 
+        animation_data = 
+        {
+            x = 0,
+            y = 0,
+            time = 700
+        }
+        local object = {}
+        object.animation = animation_data
+        Camera.StartFocusAnimation(animation_data)
+        RenderMap.PerformAnimation(object)
+        return true
+    end
+    if (camera_timer + 30 > system.getTimer()) then
+        return false
+    end
+    camera_timer = system.getTimer()
+    Camera.CameraDrag(event)
+    RenderMap.UpdateTilemap()
+    return true
+end
+
+function RenderMap.SetRenderMap(map, map_type, unit_list, focus, surface_map, surface_characters)
+    RenderTiles.SetRenderTiles(map, map_type)
+
+    LogicMap           = map
+    RenderSurfaceMap   = surface_map
+    RenderSurfaceChars = surface_characters
+
+    RenderMap.SetCamera(focus)
+    RenderSurfaceMap:addEventListener("touch", 
+        function(event)
+
+            if(#skill_tilemap_area ~= 0) then
+                return false
+            end
+
+            if (event.phase == "began") then
+                EventManager.SetActiveEvent(EventManager.DRAG_MAP, MapTouchEvent)
+            end
+
+            EventManager.PerformEvent(event)
+
+            return true
+        end)
+    inbound_characters = unit_list
 end
 
 return RenderMap

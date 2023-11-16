@@ -16,7 +16,7 @@ end
 
 function ApplyDamage(game_map, char, damage)
     print(char["Actor"] .. " suffered " .. damage .. " damage!")
-    if(damage > char["currentHP"]) then
+    if(damage >= char["currentHP"]) then
         char["currentHP"] = 0
         KillCharacter(game_map, char)
         print(char["Actor"] .. " killed!")
@@ -105,7 +105,7 @@ function GetOmniSkillMapRange(map, atk_char, skill)
 end
 
 
-function GetSkillMapRange(map, atk_char, skill)
+function GetSkillMapRange(map, atk_char, skill) -- change atk_char to atk_origin
 
     if(skill["TargetType"] == "Omni") then
         return GetOmniSkillMapRange(map, atk_char, skill)

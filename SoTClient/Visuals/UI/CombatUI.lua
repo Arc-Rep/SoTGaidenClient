@@ -4,6 +4,7 @@ local MapRender = require "SotClient.Visuals.RenderMap"
 local MapData = require "SoTClient.GameLogic.Scenarios.MissionMap"
 local Player = require "SoTClient.GameLogic.PlayerLogic.Player"
 local LazyEval = require "SoTClient.Utils.LazyEval"
+local EventManager = require "SoTClient.Visuals.Events.EventManager"
 
 local CombatUI = {}
 
@@ -27,19 +28,21 @@ function CombatUI.createPlayerUI(GameOverseer, Player_Squad, UIGroup)
     end
 
     local touchListener = function(event, dpad)
+
         if (last_click + 300 > system.getTimer() or active_skill ~= nil) then
-            return false
+            return true
         end
+
         last_click = system.getTimer()
         local relative_x, relative_y = dpad.x - event.x, dpad.y - event.y
-    
+
         if (relative_x > relative_y) then
             if (relative_x + relative_y < dpad.contentWidth) then
                 GameOverseer.SendCommand("pressDown")
             elseif (relative_x + relative_y > dpad.contentWidth) then
                 GameOverseer.SendCommand("pressLeft")
             else
-                return false
+                return true
             end
         elseif (relative_x < relative_y) then
             if (relative_x + relative_y < dpad.contentWidth) then
@@ -47,12 +50,11 @@ function CombatUI.createPlayerUI(GameOverseer, Player_Squad, UIGroup)
             elseif (relative_x + relative_y > dpad.contentWidth) then
                 GameOverseer.SendCommand("pressUp")
             else
-                return false
+                return true
             end
         else
-            return false
+            return true
         end
-        MapRender.UpdateTilemap(MapData.GetMap())
     
         --Move where you wanna call cutscenes
         --if cutscene[1] == false then
@@ -72,10 +74,11 @@ function CombatUI.createPlayerUI(GameOverseer, Player_Squad, UIGroup)
             local click_result = GameOverseer.SendCommand(active_skill, tile_x, tile_y)
     
             if(click_result == true) then
-                MapRender.ClearSkillRangeOverlay(GetGameMap())
+                MapRender.ClearSkillRangeOverlay()
                 active_skill = nil
-                MapRender.UpdateTilemap(GetGameMap())
+                MapRender.UpdateTilemap()
             end
+            return true
         end
     end
     
@@ -84,7 +87,7 @@ function CombatUI.createPlayerUI(GameOverseer, Player_Squad, UIGroup)
         if(last_click + 300 > system.getTimer()) then
             return false
         end
-    
+        
         local skill_map, skill_clicked, temp_skill
     
         skill_clicked = "press" .. skill
@@ -97,10 +100,15 @@ function CombatUI.createPlayerUI(GameOverseer, Player_Squad, UIGroup)
         end
       
         skill_map = GameOverseer.SendCommand(skill_clicked)
-        if(MapRender.ShowSkillRangeOverlay(GetGameMap(), skill_map, skill_performer) == true) then
+
+        if (skill_map == nil) then
+            return false
+        end
+
+        if(MapRender.ShowSkillRangeOverlay(skill_map, skill_performer) == true) then
             active_skill = temp_skill
         end
-    
+        return true
     end
     --ABILITIES UI
     local AbilityPanelW = display.contentWidth * 0.40
@@ -123,7 +131,8 @@ function CombatUI.createPlayerUI(GameOverseer, Player_Squad, UIGroup)
             display.newRect(AbilitySpacingW * square_idx + AbilityW * (square_idx - 1), AbilityY, AbilityW, AbilityH)
         AbilitySquares[square_idx].anchorX = 0
         AbilitySquares[square_idx].anchorY = 1
-        AbilitySquares[square_idx]:addEventListener("tap",function(event) skillTapListener(event, "Skill" .. square_idx) end)
+        AbilitySquares[square_idx]:addEventListener("tap",function(event) skillTapListener(event, "Skill" .. square_idx) return true end)
+        AbilitySquares[square_idx]:addEventListener("touch",function(event) EventManager.PerformEvent(event) return true end)
         AbilityUI:insert(AbilitySquares[square_idx])
     end
     AbilityUI:insert(UIAbilitiesPanel)
@@ -352,7 +361,15 @@ function CombatUI.createPlayerUI(GameOverseer, Player_Squad, UIGroup)
     local dpadSpacingRatioY = 0.01
     dpad:translate( display.contentWidth * (1 - dpadSpacingRatioX), display.contentHeight * (1 - dpadSpacingRatioY))
     DpadUI:insert(dpad)
-    DpadUI:addEventListener("tap", function(event) touchListener(event, dpad) end)
+    DpadUI:addEventListener("tap", function(event) touchListener(event, dpad) return true end)
+    DpadUI:addEventListener("touch", 
+        function(event)
+            if (EventManager.GetActiveEventID() ~= nil) then 
+                EventManager.PerformEvent(event) 
+            end 
+                return true 
+        end
+    )
 
     --GLOBAL UI
     UIGroup:insert(PlayerUI)
