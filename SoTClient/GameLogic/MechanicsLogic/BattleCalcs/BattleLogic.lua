@@ -3,10 +3,11 @@ local math = require "math"
 
 local MapUtils = require "SoTClient.GameLogic.Scenarios.MissionMapUtils"
 local Infusion = require "SoTClient.GameLogic.MechanicsLogic.InfusionSystem.Infusion"
-local Essence = require "SoTClient.GameLogic.MechanicsLogic.InfusionSystem.Essence"
+local Essence  = require "SoTClient.GameLogic.MechanicsLogic.InfusionSystem.Essence"
 local StatCals = require "SoTClient.GameLogic.MechanicsLogic.BattleCalcs.StatCalcs"
 local CombatUI = require "SoTClient.Visuals.UI.CombatUI"
 local LazyEval = require "SoTClient.Utils.LazyEval"
+local Audio    = require "SoTClient.Audio.AudioHandler"
 
 function KillCharacter(game_map, char)
     game_map[char["x"]][char["y"]]["Actor"] = nil
@@ -19,8 +20,10 @@ function ApplyDamage(game_map, char, damage)
     if(damage >= char["currentHP"]) then
         char["currentHP"] = 0
         KillCharacter(game_map, char)
+        PlayLevelAudio("slash_kill.wav")
         print(char["Actor"] .. " killed!")
     else
+        PlayLevelAudio("slash.wav")
         char["currentHP"] = char["currentHP"] - damage
     end
 

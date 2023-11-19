@@ -4,6 +4,8 @@ local GameOverseer = {}
 -- 0 = Enemies, 1 = Player1 & Allies, 2 = Player2 & Allies, ...
 local global_turns = 1
 local current_turn_player_index = 1
+
+local Audio = require "SoTClient.Audio.AudioHandler"
 local GameSetup = require "SoTClient.GameLogic.LevelMechanics.GameSetup"
 local CharAction = require "SoTClient.GameLogic.CharacterLogic.CharAction"
 local BattleLogic = require "SoTClient.GameLogic.MechanicsLogic.BattleCalcs.BattleLogic"
@@ -138,6 +140,7 @@ function GameOverseer.StartGame(MapData, player_squads, team_squads, seed1, seed
     SetupPlayerUnits(unit_table, Squads)
     SetupPlayerInitPlacements(GetGameMap(), Squads[1])
     SetupEnemyInitPlacements(GetGameMap(), Squads[0], seed1, seed2)
+    LoadLevelAudio()
     squad_team_num = 2
     global_turns = 1
 end
