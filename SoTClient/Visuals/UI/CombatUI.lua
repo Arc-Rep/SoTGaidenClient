@@ -132,7 +132,15 @@ function CombatUI.createPlayerUI(GameOverseer, Player_Squad, UIGroup)
         AbilitySquares[square_idx].anchorX = 0
         AbilitySquares[square_idx].anchorY = 1
         AbilitySquares[square_idx]:addEventListener("tap",function(event) skillTapListener(event, "Skill" .. square_idx) return true end)
-        AbilitySquares[square_idx]:addEventListener("touch",function(event) EventManager.PerformEvent(event) return true end)
+        AbilitySquares[square_idx]:addEventListener(
+            "touch",
+            function(event)
+                if (EventManager.GetActiveEventID() ~= nil) then 
+                    EventManager.PerformEvent(event) 
+                end
+                return true
+            end
+        )
         AbilityUI:insert(AbilitySquares[square_idx])
     end
     AbilityUI:insert(UIAbilitiesPanel)

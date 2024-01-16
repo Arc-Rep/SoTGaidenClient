@@ -3,13 +3,14 @@ local CameraMap = {}
 local math = require "math"
 local timer = require "timer"
 local EventManager = require "SoTClient.Visuals.Events.EventManager"
+local AnimationQueue = require "SoTClient.Visuals.Animations.Basic.AnimationQueue"
 
 local camera_x, camera_y = 0, 0
 local camera_start_x, camera_start_y = 1, 1
 local camera_width_base, camera_height_base = 0, 0
 local camera_tile_width, camera_tile_height = 1, 1
 local camera_tile_pixel_conversion = 1
-local TILE_OUT_BOUNDS = 4
+local TILE_OUT_BOUNDS = 6
 local CAMERA_MAX_TILE_DRAG = 1
 local CAMERA_MAX_MOTION_SPEED = 0.1
 local CAMERA_ZOOM_VALUES = {0.75, 0.875, 1, 1.125, 1.25}
@@ -23,27 +24,36 @@ local camera_animation_speed_x, camera_animation_speed_y
 local camera_animation_start_time = nil
 local camera_animation_time = nil
 local camera_animation_ongoing = false
+local camera_shift_x = 0
+local camera_shift_y = 0
 local focus_element_queue = {}
 
 function CameraMap.updateFocusAnimated()
-    local camera_x_prev = camera_x
-    local camera_y_prev = camera_y
+    local camera_x_prev
+    local camera_y_prev
     
-    if(focus_element_queue[1]["x"] ~= nil and focus_element_queue[1]["y"] ~= nil and 
-        focus_element_queue[1]["animation"] == nil
-    ) then
+    if(focus_element_queue[1]["x"] ~= nil and focus_element_queue[1]["y"] ~= nil) then
         camera_focus_x = focus_element_queue[1]["x"]
         camera_focus_y = focus_element_queue[1]["y"]
     end
+
     if(CameraMap.CheckAnimationExists() == true) then
+        camera_x_prev = camera_x
+        camera_y_prev = camera_y
         CameraMap.DoCameraAnimation(camera_x_animation_offset_focus, camera_y_animation_offset_focus)
+        camera_x = camera_focus_x + camera_x_animation_offset 
+        camera_y = camera_focus_y + camera_y_animation_offset
+    else
+        camera_x = camera_focus_x
+        camera_y = camera_focus_y
+        camera_x_prev = camera_x
+        camera_y_prev = camera_y
     end
-    camera_x = camera_focus_x + camera_x_animation_offset 
-    camera_y = camera_focus_y + camera_y_animation_offset
+
     camera_start_x = camera_x - camera_tile_width/2
     camera_start_y = camera_y - camera_tile_height/2
 
-    return camera_x - camera_x_prev, camera_y - camera_y_prev
+    return camera_x_animation_offset, camera_y_animation_offset
 end
 
 function CameraMap.zoomSetup()
@@ -115,6 +125,11 @@ function CameraMap.StartFocusAnimation(animation_data)
     camera_animation_ongoing = true
 end
 
+function CameraMap.ShiftMap(shift_x, shift_y)
+    camera_shift_x = shift_x
+    camera_shift_y = shift_y
+end
+
 function CameraMap.EndFocusAnimation()
     camera_x_animation_offset_focus = 0
     camera_y_animation_offset_focus = 0
@@ -126,9 +141,11 @@ function CameraMap.EndFocusAnimation()
 end
 
 function CameraMap.MoveElement(texture, params)
-    params["x"] = params["x"] * camera_tile_pixel_zoomed
-    params["y"] = params["y"] * camera_tile_pixel_zoomed
-    transition.moveBy(texture, params)
+    params["x"] = (params["x"] + camera_x_animation_offset_focus) * camera_tile_pixel_zoomed
+    params["y"] = (params["y"] + camera_y_animation_offset_focus) * camera_tile_pixel_zoomed
+    --transition.moveBy(texture, params)
+
+    AnimationQueue.AddAnimation(texture, params)
 end
 
 function CameraMap.CameraDrag(event)
@@ -157,6 +174,7 @@ function CameraMap.CameraDrag(event)
     end
 
     if(event.phase == "began") then
+        camera_animation_ongoing = true
         camera_drag_begin_x = event.x
         camera_drag_begin_y = event.y
     end

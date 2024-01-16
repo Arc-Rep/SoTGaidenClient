@@ -18,6 +18,9 @@ local inbound_characters = {}
 local skill_tilemap_area = {}
 
 local RenderSurfaceMap = nil
+local RenderSurfaceChars = nil
+local RenderSurfaceFocus = nil
+local RenderSurfaceNonFocus = nil
 
 function RenderMap.SetCamera(focus)
 
@@ -26,6 +29,15 @@ function RenderMap.SetCamera(focus)
 
     local camera_tile_width = math.floor(Camera.getTileWidth()) + 1
     local camera_tile_height = math.floor(Camera.getTileHeight()) + 1
+
+    if (Camera.getFocus() ~= nil and charmap[Camera.getFocus()] ~= nil) then
+        RenderSurfaceFocus:remove(charmap[Camera.getFocus()["ID"]])
+    end
+
+    if (charmap[focus["ID"]] ~= nil) then
+        RenderSurfaceNonFocus:remove(charmap[focus["ID"]])
+        RenderSurfaceFocus:insert(charmap[focus["ID"]])
+    end
 
     for tile_x = -camera_tile_width, map["x"] + camera_tile_width, 1 do
         tilemap[tile_x] = {}
@@ -59,6 +71,7 @@ function ClearColumn(column, start_x, end_x)
 end
 
 function RenderMap.PerformAnimation(object, params)
+
     if Camera.CheckAnimationExists() == false then
         local onAnimationCompleteFunction = object.animation.onComplete
         local afterAnimationFunction = nil
@@ -77,32 +90,145 @@ function RenderMap.PerformAnimation(object, params)
     end
 end
 
-function RenderMap.UpdateCharacters(move_x, move_y)
+
+function RenderMap.MoveTileMap(params)
+
+    local moved_tile_x, moved_tile_y = params["x"], params["y"]
+    local time1 = params["time"]
+    local start_x, start_y, end_x, end_y
+
+    if (moved_tile_x > 0) then
+        start_x = Camera.getStartTileX() 
+        end_x   = Camera.getStartTileX() + Camera.getTileWidth() + moved_tile_x
+    else
+        start_x = Camera.getStartTileX() - moved_tile_x
+        end_x   = Camera.getStartTileX() + Camera.getTileWidth()
+    end
+
+    if (moved_tile_y > 0) then
+        start_y = Camera.getStartTileY()
+        end_y   = Camera.getStartTileY() + Camera.getTileHeight() + moved_tile_y
+    else
+        start_y = Camera.getStartTileY() - moved_tile_y
+        end_y   = Camera.getStartTileY() + Camera.getTileHeight()
+    end
+
+
+    local map_cleanup = 
+        function(next_function)
+            if (moved_tile_x < 0) then
+                for i=0, moved_tile_x, -1 do
+                    ClearRow(Camera.getStartTileX() + Camera.getTileWidth() + i, moved_tile_y, math.floor(moved_tile_y + Camera.getTileHeight()))
+                end
+        
+            elseif (moved_tile_x > 0) then
+                for i=0, moved_tile_x, 1 do
+                    ClearRow(Camera.getStartTileX() + i, moved_tile_y, math.floor(moved_tile_y + Camera.getTileHeight()))
+                end
+            end
+        
+            if (moved_tile_y < 0) then
+                for i=0, moved_tile_y, -1 do
+                    ClearColumn(Camera.getStartTileY() + Camera.getTileHeight() + i, moved_tile_x, math.floor(moved_tile_x + Camera.getTileWidth()))
+                end
+        
+            elseif (moved_tile_y > 0) then
+                for i=0, moved_tile_y, 1 do
+                    ClearColumn(Camera.getStartTileY() + i, moved_tile_x, math.floor(moved_tile_x + Camera.getTileWidth()))
+                end
+            end
+            
+            return next_function()
+        end
+
+    local params1 = {
+        x = -moved_tile_x,
+        y = -moved_tile_y,
+        time = time1,
+        end_function = map_cleanup
+    }
+
+    params["x"] = -params["x"]
+    params["y"] = -params["y"]
+    params["end_function"] = map_cleanup
+
+    local params1 = {
+        x = params["x"],
+        y = params["y"],
+        time = params["time"]
+    }
+
+    RenderMap.RenderMapBox(
+        Camera.getStartTileX(), 
+        Camera.getStartTileY(),
+        start_x,
+        start_y,
+        end_x,
+        end_y,
+        false
+    )
+    Camera.MoveElement(RenderSurfaceMap, params)
+    Camera.MoveElement(RenderSurfaceNonFocus, params1)
+
+end
+
+function RenderMap.UpdateTilemap()
+
+    Camera.updateFocusAnimated()
+
+    RenderMap.RenderMapBox(
+        Camera.getStartTileX(), 
+        Camera.getStartTileY(), 
+        Camera.getStartTileX(), 
+        Camera.getStartTileY(), 
+        Camera.getStartTileX() + Camera.getTileWidth(),
+        Camera.getStartTileY() + Camera.getTileHeight(),
+        true
+    )
+
+    map_created = true
+
+    return tilemap
+end
+
+function RenderMap.RenderCharacterBox(origin_x, origin_y, start_x, start_y, end_x, end_y)
+
+    RenderSurfaceFocus.x = 0
+    RenderSurfaceNonFocus.x = 0
+
+    RenderSurfaceFocus.y = 0
+    RenderSurfaceNonFocus.y = 0
+
     for i = 1, #inbound_characters, 1 do
         local char_id = inbound_characters[i]["ID"]
-        if(inbound_characters[i]["animation"] ~= nil) then
-        elseif(inbound_characters[i]["x"] == nil) then
+        if(inbound_characters[i]["x"] == nil) then
             if(charmap[char_id] ~= nil) then
                 inbound_characters[i]["Texture"] = nil
                 charmap[char_id]:removeSelf()
                 charmap[char_id] = nil
             end
-        elseif(inbound_characters[i]["x"] >= Camera.getStartTileX() and
-           inbound_characters[i]["x"] < Camera.getStartTileX() + Camera.getTileWidth() and
-           inbound_characters[i]["y"] >= Camera.getStartTileY() and
-           inbound_characters[i]["y"] < Camera.getStartTileY() + Camera.getTileHeight()) then
+        elseif(inbound_characters[i]["x"] >= start_x and
+           inbound_characters[i]["x"] < end_x and
+           inbound_characters[i]["y"] >= start_y and
+           inbound_characters[i]["y"] < end_y) then
             if(charmap[char_id] == nil) then
                 charmap[char_id] = display.newRect(0, 0, Camera.getRealTileSize(),Camera.getRealTileSize())
                 charmap[char_id].strokeWidth = 3
                 charmap[char_id]:setFillColor(0.8)
                 charmap[char_id]:setStrokeColor(0, 1, 1)
-                RenderSurfaceChars:insert(charmap[char_id])
+                if (inbound_characters[i] == Camera.getFocus()) then
+                    RenderSurfaceFocus:insert(charmap[char_id])
+                else
+                    RenderSurfaceNonFocus:insert(charmap[char_id])
+                end
                 inbound_characters[i]["Texture"] = charmap[char_id]
             end
+            
             charmap[char_id].x =
-                ((-Camera.getStartTileX() + inbound_characters[i]["x"]) - Camera.getDeviationX()) * Camera.getRealTileSize()
+                ((-origin_x + inbound_characters[i]["x"]) - Camera.getDeviationX()) * Camera.getRealTileSize()
             charmap[char_id].y =
-                ((-Camera.getStartTileY() + inbound_characters[i]["y"]) - Camera.getDeviationY()) * Camera.getRealTileSize()
+                ((-origin_y + inbound_characters[i]["y"]) - Camera.getDeviationY()) * Camera.getRealTileSize()
+
         elseif(charmap[char_id] ~= nil) then
             charmap[char_id]:removeSelf()
             charmap[char_id] = nil
@@ -110,47 +236,19 @@ function RenderMap.UpdateCharacters(move_x, move_y)
     end
 end
 
-function RenderMap.UpdateTilemap()
+function RenderMap.RenderMapBox(origin_x, origin_y, start_x, start_y, end_x, end_y, render_chars)
 
-    local move_x, move_y = Camera.updateFocusAnimated()
+    RenderSurfaceMap.x = 0
+    RenderSurfaceMap.y = 0
+
     local map = GetGameMap()
 
-    RenderMap.UpdateCharacters(move_x, move_y)
+    local tile_x, tile_y = math.floor(start_x), math.floor(start_y)
 
-    if(move_x == 0 and move_y == 0 and map_created == true) then
-        return
-    end
-
-    local tile_x, tile_y = math.floor(Camera.getStartTileX()), math.floor(Camera.getStartTileY())
-    local moved_tile_x, moved_tile_y = math.floor(Camera.getStartTileX() - move_x), math.floor(Camera.getStartTileY() - move_y)
-
---[[print("Entered Tilemap")
-    print()
-    print(tile_x)
-    print(tile_y)
-    print(moved_tile_x)
-    print(moved_tile_y)]]--
-
-    if(moved_tile_x < tile_x) then
-        ClearRow(moved_tile_x, moved_tile_y, math.floor(moved_tile_y + Camera.getTileHeight()))
-
-    elseif (moved_tile_x > tile_x) then
-        ClearRow(math.floor(moved_tile_x + Camera.getTileWidth()),
-            moved_tile_y, math.floor(moved_tile_y + Camera.getTileHeight()))
-    end
-
-    if(moved_tile_y < tile_y) then
-        ClearColumn(moved_tile_y, moved_tile_x, math.floor(moved_tile_x + Camera.getTileWidth()))
-
-    elseif (moved_tile_y > tile_y) then
-        ClearColumn(math.floor(moved_tile_y + Camera.getTileHeight()),
-        moved_tile_x, math.floor(moved_tile_x + Camera.getTileWidth()))
-    end
-
-    for x = Camera.getStartTileX(), Camera.getStartTileX() + Camera.getTileWidth(), 1 do
+    for x = start_x, end_x, 1 do
         tile_x = math.floor(x)
 
-        for y = Camera.getStartTileY(), Camera.getStartTileY() + Camera.getTileHeight(), 1 do
+        for y = start_x, end_y, 1 do
             tile_y = math.floor(y)
             
             if(tilemap[tile_x][tile_y] == nil) then
@@ -208,16 +306,16 @@ function RenderMap.UpdateTilemap()
                 
                 RenderSurfaceMap:insert(tilemap[tile_x][tile_y])
             end
-            
+
             tilemap[tile_x][tile_y].x = 
-            ((-Camera.getStartTileX() + tile_x) - Camera.getDeviationX()) * Camera.getRealTileSize()
+            (((-origin_x) + tile_x) - Camera.getDeviationX()) * Camera.getRealTileSize()
             tilemap[tile_x][tile_y].y = 
-            ((-Camera.getStartTileY() + tile_y) - Camera.getDeviationY()) * Camera.getRealTileSize()
+            (((-origin_y) + tile_y) - Camera.getDeviationY()) * Camera.getRealTileSize()
         end
     end
-    map_created = true
-
-    return tilemap
+    if (render_chars == true) then
+        RenderMap.RenderCharacterBox(origin_x, origin_y, start_x, start_y, end_x, end_y)
+    end
 end
 
 function RenderMap.ClearSkillRangeOverlay()
@@ -285,13 +383,18 @@ local function MapTouchEvent(event)
 end
 
 function RenderMap.SetRenderMap(map, map_type, unit_list, focus, surface_map, surface_characters)
-    RenderTiles.SetRenderTiles(map, map_type)
 
-    LogicMap           = map
-    RenderSurfaceMap   = surface_map
-    RenderSurfaceChars = surface_characters
+    RenderTiles.SetRenderTiles(map, map_type)
+    RenderSurfaceMap      = surface_map
+    RenderSurfaceChars    = surface_characters
+    RenderSurfaceFocus    = display.newGroup()
+    RenderSurfaceNonFocus = display.newGroup()
+
+    RenderSurfaceChars:insert(RenderSurfaceFocus)
+    RenderSurfaceChars:insert(RenderSurfaceNonFocus)
 
     RenderMap.SetCamera(focus)
+
     RenderSurfaceMap:addEventListener("touch", 
         function(event)
 
@@ -302,12 +405,14 @@ function RenderMap.SetRenderMap(map, map_type, unit_list, focus, surface_map, su
             if (event.phase == "began") then
                 EventManager.SetActiveEvent(EventManager.DRAG_MAP, MapTouchEvent)
             end
-
-            EventManager.PerformEvent(event)
+            if (EventManager.GetActiveEventID() ~= nil) then
+                EventManager.PerformEvent(event)
+            end
 
             return true
         end)
     inbound_characters = unit_list
+
 end
 
 return RenderMap

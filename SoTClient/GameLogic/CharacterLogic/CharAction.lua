@@ -5,13 +5,14 @@ local LazyEval = require "SoTClient.Utils.LazyEval"
 local BasicAnimation = require "SoTClient.Visuals.Animations.Basic.BasicAnimations"
 local MapRender = require "SotClient.Visuals.RenderMap"
 local Camera = require "SoTClient.Visuals.CameraMap"
+local MapMovement = require "SoTClient.GameLogic.MechanicsLogic.MapLogic.Movement"
 local math = require "math"
 
-local function BehaviourHandler_Ally(game_map, char_list, char, TurnEnd)
+local function BehaviourHandler_Ally(game_map, char_list, char)
     local hittables = CheckHittableEnemies(game_map, char, char_list)
     if(#hittables ~= 0) then
         BasicAttack.doAttack(game_map, char, hittables[1])
-        MapRender.UpdateTilemap(game_map)
+        --MapRender.UpdateTilemap(game_map)
         return true
     end
     if(char["Status"] == "Follower") then
@@ -20,14 +21,14 @@ local function BehaviourHandler_Ally(game_map, char_list, char, TurnEnd)
         if(move_x == 0 and move_y == 0) then
             return true
         elseif(move_x ~= nil and move_y ~= nil) then
-            return DoMovement(game_map, char, move_x, move_y, TurnEnd)
+            return DoMovement(game_map, char, move_x, move_y)
         end
     end
 
     return true
 end
 
-local function BehaviourHandler_Enemy(game_map, char_list, char, TurnEnd)
+local function BehaviourHandler_Enemy(game_map, char_list, char)
     local move_x, move_y, steps, temp_move_x, temp_move_y, temp_steps = nil, nil, nil, nil, nil, nil
     local cur_room = GetCurrentRoom(game_map, char["x"], char["y"])
     local hittables = CheckHittableEnemies(game_map, char, char_list)
@@ -35,7 +36,7 @@ local function BehaviourHandler_Enemy(game_map, char_list, char, TurnEnd)
         char["Status"] = "Follower"
         char["Focus"] = hittables[1]
         BasicAttack.doAttack(game_map, char, char["Focus"])
-        MapRender.UpdateTilemap(game_map)
+        --MapRender.UpdateTilemap(game_map)
         return true
     end
     if(char["Status"] == "Standby" or char["Status"] == "Follower") then
@@ -62,17 +63,19 @@ local function BehaviourHandler_Enemy(game_map, char_list, char, TurnEnd)
         char["Focus"] = nil
     elseif(move_x ~= nil and move_y ~= nil) then
         if (move_x ~= 0 or move_y ~= 0) then
-            return DoMovement(game_map, char, move_x, move_y, TurnEnd) == true
+            return DoMovement(game_map, char, move_x, move_y) == true
         end
     end
     return true
 end
 
-function DoMovement(game_map, char, move_x, move_y, TurnEnd)
+function DoMovement(game_map, char, move_x, move_y)
 
     if(CheckLegalMovement(game_map, char["x"], char["y"], move_x, move_y) == false) then
         return false
     end
+
+    MoveCharacterTo(game_map, char, char["x"] + move_x, char["y"] + move_y)
 
     if (char["Texture"] ~= nil) then
         ElementMove{
@@ -81,21 +84,14 @@ function DoMovement(game_map, char, move_x, move_y, TurnEnd)
             params = {
                 x = move_x,
                 y = move_y,
-                time = (math.abs(move_x) + math.abs(move_y)) * 250,
-                end_function = TurnEnd
+                time = (math.abs(move_x) + math.abs(move_y)) * 250
             }
         }
-        return false
-    else
-        cur_tile["Actor"] = nil
-        desired_tile["Actor"] = char
-        char["x"] = char["x"] + move_x
-        char["y"] = char["y"] + move_y
     end
     return true
 end
 
-function PlayerMoveEvent(game_map, char, move_x, move_y, TurnEnd)
+function PlayerMoveEvent(game_map, char, move_x, move_y)
     
     if (char["x"] == nil or char["y"] == nil or char["currentHP"] == 0) then
         return false
@@ -108,17 +104,17 @@ function PlayerMoveEvent(game_map, char, move_x, move_y, TurnEnd)
 
         if CheckIfEnemy(char, neighbour) == true then
             BasicAttack.doAttack(game_map, char, neighbour)
-            MapRender.UpdateTilemap(game_map)
+            --MapRender.UpdateTilemap(game_map)
             return true
         end
     end
 
-    return DoMovement(game_map, char, move_x, move_y, TurnEnd)
+    return DoMovement(game_map, char, move_x, move_y)
 end
 
-function doCharActionSkill(game_map, char, skill, focus_x, focus_y)
+function DoCharActionSkill(game_map, char, skill, focus_x, focus_y)
     skill["Effect"](game_map, char, focus_x, focus_y)
-    MapRender.UpdateTilemap(game_map)
+    --MapRender.UpdateTilemap(game_map)
 end
 
 function CheckFocusExists(unit)
@@ -128,15 +124,15 @@ function CheckFocusExists(unit)
     end
 end
 
-function DoCharAction(map, unit_list, char, TurnEnd)
+function DoCharAction(map, unit_list, char)
 
     if(char["Focus"] ~= nil) then
         CheckFocusExists(char)
     end
 
     if(char["Team"] == 0) then
-        return BehaviourHandler_Enemy(map, unit_list, char, TurnEnd)
+        return BehaviourHandler_Enemy(map, unit_list, char)
     else
-        return BehaviourHandler_Ally(map, unit_list, char, TurnEnd)
+        return BehaviourHandler_Ally(map, unit_list, char)
     end
 end

@@ -35,12 +35,14 @@ function scene:create( event )
 	--summary:setFillColor( 0 ) -- black
 
 	
-	GameOverseer.StartGame(MapData, nil, nil, seed1, seed2)
+	GameOverseer.SetupGame(MapData, nil, nil, seed1, seed2)
 
 	Player.readPlayer()
 
 	RenderBroker.SetRenderBattle(MapData.GetMap(), GameOverseer.GetPlayerParty(), nil, sceneGroup)
 	RenderBroker.UpdateRender()
+
+	GameOverseer.StartGame()
 
 	
 	-- all objects must be added to group (e.g. self.view)
