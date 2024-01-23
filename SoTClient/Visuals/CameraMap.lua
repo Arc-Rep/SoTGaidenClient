@@ -31,6 +31,7 @@ local focus_element_queue = {}
 function CameraMap.updateFocusAnimated()
     local camera_x_prev
     local camera_y_prev
+    local camera_focus_x, camera_focus_y = 0, 0
     
     if(focus_element_queue[1]["x"] ~= nil and focus_element_queue[1]["y"] ~= nil) then
         camera_focus_x = focus_element_queue[1]["x"]
@@ -149,7 +150,6 @@ function CameraMap.MoveElement(texture, params)
 end
 
 function CameraMap.CameraDrag(event)
-
 
     if(event.phase == "moved") then
         camera_drag_x = (event.x - camera_drag_begin_x) / (camera_width_base / 2)
