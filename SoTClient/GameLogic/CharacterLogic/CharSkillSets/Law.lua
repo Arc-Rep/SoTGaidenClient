@@ -47,7 +47,8 @@ local function PrepareStreakElement(streak)
     streak_element["TargetType"]   = streak["TargetType"]  
     streak_element["FocusType"]    = streak["FocusType"]  
     streak_element["AuraRadius"]   = streak["AuraRadius"]    
-    streak_element["DmgBase"]      = streak["DmgBase"] 
+    streak_element["DmgBase"]      = streak["DmgBase"]
+    streak_element["Blockable"]    = streak["Blockable"] 
     streak_element["DmgIncrement"] = streak["DmgIncrement"]
     streak_element["CritMod"]      = streak["CritMod"]
     streak_element["Modifiers"]    = streak["Modifiers"]
@@ -66,6 +67,7 @@ local function PrepareDivineStreak(streak, modifiers)
     streak["AuraRadius"]        = 0
     streak["DmgBase"]           = 10
     streak["DmgIncrement"]      = {"Mag", 0.5, "Skl", 0.2}
+    streak["Blockable"]         = "false"
     streak["CritMod"]           = {0.2}
     streak["EffectModifier"]    = 3
     streak["Effect"]            =

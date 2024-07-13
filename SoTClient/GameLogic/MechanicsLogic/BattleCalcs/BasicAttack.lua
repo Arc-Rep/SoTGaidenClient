@@ -6,6 +6,7 @@ local BasicAttack = {}
 
 local base_attack_skill = {}
 
+base_attack_skill["Focus"] = "Enemy"
 base_attack_skill["DmgBase"] = 10
 base_attack_skill["DmgIncrement"] = {"Str", 1.5}
 base_attack_skill["Accuracy"] = 1

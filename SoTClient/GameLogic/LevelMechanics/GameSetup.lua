@@ -44,8 +44,7 @@ function SetupPlayerUnits(unit_table, Squads)
     table.insert(Squads[unit1["Team"]], unit1)
     table.insert(Squads[unit1["Team"]], unit2)
 
-    SetupEnemyUnits(game_map, unit_table, Squads, 1
-)
+    SetupEnemyUnits(game_map, unit_table, Squads, 1)
 end
 
 function SetupEnemyUnits(game_map, unit_table, Squads, difficulty)
