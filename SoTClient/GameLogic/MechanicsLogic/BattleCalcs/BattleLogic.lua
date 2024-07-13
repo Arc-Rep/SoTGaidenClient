@@ -32,6 +32,22 @@ function ApplyDamage(game_map, char, damage)
     end
 end
 
+function CheckValidTarget(map, atk_char, skill, target_x, target_y)
+
+    
+    if (map[target_x][target_y]["Actor"] ~= nil) then
+        if (LAND(skill["Focus"] == "Enemy", function () return map[target_x][target_y]["Actor"]["Team"] ~= atk_char["Team"] end)) then
+            return true
+        elseif (LAND(skill["Focus"] == "Ally", function () return map[target_x][target_y]["Actor"]["Team"] ~= atk_char["Team"] end)) then
+            return true
+        elseif (LAND(skill["Focus"] == "Self", function () return target_x == atk_char["x"] and target_y == atk_char["y"] end)) then
+            return true
+        end
+    end
+
+    return false
+end
+
 
 function GetOmniSkillMapRange(map, atk_char, skill)
 
@@ -140,12 +156,11 @@ function GetSkillMapRange(map, atk_char, skill) -- change atk_char to atk_origin
             if (LOR(map[x][atk_char["y"]]["Tile"] == 0,
                 function() return LAND(
                     skill["Blockable"] == true and map[x][atk_char["y"]]["Actor"] ~= nil,
-                    function() 
-                        local is_enemy = CheckIfEnemy(atk_char, map[x][atk_char["y"]]["Actor"])
-                        if (is_enemy == true) then
+                    function()
+                        if (CheckValidTarget(map, atk_char, skill, x, atk_char["y"]) == true) then
                             table.insert(skill_range_tile_list, {x = x, y = atk_char["y"]})
                         end
-                        return is_enemy
+                        return true
                     end) 
                 end)
             ) then
@@ -160,11 +175,10 @@ function GetSkillMapRange(map, atk_char, skill) -- change atk_char to atk_origin
                 function() return LAND(
                     skill["Blockable"] == true and map[x][atk_char["y"]]["Actor"] ~= nil,
                     function() 
-                        local is_enemy = CheckIfEnemy(atk_char, map[x][atk_char["y"]]["Actor"])
-                        if (is_enemy == true) then
+                        if (CheckValidTarget(map, atk_char, skill, x, atk_char["y"]) == true) then
                             table.insert(skill_range_tile_list, {x = x, y = atk_char["y"]})
                         end
-                        return is_enemy
+                        return true
                     end) 
                 end)
             ) then
@@ -183,11 +197,10 @@ function GetSkillMapRange(map, atk_char, skill) -- change atk_char to atk_origin
                 function() return LAND(
                     skill["Blockable"] == true and map[atk_char["x"]][y]["Actor"] ~= nil,
                     function() 
-                        local is_enemy = CheckIfEnemy(atk_char, map[atk_char["x"]][y]["Actor"])
-                        if (is_enemy == true) then
+                        if (CheckValidTarget(map, atk_char, skill, atk_char["x"], y) == true) then
                             table.insert(skill_range_tile_list, {x = atk_char["x"], y = y})
                         end
-                        return is_enemy
+                        return true
                     end) 
                 end)
             ) then
@@ -202,11 +215,11 @@ function GetSkillMapRange(map, atk_char, skill) -- change atk_char to atk_origin
                 function() return LAND(
                     skill["Blockable"] == true and map[atk_char["x"]][y]["Actor"] ~= nil,
                     function() 
-                        local is_enemy = CheckIfEnemy(atk_char, map[atk_char["x"]][y]["Actor"])
-                        if (is_enemy == true) then
+                        local is_valid_target = CheckValidTarget(map, atk_char, skill, atk_char["x"], y)
+                        if (is_valid_target == true) then
                             table.insert(skill_range_tile_list, {x = atk_char["x"], y = y})
                         end
-                        return is_enemy
+                        return true
                     end) 
                 end)
             ) then
@@ -246,11 +259,10 @@ function GetSkillMapRange(map, atk_char, skill) -- change atk_char to atk_origin
                     function() return LAND(
                         skill["Blockable"] == true and map[x_diagonal][y_diagonal]["Actor"] ~= nil,
                         function() 
-                            local is_enemy = CheckIfEnemy(atk_char, map[x_diagonal][y_diagonal]["Actor"])
-                            if (is_enemy == true) then
+                            if (CheckValidTarget(map, atk_char, skill, x_diagonal, y_diagonal) == true) then
                                 table.insert(skill_range_tile_list, {x = x_diagonal, y = y_diagonal})
                             end
-                            return is_enemy
+                            return true
                         end) 
                     end)
                 ) then
