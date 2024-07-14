@@ -2,6 +2,7 @@ local missionmaputils = require "SoTClient.GameLogic.Scenarios.MissionMapUtils"
 local levelgen = require "SoTClient.GameLogic.Scenarios.LevelGen"
 local Infusion = require "SoTClient.GameLogic.MechanicsLogic.InfusionSystem.Infusion"
 local Law_SkillSet = require "SoTClient.GameLogic.CharacterLogic.CharSkillSets.Law"
+local CharDatabase = require "SoTClient.GameLogic.CharacterLogic.CharDatabase"
 
 function SetupPlayerUnits(unit_table, Squads)
     
@@ -52,26 +53,15 @@ function SetupEnemyUnits(game_map, unit_table, Squads, difficulty)
     local current_difficulty = (map_enemy_number - difficulty * 3)  / difficulty * 2;
 
     Squads[0] = {}
-
+    
     for enemy_index = 1, map_enemy_number, 1 do
         local enemy_unit = {}
-        enemy_unit["Actor"] = "Enemy"
         enemy_unit["ID"] = "-" .. enemy_index
-        enemy_unit["Status"] = "Standby"
-        enemy_unit["Class"] = "Berserker"
-        enemy_unit["Team"] = 0
-        enemy_unit["ControlType"] = "CPU-H"
         enemy_unit["Focus"] = nil
-        enemy_unit["Str"] = 3
-        enemy_unit["Def"] = 1
-        enemy_unit["Res"] = 3
-        enemy_unit["elem_res"] = {}
-        enemy_unit["elem_res"]["Light"] = 0.3
-        enemy_unit["maxHP"] = 30
-        enemy_unit["currentHP"] = enemy_unit["maxHP"]
-        enemy_unit["maxEssence"] = 3
-        enemy_unit["currentEssence"] = enemy_unit["maxEssence"]
-
+        enemy_unit["ControlType"] = "CPU-H"
+        enemy_unit["Status"] = "Standby"
+        enemy_unit["Team"] = 0 
+        LoadCharacter("Coblyn", enemy_unit)
         table.insert(unit_table, enemy_unit)
         table.insert(Squads[enemy_unit["Team"]], enemy_unit)
     end

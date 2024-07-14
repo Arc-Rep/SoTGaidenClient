@@ -1,8 +1,10 @@
+--[[
+local gu = require "SoTClient.Utils.GeneralUtils"
+]]--
+
 local lfs = require( "lfs" )
 
-local gu = {}
-
-function gu.PrintTable( t )
+function PrintTable( t )
     local printTable_cache = {}
     local function sub_printTable( t, indent )
         if ( printTable_cache[tostring(t)] ) then
@@ -37,7 +39,7 @@ end
 
 
 -- Get raw path to the app documents directory
-function gu.GetDocumentsPath()
+function GetDocumentsPath()
     local doc_path = system.pathForFile( "", system.DocumentsDirectory )
 
     for file in lfs.dir( doc_path ) do
@@ -55,5 +57,3 @@ function table_contains(table, element)
     end
     return false
 end
-
-return gu
