@@ -10,6 +10,7 @@ local EventManager = require "SoTClient.Visuals.Events.EventManager"
 
 local visual_tile_width, visual_tile_height
 local camera_timer = 0
+local camera_deactivate = false
 local map_created = false
 
 local tilemap = {}
@@ -359,13 +360,27 @@ end
 
 
 local function MapTouchEvent(event)
+
+    if(event.phase == "began") then
+        if (Camera.CheckAnimationExists() == true) then
+            camera_deactivate = true
+            return
+        else
+            camera_deactivate = false
+        end
+    end
+
+    if (camera_deactivate == true) then
+        return
+    end
+
     if(event.phase == "ended") then
         Camera.CameraDrag(event) 
         animation_data = 
         {
             x = 0,
             y = 0,
-            time = 700
+            time = 500
         }
         local object = {}
         object.animation = animation_data
