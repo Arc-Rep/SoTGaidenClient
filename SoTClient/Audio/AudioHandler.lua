@@ -32,7 +32,6 @@ end
 
 function PlayLevelAudio(audio_file)
     if (audio_playing["level"] == nil) then
-        print("Playing")
         audio_playing["level"] = audio_file
         audio.play(general_gameplay_audio[audio_file], {onComplete = function() audio_playing["level"] = nil end} )
     end

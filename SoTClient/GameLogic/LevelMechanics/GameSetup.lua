@@ -61,7 +61,7 @@ function SetupEnemyUnits(game_map, unit_table, Squads, difficulty)
         enemy_unit["ControlType"] = "CPU-H"
         enemy_unit["Status"] = "Standby"
         enemy_unit["Team"] = 0 
-        LoadCharacter("Coblyn", enemy_unit)
+        LoadCharacter("Arachna", enemy_unit)
         table.insert(unit_table, enemy_unit)
         table.insert(Squads[enemy_unit["Team"]], enemy_unit)
     end

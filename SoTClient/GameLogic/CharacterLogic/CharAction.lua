@@ -6,6 +6,7 @@ local BasicAnimation = require "SoTClient.Visuals.Animations.Basic.BasicAnimatio
 local MapRender = require "SotClient.Visuals.RenderMap"
 local Camera = require "SoTClient.Visuals.CameraMap"
 local MapMovement = require "SoTClient.GameLogic.MechanicsLogic.MapLogic.Movement"
+local CharAnimationList = require("SoTClient.Visuals.Animations.Character.CharAnimationList")
 local math = require "math"
 
 local function BehaviourHandler_Ally(game_map, char_list, char)
@@ -70,7 +71,7 @@ local function BehaviourHandler_Enemy(game_map, char_list, char)
 end
 
 function DoMovement(game_map, char, move_x, move_y)
-
+    local sprite_animation = nil
     if(CheckLegalMovement(game_map, char["x"], char["y"], move_x, move_y) == false) then
         return false
     end
@@ -78,10 +79,22 @@ function DoMovement(game_map, char, move_x, move_y)
     MoveCharacterTo(game_map, char, char["x"] + move_x, char["y"] + move_y)
 
     if (char["Texture"] ~= nil) then
+        local dir_x, dir_y = 
+            CheckGeneralDirection(
+                char["x"], char["y"],
+                char["x"] + move_x,
+                char["y"] + move_y
+            )
+
+        if (char["animation_data"] ~= nil) then
+            local move_direction = CharAnimationList.convertMoveCoordsToAnimation(dir_x, dir_y)
+            sprite_animation = CharAnimationList.convertAnimationIndexToAnimationID(move_direction)
+        end
+
         ElementMove{
-            map = game_map,
             object = char,
-            params = {
+            animation = sprite_animation,
+            move_params = {
                 x = move_x,
                 y = move_y,
                 time = (math.abs(move_x) + math.abs(move_y)) * 250

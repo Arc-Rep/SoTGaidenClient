@@ -116,7 +116,7 @@ function RenderMap.MoveTileMap(params)
 
 
     local map_cleanup = 
-        function(next_function)
+        function()
             if (moved_tile_x < 0) then
                 for i=0, moved_tile_x, -1 do
                     ClearRow(Camera.getStartTileX() + Camera.getTileWidth() + i, moved_tile_y, math.floor(moved_tile_y + Camera.getTileHeight()))
@@ -138,8 +138,6 @@ function RenderMap.MoveTileMap(params)
                     ClearColumn(Camera.getStartTileY() + i, moved_tile_x, math.floor(moved_tile_x + Camera.getTileWidth()))
                 end
             end
-            
-            return next_function()
         end
 
     local params1 = {
@@ -213,10 +211,16 @@ function RenderMap.RenderCharacterBox(origin_x, origin_y, start_x, start_y, end_
            inbound_characters[i]["y"] >= start_y and
            inbound_characters[i]["y"] < end_y) then
             if(charmap[char_id] == nil) then
-                charmap[char_id] = display.newRect(0, 0, Camera.getRealTileSize(),Camera.getRealTileSize())
-                charmap[char_id].strokeWidth = 3
-                charmap[char_id]:setFillColor(0.8)
-                charmap[char_id]:setStrokeColor(0, 1, 1)
+                if (inbound_characters[i]["sprite"] == nil) then
+                    charmap[char_id] = display.newRect(0, 0, Camera.getRealTileSize(),Camera.getRealTileSize())
+                    charmap[char_id].strokeWidth = 3
+                    charmap[char_id]:setFillColor(0.8)
+                    charmap[char_id]:setStrokeColor(0, 1, 1)
+                else
+                    charmap[char_id] = inbound_characters[i]["sprite"]
+                    charmap[char_id]:setSequence("idle")
+                    charmap[char_id]:play()
+                end
                 if (inbound_characters[i] == Camera.getFocus()) then
                     RenderSurfaceFocus:insert(charmap[char_id])
                 else
@@ -412,7 +416,7 @@ function RenderMap.SetRenderMap(map, map_type, unit_list, focus, surface_map, su
 
     RenderSurfaceMap:addEventListener("touch", 
         function(event)
-
+            
             if(#skill_tilemap_area ~= 0) then
                 return false
             end

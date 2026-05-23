@@ -57,7 +57,7 @@ function CameraMap.updateFocusAnimated()
 end
 
 function CameraMap.zoomSetup()
-    camera_tile_pixel_zoomed = camera_tile_pixel_conversion * CAMERA_ZOOM_VALUES[zoom_index]
+    camera_tile_pixel_zoomed = CameraMap.getRealTileSize()
     camera_tile_width = camera_width_base / camera_tile_pixel_zoomed + TILE_OUT_BOUNDS
     camera_tile_height = camera_height_base / camera_tile_pixel_zoomed + TILE_OUT_BOUNDS
     camera_start_x = camera_x - camera_tile_width/2
@@ -117,9 +117,6 @@ end
 function CameraMap.StartFocusAnimation(animation_data)
     camera_x_animation_offset_focus = animation_data.x
     camera_y_animation_offset_focus = animation_data.y
-    print("Animation Starting...")
-    print(camera_x_animation_offset)
-    print(camera_y_animation_offset)
     camera_animation_start_time = system.getTimer()
     camera_animation_time = animation_data.time
     camera_animation_ongoing = true
@@ -140,12 +137,11 @@ function CameraMap.EndFocusAnimation()
     print("Animation Ended")
 end
 
-function CameraMap.MoveElement(texture, params)
+function CameraMap.MoveElement(texture, params, animation)
     params["x"] = (params["x"] + camera_x_animation_offset_focus) * camera_tile_pixel_zoomed
     params["y"] = (params["y"] + camera_y_animation_offset_focus) * camera_tile_pixel_zoomed
-    --transition.moveBy(texture, params)
 
-    AnimationQueue.AddAnimation(texture, params)
+    AnimationQueue.AddAnimation(texture, params, animation)
 end
 
 function CameraMap.CameraDrag(event)

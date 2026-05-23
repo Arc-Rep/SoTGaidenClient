@@ -28,18 +28,27 @@ local function PerformAnimationCycle()
 
     for animation_index = 1, animation_number, 1 do
         local current_animation = animations[current_cycle][animation_index]
-        if (current_animation["Parameters"]["end_function"] == nil) then
-            current_animation["Parameters"].onComplete = AnimationFinished
-            current_animation["Parameters"].onCancel   = AnimationFinished
+        if (current_animation["MoveParameters"]["end_function"] == nil) then
+            current_animation["MoveParameters"].onComplete = AnimationFinished
+            current_animation["MoveParameters"].onCancel   = AnimationFinished
         else
-            local end_function = current_animation["Parameters"].onComplete
-            current_animation["Parameters"].onComplete = 
+            local end_function = current_animation["MoveParameters"].onComplete
+            current_animation["MoveParameters"].onComplete = 
                 function()
-                    current_animation["Parameters"].end_function(AnimationFinished)
+                    current_animation["MoveParameters"].end_function()
+                    AnimationFinished()
                 end
-            current_animation["Parameters"].onCancel = current_animation["Parameters"].onComplete
+            current_animation["MoveParameters"].onCancel = current_animation["MoveParameters"].onComplete
         end
-        transition.moveBy(current_animation["Texture"], current_animation["Parameters"])
+
+        if (current_animation["MoveParameters"] ~= nil) then
+            transition.moveBy(current_animation["Texture"], current_animation["MoveParameters"])
+        end
+
+        if (current_animation["Animation"] ~= nil) then
+            current_animation["Texture"]:setSequence(current_animation["Animation"])
+            current_animation["Texture"]:play()
+        end
     end
 end
 
@@ -72,13 +81,13 @@ function AnimationQueue.ResetQueue()
     animations = {}
 end
 
-function AnimationQueue.AddAnimation(texture, params)
-    local new_animation = {Texture = texture, Parameters = params}
+function AnimationQueue.AddAnimation(texture, move_params, animation)
+    local new_animation = {Texture = texture, MoveParameters = move_params, Animation = animation}
     animations[#animations][#animations[#animations] + 1] = new_animation
 end
 
 function AnimationQueue.ReturnCurrentAnimation()
-    return #animations
+    return animations[#animations]
 end
 
 return AnimationQueue
