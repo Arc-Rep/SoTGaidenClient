@@ -1,4 +1,7 @@
+local CharAnimationList = require("SoTClient.Visuals.Animations.Character.CharAnimationList")
+
 function LoadCharacter(characterName, unit)
+    local CharacterAnimation = require("SoTClient.Visuals.Animations.Character.CharacterAnimation")
     local moduleName = "SoTClient.GameLogic.CharacterLogic.CharData." .. characterName
     local charModule = require(moduleName)
     unit["Actor"] = charModule["Actor"]
@@ -18,5 +21,8 @@ function LoadCharacter(characterName, unit)
     unit["currentEssence"] = charModule["maxEssence"]
     unit["elem_res"] = charModule["elem_res"]
     unit["currentHP"] = charModule["maxHP"]
+    unit["animation_data"] = CharacterAnimation.ImportAnimationSet(characterName)
+    local idle = CharAnimationList["idle"]
+    unit["sprite"] = display.newSprite( unit["animation_data"]["sheet"], unit["animation_data"]["sequences"] )
     return charModule
 end

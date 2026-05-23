@@ -5,16 +5,20 @@ local timer = require "timer"
 local math = require "math"
 
 
-function ElementMove(animation)
-    local current_object = animation.object
-    local params = animation.params
+function ElementMove(element_data)
+    local current_object = element_data.object
+    local move_params = element_data.move_params
 
-    if animation.object == Camera.getFocus() then
-        MapRender.MoveTileMap(params)
-        --Camera.StartFocusAnimation(params)
-        --return MapRender.PerformAnimation(animation.object)
+    if element_data.object == Camera.getFocus() then
+        MapRender.MoveTileMap(move_params)
+        --Camera.StartFocuselement_data(params)
+        --return MapRender.Performelement_data(element_data.object)
     else
-        Camera.MoveElement(animation.object.Texture, animation.params)
+        if (current_object["sprite"] ~= nil) then
+            Camera.MoveElement(element_data.object.sprite, move_params, element_data.animation)
+        else
+            Camera.MoveElement(element_data.object.Texture, move_params, element_data.animation)
+        end
     end
 end
 

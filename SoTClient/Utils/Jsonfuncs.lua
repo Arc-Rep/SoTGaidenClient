@@ -26,7 +26,8 @@ function jsonfunc.LoadTable(filename,location)
     if not location then
         loc = defaultLocation
     end
-
+    print(location)
+    print(filename)
     local path = system.pathForFile( filename, loc )
     local file, errorString = io.open( path, "r" )
  

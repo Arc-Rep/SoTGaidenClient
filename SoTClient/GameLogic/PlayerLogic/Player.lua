@@ -2,12 +2,12 @@
 local Player = {}
 
 local Json = require("SoTClient.Utils.JsonFuncs")
-local rootloc = system.DocumentsDirectory
+local rootloc = system.ResourceDirectory
 local math = require("SoTClient.Utils.MathUtils")
 
 
 function Player.readPlayer()
-    local player = Json.LoadTable("playerdata.json",rootloc)
+    local player = Json.LoadTable("UserData\\playerdata.json",rootloc)
     if player == nil then
         Player.currenthp = 10
         Player.currentessence = 10

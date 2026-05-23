@@ -1,0 +1,46 @@
+{
+    "action_sequences":
+    {
+        "0" : {
+            "name": 0,
+            "start": 1,
+            "count": 3,
+            "loopCount": 0,
+            "time": 1000 
+        },
+        "1" : {
+            "name": 1,
+            "start": 1,
+            "count": 3,
+            "loopCount": 0,
+            "time": 1000 
+        },
+        "2" : {
+            "name": 2,
+            "start": 4,
+            "count": 3,
+            "loopCount": 0,
+            "time": 1000 
+        },
+        "3" : {
+            "name": 3,
+            "start": 7,
+            "count": 3,
+            "loopCount": 0,
+            "time": 1000 
+        },
+        "4": {
+            "name": 4,
+            "start": 10,
+            "count": 3,
+            "loopCount": 0,
+            "time": 1000 
+        }
+    },
+    "sheet_data":
+    {
+        "width": 48,
+        "height": 48,
+        "numFrames": 12
+    }
+}
