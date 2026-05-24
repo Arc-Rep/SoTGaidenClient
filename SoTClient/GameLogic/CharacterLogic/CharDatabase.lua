@@ -23,6 +23,5 @@ function LoadCharacter(characterName, unit)
     unit["currentHP"] = charModule["maxHP"]
     unit["animation_data"] = CharacterAnimation.ImportAnimationSet(characterName)
     local idle = CharAnimationList["idle"]
-    unit["sprite"] = display.newSprite( unit["animation_data"]["sheet"], unit["animation_data"]["sequences"] )
     return charModule
 end
