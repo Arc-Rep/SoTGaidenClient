@@ -212,13 +212,13 @@ function RenderMap.RenderCharacterBox(origin_x, origin_y, start_x, start_y, end_
            inbound_characters[i]["y"] < end_y) then
             if(charmap[char_id] == nil) then
                 if (inbound_characters[i]["animation_data"] == nil) then
-                    print("No sprite was found for " .. char_id)
+                    --print("No sprite was found for " .. char_id)
                     charmap[char_id] = display.newRect(0, 0, Camera.getRealTileSize(),Camera.getRealTileSize())
                     charmap[char_id].strokeWidth = 3
                     charmap[char_id]:setFillColor(0.8)
                     charmap[char_id]:setStrokeColor(0, 1, 1)
                 else
-                    print("Creating sprite for " .. char_id)
+                    --print("Creating sprite for " .. char_id)
                     charmap[char_id] = display.newSprite( inbound_characters[i]["animation_data"]["sheet"], inbound_characters[i]["animation_data"]["sequences"] )
                     charmap[char_id]:setSequence("idle")
                     charmap[char_id]:play()
