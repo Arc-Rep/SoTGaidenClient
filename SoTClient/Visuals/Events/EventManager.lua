@@ -4,6 +4,7 @@ local EventManager = {}
 -- List of defines
 EventManager.DRAG_MAP = 1
 EventManager.UI = 2
+EventManager.ABILITY = 3
 
 local active_event_id = nil
 local active_event = nil

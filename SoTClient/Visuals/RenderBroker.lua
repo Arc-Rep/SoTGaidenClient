@@ -51,7 +51,7 @@ function RenderBroker.ExtractUIGroup()
 end
 
 function RenderBroker.SetTileMap(map, map_type)
-    MapRender.SetRenderMap(map, map_type, GameOverseer.GetUnitList(), GameOverseer.getPlayerCharStats(), tilemap_group, character_group)
+    MapRender.SetRenderMap(map, map_type, GameOverseer.GetUnitList(), GameOverseer.getPlayerChar(), tilemap_group, character_group)
 end
 
 function RenderBroker.SetUI(player_squad)

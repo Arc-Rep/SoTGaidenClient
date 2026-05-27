@@ -5,6 +5,7 @@ local MapData = require "SoTClient.GameLogic.Scenarios.MissionMap"
 local Player = require "SoTClient.GameLogic.PlayerLogic.Player"
 local LazyEval = require "SoTClient.Utils.LazyEval"
 local EventManager = require "SoTClient.Visuals.Events.EventManager"
+local SkillDescription = require "SoTClient.Visuals.UI.SkillDescription"
 
 local CombatUI = {}
 
@@ -18,8 +19,27 @@ local essenceprogressView = nil
 local essenceText = nil
 
 local active_skill = nil
+local skill_pressed = false
+
 ---------------------------------------------------------------------------------
 local last_click = system.getTimer()
+
+--ABILITIES UI
+local AbilityPanelW = display.contentWidth * 0.40
+local AbilityPanelH = AbilityPanelW * 0.25
+local UIAbilitiesPanel = display.newRect(0, display.contentHeight, AbilityPanelW, AbilityPanelH)
+UIAbilitiesPanel.anchorX = 0
+UIAbilitiesPanel.anchorY = 1
+UIAbilitiesPanel.alpha = 0.5
+-- CREATE DEFAULT UI OPTIONS
+-- Each ability block occupies 1/5 of the Panel width.
+-- Last 1/5 is for spacing
+local AbilityW = AbilityPanelW/5 
+-- Each ability block occupies 80% of the panel's height
+local AbilityH = AbilityPanelH * 0.8
+local AbilitySpacingW = AbilityW/5
+local AbilityY = display.contentHeight - AbilityH/10
+local AbilitySquares = {}
 
 
 function CombatUI.createPlayerUI(GameOverseer, Player_Squad, UIGroup)
@@ -81,62 +101,72 @@ function CombatUI.createPlayerUI(GameOverseer, Player_Squad, UIGroup)
             return true
         end
     end
-    
-    
-    local function skillTapListener(event, skill) 
-        if(last_click + 300 > system.getTimer()) then
-            return false
+
+    local function showSkillDescription(skill)
+        if (skill_pressed == false) then
+            return true
         end
+
+        local skill_data = GameOverseer.getPlayerChar()[skill]
+        SkillDescription.createDescription(skill_data, skill[#skill], AbilityUI)
+    end
+    
+    
+    local function skillTouchListener(event, skill) 
+        if(last_click + 300 > system.getTimer() and event.phase == "began") then
+            return true
+        end
+
+        if (event.phase == "began") then
+            skill_pressed = true
+            timer.performWithDelay(120, function() showSkillDescription(skill) end)
+            last_click = system.getTimer()
+        elseif ((event.phase == "ended" or event.phase == "cancelled") and SkillDescription.isDescriptionActive()) then
+            SkillDescription.removeDescription()
+            skill_pressed = false
+        end
+
+        if (event.phase == "ended" and last_click + 300 > system.getTimer()) then
+            local skill_map, skill_clicked, temp_skill
         
-        local skill_map, skill_clicked, temp_skill
-    
-        skill_clicked = "press" .. skill
-        temp_skill = "perform" .. skill
-    
-        if(temp_skill == active_skill) then
-            MapRender.ClearSkillRangeOverlay(GetGameMap())
-            active_skill = nil
-            return
-        end
-      
-        skill_map = GameOverseer.SendCommand(skill_clicked)
+            skill_pressed = false
 
-        if (skill_map == nil) then
-            return false
-        end
+            skill_clicked = "press" .. skill
+            temp_skill = "perform" .. skill
+        
+            if(temp_skill == active_skill) then
+                MapRender.ClearSkillRangeOverlay(GetGameMap())
+                active_skill = nil
+                return true
+            end
+        
+            skill_map = GameOverseer.SendCommand(skill_clicked)
 
-        if(MapRender.ShowSkillRangeOverlay(skill_map, skill_performer) == true) then
-            active_skill = temp_skill
+            if (skill_map == nil) then
+                return true
+            end
+
+            if(MapRender.ShowSkillRangeOverlay(skill_map, skill_performer) == true) then
+                active_skill = temp_skill
+            end
         end
         return true
     end
-    --ABILITIES UI
-    local AbilityPanelW = display.contentWidth * 0.40
-    local AbilityPanelH = AbilityPanelW * 0.25
-    local UIAbilitiesPanel = display.newRect(0, display.contentHeight, AbilityPanelW, AbilityPanelH)
-    UIAbilitiesPanel.anchorX = 0
-    UIAbilitiesPanel.anchorY = 1
-    UIAbilitiesPanel.alpha = 0.5
-    -- CREATE DEFAULT UI OPTIONS
-    -- Each ability block occupies 1/5 of the Panel width.
-    -- Last 1/5 is for spacing
-    local AbilityW = AbilityPanelW/5 
-    -- Each ability block occupies 80% of the panel's height
-    local AbilityH = AbilityPanelH * 0.8
-    local AbilitySpacingW = AbilityW/5
-    local AbilityY = display.contentHeight - AbilityH/10
-    local AbilitySquares = {}
+
     for square_idx = 1, 4, 1 do
         AbilitySquares[square_idx] = 
             display.newRect(AbilitySpacingW * square_idx + AbilityW * (square_idx - 1), AbilityY, AbilityW, AbilityH)
         AbilitySquares[square_idx].anchorX = 0
         AbilitySquares[square_idx].anchorY = 1
-        AbilitySquares[square_idx]:addEventListener("tap",function(event) skillTapListener(event, "Skill" .. square_idx) return true end)
+        --AbilitySquares[square_idx]:addEventListener("tap",function(event) skillTapListener(event, "Skill" .. square_idx) return true end)
         AbilitySquares[square_idx]:addEventListener(
             "touch",
             function(event)
                 if (EventManager.GetActiveEventID() ~= nil) then 
-                    EventManager.PerformEvent(event) 
+                    EventManager.PerformEvent(event)
+                else
+                    EventManager.SetActiveEvent(EventManager.ABILITY, function(event) skillTouchListener(event, "Skill" .. square_idx) end)
+                    EventManager.PerformEvent(event)
                 end
                 return true
             end
