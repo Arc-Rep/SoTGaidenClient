@@ -8,7 +8,8 @@ local LevelGen = require "SoTClient.GameLogic.Scenarios.LevelGen"
 local DEFAULT_STREAK_NUM = 3
 
 local function PreparePiercingJudgement(piercing_judgement, modifiers)
-
+    piercing_judgement["Name"]            = "Piercing Judgement"
+    piercing_judgement["Description"]     = "Law pierces the enemy with his gaze, weakening their resolve."
     piercing_judgement["Focus"]           = "Enemy"
     piercing_judgement["Element"]         = {}
     piercing_judgement["Status"]          = "Feeble"
@@ -57,6 +58,8 @@ local function PrepareStreakElement(streak)
 end
 
 local function PrepareDivineStreak(streak, modifiers)
+    streak["Name"]              = "Divine Streak"
+    streak["Description"]       = "An arrow of light that ricochets from enemy to enemy (maximum of 3 targets)."
     streak["Modifiers"]         = modifiers
     streak["Focus"]             = "Enemy"
     streak["Element"]           = {"Light"}
@@ -129,6 +132,8 @@ end
 
 local function PrepareWeightOfTheUndaunted(weight_of_the_undaunted, modifiers)
     -- Add effect range and stun
+    weight_of_the_undaunted["Name"]           = "Weight of the Undaunted"
+    weight_of_the_undaunted["Description"]    = "Law clashes against the enemy with full force, pushing them away for 3 spaces at most."
     weight_of_the_undaunted["Focus"]          = "Enemy"
     weight_of_the_undaunted["Element"]        = {"Light"}
     weight_of_the_undaunted["Range"]          = 3
@@ -197,17 +202,19 @@ end
 local function PrepareHolyExtermination(holy_extermination, modifiers)
 
     local holy_extermination_aura = {}
-    holy_extermination_aura["TargetType"]    = "Omni"
-    holy_extermination_aura["Accuracy"]      = "Always"
-    holy_extermination_aura["Range"]         = 2
-    holy_extermination_aura["DmgBase"]       = 20
-    holy_extermination_aura["DmgIncrement"]  = {"Mag", 1}
-    holy_extermination_aura["CritMod"]       = {0.4}
-    holy_extermination_aura["Element"]       = {"Light"}
+    holy_extermination["Name"]          = "Holy Extermination"
+    holy_extermination["Description"]   = "Law performs an explosion of light, pushing away all enemies in a 2 unit radius."
+    holy_extermination["FocusType"]    = "Omni"
+    holy_extermination["Accuracy"]      = "Always"
+    holy_extermination["Range"]         = 2
+    holy_extermination["DmgBase"]       = 20
+    holy_extermination["DmgIncrement"]  = {"Mag", 1}
+    holy_extermination["CritMod"]       = {0.4}
+    holy_extermination["Element"]       = {"Light"}
 
     holy_extermination["Focus"]         = "Enemy"
     holy_extermination["TargetType"]    = "Self"
-    holy_extermination["Aura"]          = holy_extermination_aura
+    holy_extermination["Aura"]          = nil
     holy_extermination["Effect"]        =
         function (map, char, focus_x, focus_y)
             local aura_tile_list = GetSkillMapRange(map, char, holy_extermination_aura)
@@ -243,16 +250,9 @@ function Law.InitializeChar(char, options)
     local skill_1, skill_2, skill_3, ultimate = {}, {}, {}, {}
 
     PreparePiercingJudgement(skill_1, {})
-    skill_1["Name"]     = "Piercing Judgement"
-
     PrepareDivineStreak(skill_2, {})
-    skill_2["Name"]     = "Divine Streak"
-    
     PrepareWeightOfTheUndaunted(skill_3, {})
-    skill_3["Name"]     = "Weight of the Undaunted"
-
     PrepareHolyExtermination(ultimate, {})
-    ultimate["Name"]    = "Holy Extermination"
 
     --PrepareDivineStreak(skill_1, options["Skill1"])
 

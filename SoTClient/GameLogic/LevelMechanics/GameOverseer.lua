@@ -31,7 +31,7 @@ local current_turn_player_index = 1
 
 local DoActionEnd
 
-function GameOverseer.getPlayerCharStats()
+function GameOverseer.getPlayerChar()
     return Squads[1][1]
 end
 
