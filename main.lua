@@ -3,7 +3,6 @@ display.setStatusBar( display.HiddenStatusBar )
 
 -- include Corona's "widget" library
 local composer = require "composer"
-local Player = require "SoTClient.GameLogic.PlayerLogic.Player"
 local sqlite3 = require( "sqlite3" )
 
 local datapath = "D:/GameDev/SoT Gaiden/UserData/gamedata.db"
