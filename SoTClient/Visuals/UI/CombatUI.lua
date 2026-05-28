@@ -2,7 +2,6 @@ local graphics = require ("graphics")
 local widget = require("widget")
 local MapRender = require "SotClient.Visuals.RenderMap"
 local MapData = require "SoTClient.GameLogic.Scenarios.MissionMap"
-local Player = require "SoTClient.GameLogic.PlayerLogic.Player"
 local LazyEval = require "SoTClient.Utils.LazyEval"
 local EventManager = require "SoTClient.Visuals.Events.EventManager"
 

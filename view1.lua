@@ -9,7 +9,6 @@ local scene = composer.newScene()
 local RenderBroker = require "SotClient.Visuals.RenderBroker"
 local GameOverseer = require "SotClient.GameLogic.LevelMechanics.GameOverseer"
 local MapData = require "SoTClient.GameLogic.Scenarios.MissionMap"
-local Player = require "SoTClient.GameLogic.PlayerLogic.Player"
 local seed1, seed2 = 14638, 3533
 local cutscene = {false}
 
@@ -37,7 +36,7 @@ function scene:create( event )
 	
 	GameOverseer.SetupGame(MapData, nil, nil, seed1, seed2)
 
-	Player.readPlayer()
+
 
 	RenderBroker.SetRenderBattle(MapData.GetMap(), GameOverseer.GetPlayerParty(), nil, sceneGroup)
 	RenderBroker.UpdateRender()
