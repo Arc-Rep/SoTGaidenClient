@@ -19,14 +19,26 @@ local CharAnimationList = {
     -- hurt
     hurt = 11,
     -- skill
-    skill1              = 12, 
-    skill1_projectile   = 13, 
-    skill2              = 14, 
-    skill2_projectile   = 15,
-    skill3              = 16,
-    skill3_projectile   = 17,
-    skill4              = 18, 
-    skill4_projectile   = 19
+    skill1_char_down    = 12, 
+    skill1_char_left    = 13,
+    skill1_char_right   = 14,
+    skill1_char_up      = 15,
+    skill1_projectile   = 16, 
+    skill2_char_down    = 17, 
+    skill2_char_left    = 18,
+    skill2_char_right   = 19,
+    skill2_char_up      = 20,
+    skill2_projectile   = 21,
+    skill3_char_down    = 22, 
+    skill3_char_left    = 23,
+    skill3_char_right   = 24,
+    skill3_char_up      = 25,
+    skill3_projectile   = 26,
+    skill4_char_down    = 27, 
+    skill4_char_left    = 28,
+    skill4_char_right   = 29,
+    skill4_char_up      = 30,
+    skill4_projectile   = 31
 }
 
 function CharAnimationList.convertMoveCoordsToAnimation(dir_x, dir_y)

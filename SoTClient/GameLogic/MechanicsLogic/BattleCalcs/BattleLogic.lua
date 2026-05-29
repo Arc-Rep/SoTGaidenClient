@@ -1,13 +1,14 @@
 
 local math = require "math"
 
-local MapUtils = require "SoTClient.GameLogic.Scenarios.MissionMapUtils"
-local Infusion = require "SoTClient.GameLogic.MechanicsLogic.InfusionSystem.Infusion"
-local Essence  = require "SoTClient.GameLogic.MechanicsLogic.InfusionSystem.Essence"
-local StatCals = require "SoTClient.GameLogic.MechanicsLogic.BattleCalcs.StatCalcs"
-local CombatUI = require "SoTClient.Visuals.UI.CombatUI"
-local LazyEval = require "SoTClient.Utils.LazyEval"
-local Audio    = require "SoTClient.Audio.AudioHandler"
+local AnimationQueue = require "SoTClient.Visuals.Animations.Basic.AnimationQueue"
+local MapUtils       = require "SoTClient.GameLogic.Scenarios.MissionMapUtils"
+local Infusion       = require "SoTClient.GameLogic.MechanicsLogic.InfusionSystem.Infusion"
+local Essence        = require "SoTClient.GameLogic.MechanicsLogic.InfusionSystem.Essence"
+local StatCals       = require "SoTClient.GameLogic.MechanicsLogic.BattleCalcs.StatCalcs"
+local CombatUI       = require "SoTClient.Visuals.UI.CombatUI"
+local LazyEval       = require "SoTClient.Utils.LazyEval"
+local Audio          = require "SoTClient.Audio.AudioHandler"
 
 function KillCharacter(game_map, char)
     game_map[char["x"]][char["y"]]["Actor"] = nil
@@ -282,17 +283,15 @@ function PerformSkill(game_map, atk_char, def_char, skill)
     skill["Modifiers"] = {}
 
     Infusion.checkBeforeAttackEssenceTrigger(map, atk_char, skill)
-
     Infusion.checkOnAttackReceiveTrigger(map, def_char, skill)
 
     if(LAND(skill["Accuracy"] ~= "Always", function () return CalculateHitOrMiss(skill) == false end)) then --in case of a miss
         print("You missed!")
-        return true
+    else
+        local base_attack_damage = DamageSkillCalculation(skill, atk_char, def_char)
+        ApplyDamage(game_map, def_char, base_attack_damage)
+        -- AnimationQueue.AddAnimation(def_char["Texture"], nil, nil, nil)
     end
-
-    local base_attack_damage = DamageSkillCalculation(skill, atk_char, def_char)
-
-    ApplyDamage(game_map, def_char, base_attack_damage)
 
     return true
 end
