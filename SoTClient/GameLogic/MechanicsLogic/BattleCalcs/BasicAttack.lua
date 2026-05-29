@@ -11,6 +11,7 @@ base_attack_skill["DmgBase"] = 10
 base_attack_skill["DmgIncrement"] = {"Str", 1.5}
 base_attack_skill["Accuracy"] = 1
 base_attack_skill["Element"] = {}
+base_attack_skill["Animation"] = nil
 
 
 function BasicAttack.doAttack(game_map, atk_char, def_char)
