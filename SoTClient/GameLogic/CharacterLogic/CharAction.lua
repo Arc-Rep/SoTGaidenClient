@@ -14,7 +14,7 @@ local function BehaviourHandler_Ally(game_map, char_list, char)
     if(#hittables ~= 0) then
         BasicAttack.doAttack(game_map, char, hittables[1])
         --MapRender.UpdateTilemap(game_map)
-        return true
+        return hittables[1]
     end
     if(char["Status"] == "Follower") then
         --print("Data is " .. char["Focus"]["y"])
@@ -38,7 +38,7 @@ local function BehaviourHandler_Enemy(game_map, char_list, char)
         char["Focus"] = hittables[1]
         BasicAttack.doAttack(game_map, char, char["Focus"])
         --MapRender.UpdateTilemap(game_map)
-        return true
+        return char["Focus"]
     end
     if(char["Status"] == "Standby" or char["Status"] == "Follower") then
         for index, char_i in ipairs(char_list) do

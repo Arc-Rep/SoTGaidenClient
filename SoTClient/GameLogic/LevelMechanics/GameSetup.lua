@@ -43,9 +43,9 @@ function SetupPlayerUnits(unit_table, Squads)
     table.insert(unit_table, unit1)
     table.insert(unit_table, unit2)
     table.insert(Squads[unit1["Team"]], unit1)
+    unit1["UnitIndex"] = #Squads[unit1["Team"]]
     table.insert(Squads[unit1["Team"]], unit2)
-
-    SetupEnemyUnits(game_map, unit_table, Squads, 1)
+    unit2["UnitIndex"] = #Squads[unit1["Team"]]
 end
 
 function SetupEnemyUnits(game_map, unit_table, Squads, difficulty)
@@ -64,6 +64,7 @@ function SetupEnemyUnits(game_map, unit_table, Squads, difficulty)
         LoadCharacter("Arachna", enemy_unit)
         table.insert(unit_table, enemy_unit)
         table.insert(Squads[enemy_unit["Team"]], enemy_unit)
+        enemy_unit["UnitIndex"] = #Squads[enemy_unit["Team"]]
     end
 end
 
