@@ -31,9 +31,8 @@ local function AnimationFinished()
 end
 
 local function PerformAnimationCycle()
-    local animation_number = #(animations[current_cycle])
 
-    for animation_index = 1, animation_number, 1 do
+    for animation_index = 1, #(animations[current_cycle]), 1 do
         local current_animation = animations[current_cycle][animation_index]
 
         if (current_animation["MoveParameters"] ~= nil) then
@@ -90,8 +89,15 @@ function AnimationQueue.StartAnimations(animation_callback)
     PerformAnimationCycle()
 end
 
-function AnimationQueue.SetNewCycle()
-    animations[#animations + 1] = {}
+function AnimationQueue.SetNewCycle(move_last_element)
+
+    if (move_last_element == true) then
+        local last_animation = animations[#animations][#animations[#animations]]
+        animations[#animations][#animations[#animations]] = nil
+        animations[#animations + 1] = { last_animation }
+    else
+        animations[#animations + 1] = {}
+    end
 end
 
 function AnimationQueue.ResetQueue()

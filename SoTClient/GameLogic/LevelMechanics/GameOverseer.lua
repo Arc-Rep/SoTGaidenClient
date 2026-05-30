@@ -21,7 +21,7 @@ local squad_team_num = 0
 local LocalBattles = {}
 
 -- Returns number of character actions to await before starting burst
-local burst_await_amount = 0
+local player_action_amount = 0
 
 -- Returns number of character actions to perform before stopping burst
 local burst_turn_total = 0
@@ -46,12 +46,12 @@ end
 
 function GameOverseer.SetNextBurst()
     burst_turn_total          = #Squads[global_turns]
-    burst_await_amount        = 0
+    player_action_amount      = 0
     current_turn_player_index = 1
 
     for index, character in pairs(Squads[global_turns]) do
         if (character["ControlType"] == "Player") then
-            burst_await_amount = burst_await_amount + 1
+            player_action_amount = player_action_amount + 1
         end
     end
 end
@@ -63,7 +63,13 @@ function GameOverseer.PerformBurst()
         if character["ControlType"] == "Player" then
             -- Stop and await player to act
         elseif (not CheckIfDead(character)) then
-            DoCharAction(GetGameMap(), unit_table, character)
+            local char_focused = DoCharAction(GetGameMap(), unit_table, character)
+            -- If the current unit targeted another unit, the animation must wait 
+            if (char_focused ~= nil and char_focused ~= true) then
+                if (character["Team"] == char_focused["Team"] and char_focused["UnitIndex"] < current_turn_player_index) then
+                    AnimationQueue.SetNewCycle(true)
+                end
+            end
         end
         current_turn_player_index = current_turn_player_index + 1
     end
@@ -78,7 +84,7 @@ end
 --    current_turn_player_index = current_turn_player_index + 1
 --    if (current_turn_player_index > burst_turn_total) then
 --        GameOverseer.DoTurnEnd()
---    elseif (current_turn_player_index > burst_await_amount) then
+--    elseif (current_turn_player_index > player_action_amount) then
 --        GameOverseer.PerformBurst()
 --    end
 --end
@@ -110,7 +116,7 @@ function GameOverseer.DoTurnStart()
     AnimationQueue.ResetQueue()
     AnimationQueue.SetNewCycle()
 
-    if burst_await_amount == 0 then
+    if player_action_amount == 0 then
         GameOverseer.PerformBurst()
     end
 end
@@ -185,6 +191,7 @@ function GameOverseer.SetupGame(MapData, player_squads, team_squads, seed1, seed
     MapData.generateMap(0, seed1, seed2, 0)
     SetupPlayerUnits(unit_table, Squads)
     SetupPlayerInitPlacements(GetGameMap(), Squads[1])
+    SetupEnemyUnits(MapData, unit_table, Squads, 1)
     SetupEnemyInitPlacements(GetGameMap(), Squads[0], seed1, seed2)
     LoadLevelAudio()
     squad_team_num = 2

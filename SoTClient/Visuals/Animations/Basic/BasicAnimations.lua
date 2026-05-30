@@ -14,11 +14,7 @@ function ElementMove(element_data)
         --Camera.StartFocuselement_data(params)
         --return MapRender.Performelement_data(element_data.object)
     else
-        if (current_object["sprite"] ~= nil) then
-            Camera.MoveElement(element_data.object.sprite, move_params, element_data.animation)
-        else
-            Camera.MoveElement(element_data.object.Texture, move_params, element_data.animation)
-        end
+        Camera.MoveElement(element_data.object.Texture, move_params, element_data.animation)
     end
 end
 
